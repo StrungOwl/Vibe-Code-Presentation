@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Like a Painter | Sydney Parks</title>
+
+  <!-- Reveal.js core CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+
+  <!-- Custom neumorphic pastel theme -->
+  <link rel="stylesheet" href="css/theme.css">
+
+  <!-- Three.js import map -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Microinteraction particle background -->
+  <canvas id="particles-canvas"></canvas>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ==========================================
+           TITLE: CODE LIKE A PAINTER
+           ========================================== -->
+      <section class="slide-title" data-transition="zoom" data-theme="purple">
+        <h1>Code Like a Painter</h1>
+        <p class="author">Sydney Parks</p>
+        <p class="event">Vibe Code Austin</p>
+      </section>
+
+      <!-- ==========================================
+           SECTION 1: WHO AM I?
+           ========================================== -->
+      <section data-theme="purple">
+
+        <!-- Section Header -->
+        <section class="section-header theme-purple" data-transition="zoom">
+          <span class="section-badge badge-purple">Section 01</span>
+          <h2>Who Am I?</h2>
+          <p class="section-desc">Sculptor, creative coder, and AI explorer working across physical and digital mediums.</p>
+        </section>
+
+        <!-- Portrait + Intro -->
+        <section class="slide-narrative"
+                 data-background-image="Who%20Am%20I/Myself/bW2.png"
+                 data-background-size="contain"
+                 data-background-position="right"
+                 data-background-opacity="0.25"
+                 data-transition="slide">
+          <h2>Sydney Parks</h2>
+          <p>Interdisciplinary artist working across <span class="accent-pink">physical sculpture</span>, <span class="accent-blue">generative code</span>, and <span class="highlight">AI-driven workflows</span>.</p>
+        </section>
+
+        <!-- The AI Journey -->
+        <section class="slide-narrative" data-transition="slide">
+          <h3>The AI Journey</h3>
+          <p>It started in <span class="accent-pink">Ireland</span>, where I was accepted into a <span class="highlight">creative coding program</span> and learned about AI art <em>before LLMs existed</em>.</p>
+          <p>My mentor showed me <span class="accent-blue">Midjourney</span> the summer before large language models launched &mdash; and I've been exploring ever since.</p>
+        </section>
+
+        <!-- Art Car -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/Myself/AngledShot.jpg"
+                 data-background-size="cover"
+                 data-background-position="center"
+                 data-transition="convex">
+          <div class="image-caption">
+            <h3>The Art Car</h3>
+            <p>Hand-painted from bumper to bumper</p>
+          </div>
+        </section>
+
+        <!-- Art Car Side 2 -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/Myself/GeometricSide.jpg"
+                 data-background-size="cover"
+                 data-background-position="center"
+                 data-transition="convex">
+        </section>
+
+        <!-- Portfolio: Grotesque Dome -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/My%20Work/Parks_Grotesque%20Dome.jpg"
+                 data-background-size="contain"
+                 data-background-position="center"
+                 data-transition="fade">
+          <div class="image-caption">
+            <h3>Grotesque Dome</h3>
+            <p>Mixed media sculpture with projection</p>
+          </div>
+        </section>
+
+        <!-- Portfolio: Installation -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/My%20Work/Installation.jpg"
+                 data-background-size="contain"
+                 data-background-position="center"
+                 data-transition="fade">
+          <div class="image-caption">
+            <h3>Installation View</h3>
+          </div>
+        </section>
+
+        <!-- Portfolio: Processing The Body -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/My%20Work/Parks_ProcessingTheBody.jpg"
+                 data-background-size="contain"
+                 data-background-position="center"
+                 data-transition="fade">
+          <div class="image-caption">
+            <h3>Processing The Body</h3>
+            <p>Sculpture with embedded generative visuals</p>
+          </div>
+        </section>
+
+        <!-- Portfolio: Burial -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/My%20Work/Parks_Burial.jpg"
+                 data-background-size="contain"
+                 data-background-position="center"
+                 data-transition="fade">
+          <div class="image-caption">
+            <h3>Burial</h3>
+            <p>3D printed, hand painted</p>
+          </div>
+        </section>
+
+        <!-- Portfolio: Deepglow Species -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/My%20Work/Parks_Deepglow%20Species%201.jpg"
+                 data-background-size="contain"
+                 data-background-position="center"
+                 data-transition="fade">
+          <div class="image-caption">
+            <h3>Deepglow Species 1</h3>
+          </div>
+        </section>
+
+        <!-- Portfolio: Crying Man -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/My%20Work/Parks_Crying%20Man.jpg"
+                 data-background-size="contain"
+                 data-background-position="center"
+                 data-transition="fade">
+          <div class="image-caption">
+            <h3>Crying Man</h3>
+          </div>
+        </section>
+
+        <!-- Portfolio: The Transaction -->
+        <section class="slide-image"
+                 data-background-image="Who%20Am%20I/My%20Work/Parks_The%20Transaction.jpg"
+                 data-background-size="contain"
+                 data-background-position="center"
+                 data-transition="fade">
+          <div class="image-caption">
+            <h3>The Transaction</h3>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           SECTION 2: MY PROCESS & WORKFLOWS
+           ========================================== -->
+
+      <!-- Workflows Overview -->
+      <section data-theme="pink">
+        <section class="section-header theme-pink" data-transition="zoom">
+          <span class="section-badge badge-pink">Section 02</span>
+          <h2>My Process &amp; Workflows</h2>
+          <p class="section-desc">Three AI-assisted workflows I've built for myself &mdash; each one starts with my original work as the seed.</p>
+        </section>
+
+        <section data-transition="slide">
+          <div class="workflow-cards">
+            <div class="workflow-card">
+              <div class="card-color card-color-purple"></div>
+              <span class="card-icon">&#128187;</span>
+              <h3>AI-Assisted Programming</h3>
+              <p>Pseudo code &amp; sketches &rarr; GPT image gen &rarr; Claude Code to build</p>
+            </div>
+            <div class="workflow-card">
+              <div class="card-color card-color-green"></div>
+              <span class="card-icon">&#9881;</span>
+              <h3>3D Printed Sculpture</h3>
+              <p>Sketch &rarr; AI ideation &rarr; 3D model &rarr; VR sculpt &rarr; print &rarr; paint</p>
+            </div>
+            <div class="workflow-card">
+              <div class="card-color card-color-coral"></div>
+              <span class="card-icon">&#127916;</span>
+              <h3>Video &amp; Projection</h3>
+              <p>Create source material &rarr; AI video gen &rarr; StreamDiffusion interactive output</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           WORKFLOW 1: AI-ASSISTED PROGRAMMING
+           ========================================== -->
+      <section data-theme="purple">
+
+        <!-- Workflow Chart -->
+        <section data-transition="zoom">
+          <h3>Workflow: AI-Assisted Programming</h3>
+          <div class="workflow-chart">
+            <div class="wf-step">
+              <span class="step-icon">&#9998;</span>
+              <span class="step-name">Pseudo Code / Sketches</span>
+              <span class="step-tool">Pen &amp; paper, references</span>
+            </div>
+            <span class="wf-arrow arrow-purple">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#10024;</span>
+              <span class="step-name">GPT Image Gen</span>
+              <span class="step-tool">Ideation &amp; visual refs</span>
+            </div>
+            <span class="wf-arrow arrow-purple">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#128187;</span>
+              <span class="step-name">Claude Code</span>
+              <span class="step-tool">Build from hand-written scripts</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Example: Kinetic Contemplations -->
+        <section>
+          <h3>Kinetic Contemplations</h3>
+          <p class="grid-label">JavaScript generative art</p>
+          <div class="image-grid grid-3">
+            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/Seeding%2022.png" alt="Seeding 22">
+            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/Seedling%206.png" alt="Seedling 6">
+            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/Seedling%2028.png" alt="Seedling 28">
+          </div>
+        </section>
+
+        <section class="slide-video">
+          <h3>Kinetic Contemplations &mdash; In Motion</h3>
+          <video data-autoplay muted loop playsinline controls>
+            <source data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/published.mp4" type="video/mp4">
+          </video>
+        </section>
+
+        <!-- Example: Nameless Dread -->
+        <section>
+          <h3>Nameless Dread</h3>
+          <p class="grid-label">Generative animation</p>
+          <div class="gif-display">
+            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Nameless%20Dread/dread1.gif" alt="Nameless Dread 1">
+            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Nameless%20Dread/dread2.gif" alt="Nameless Dread 2">
+            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Nameless%20Dread/dread3.gif" alt="Nameless Dread 3">
+          </div>
+        </section>
+
+        <!-- Example: Arduino -->
+        <section class="slide-video">
+          <h3>Arduino &amp; Interactive Art</h3>
+          <p class="grid-label">Physical computing meets AI-assisted code</p>
+          <video data-autoplay muted loop playsinline controls>
+            <source data-src="Workflows/AI%20Assisted%20Programming/Arduino%20%26%20Interactive%20Art/Final.mp4" type="video/mp4">
+          </video>
+        </section>
+
+        <section class="slide-video">
+          <h3>In the Clouds &mdash; How It Works</h3>
+          <video data-autoplay muted loop playsinline controls>
+            <source data-src="Workflows/AI%20Assisted%20Programming/Arduino%20%26%20Interactive%20Art/HowTo_IntheClouds.mp4" type="video/mp4">
+          </video>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           WORKFLOW 2: SCULPTURE
+           ========================================== -->
+      <section data-theme="green">
+
+        <!-- Workflow Chart -->
+        <section data-transition="zoom">
+          <h3>Workflow: 3D Printed Sculpture</h3>
+          <div class="workflow-chart">
+            <div class="wf-step">
+              <span class="step-icon">&#9998;</span>
+              <span class="step-name">Sketch</span>
+              <span class="step-tool">Pen &amp; paper</span>
+            </div>
+            <span class="wf-arrow arrow-green">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#10024;</span>
+              <span class="step-name">GPT Image Gen</span>
+              <span class="step-tool">Ideation</span>
+            </div>
+            <span class="wf-arrow arrow-green">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#9641;</span>
+              <span class="step-name">AI 3D Model</span>
+              <span class="step-tool">ComfyUI / Meshy</span>
+            </div>
+            <span class="wf-arrow arrow-green">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#127760;</span>
+              <span class="step-name">VR Sculpt</span>
+              <span class="step-tool">ShapeLab + Blender</span>
+            </div>
+            <span class="wf-arrow arrow-green">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#9881;</span>
+              <span class="step-name">3D Print</span>
+              <span class="step-tool">Creality K1 Max</span>
+            </div>
+            <span class="wf-arrow arrow-green">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#127912;</span>
+              <span class="step-name">Paint &amp; Finish</span>
+              <span class="step-tool">Acrylic, oil, resin pour</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- CRYING MAN -->
+        <section class="project-title" data-transition="convex">
+          <h3>Crying Man</h3>
+          <p class="project-medium">3D Printed Sculpture, Hand Painted</p>
+        </section>
+
+        <section>
+          <h3>ChatGPT Ideation</h3>
+          <p class="grid-label">Exploring form through AI image generation</p>
+          <div class="image-grid grid-6">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_12%20AM.png" alt="Concept 1">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_14%20AM.png" alt="Concept 2">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_18%20AM.png" alt="Concept 3">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_24%20AM.png" alt="Concept 4">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_32%20AM.png" alt="Concept 5">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_41%20AM.png" alt="Concept 6">
+          </div>
+        </section>
+
+        <section>
+          <h3>Final Sculpture</h3>
+          <div class="photos-row">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/4%20Paint/Parks_CryingMan_1.jpg" alt="Crying Man 1">
+            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/4%20Paint/Parks_CryingMan_3.jpg" alt="Crying Man 3">
+          </div>
+        </section>
+
+        <!-- BURIAL -->
+        <section class="project-title" data-transition="convex">
+          <h3>Burial</h3>
+          <p class="project-medium">3D Printed Sculpture, AI Video, Projection</p>
+        </section>
+
+        <section>
+          <h3>ChatGPT Ideation</h3>
+          <div class="image-grid grid-6">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_42_51%20AM.png" alt="Burial concept 1">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_42_59%20AM.png" alt="Burial concept 2">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_05%20AM.png" alt="Burial concept 3">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_26%20AM.png" alt="Burial concept 4">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_33%20AM.png" alt="Burial concept 5">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_36%20AM.png" alt="Burial concept 6">
+          </div>
+        </section>
+
+        <section>
+          <h3>AI-Generated 3D Model</h3>
+          <p class="grid-label">Interactive &mdash; click and drag to rotate</p>
+          <div class="model-viewer-container" data-model="Workflows/3DPrintedSculpture/Burial/gma4.obj">
+            <div class="model-loading">
+              <div class="spinner"></div>
+              <p class="loading-text">Loading model...</p>
+            </div>
+            <div class="model-controls-hint">Drag to rotate &bull; Scroll to zoom</div>
+          </div>
+        </section>
+
+        <section>
+          <h3>Final Sculpture</h3>
+          <div class="photos-row">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/Burial_Parks_1.jpg" alt="Burial final 1">
+            <img data-src="Workflows/3DPrintedSculpture/Burial/Burial_Parks_2.jpg" alt="Burial final 2">
+          </div>
+        </section>
+
+        <section class="slide-video">
+          <h3>Burial &mdash; Final Video</h3>
+          <video data-autoplay muted loop playsinline controls>
+            <source data-src="Workflows/3DPrintedSculpture/Burial/Burial_Final.mp4" type="video/mp4">
+          </video>
+        </section>
+
+        <!-- SITTING WOMAN -->
+        <section class="project-title" data-transition="convex">
+          <h3>Sitting Woman</h3>
+          <p class="project-medium">AI Image Gen, AI 3D Modeling</p>
+        </section>
+
+        <section>
+          <h3>GPT Image Generation</h3>
+          <p class="grid-label">Iterating on form through AI</p>
+          <div class="image-grid grid-6">
+            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_46_55%20AM.png" alt="Sitting Woman 1">
+            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_01%20AM.png" alt="Sitting Woman 2">
+            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_22%20AM.png" alt="Sitting Woman 3">
+            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_37%20AM.png" alt="Sitting Woman 4">
+            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_46%20AM.png" alt="Sitting Woman 5">
+            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_54%20AM.png" alt="Sitting Woman 6">
+          </div>
+        </section>
+
+        <section>
+          <h3>AI-Generated 3D Model</h3>
+          <p class="grid-label">Interactive viewer</p>
+          <div class="model-viewer-container" data-model="Workflows/3DPrintedSculpture/Sitting%20Woman/ai%20Model/sunflower1.obj">
+            <div class="model-loading">
+              <div class="spinner"></div>
+              <p class="loading-text">Loading model...</p>
+            </div>
+            <div class="model-controls-hint">Drag to rotate &bull; Scroll to zoom</div>
+          </div>
+        </section>
+
+        <section class="slide-video">
+          <h3>Work in Progress</h3>
+          <video data-autoplay muted loop playsinline controls>
+            <source data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/progress/Final_1.mp4" type="video/mp4">
+          </video>
+        </section>
+
+        <!-- FLOWER FINGERS -->
+        <section class="project-title" data-transition="convex">
+          <h3>Flower Fingers</h3>
+          <p class="project-medium">AI Image Generation, 3D Modeling</p>
+        </section>
+
+        <section>
+          <h3>AI Image Generation</h3>
+          <p class="grid-label">Exploring organic hybrid forms</p>
+          <div class="image-grid grid-5">
+            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_34%20AM.png" alt="Flower 1">
+            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_35%20AM.png" alt="Flower 2">
+            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_36%20AM.png" alt="Flower 3">
+            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_37%20AM.png" alt="Flower 4">
+            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_39%20AM.png" alt="Flower 5">
+          </div>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           WORKFLOW 3: VIDEO & PROJECTION MAPPING
+           ========================================== -->
+      <section data-theme="coral">
+
+        <!-- Workflow Chart -->
+        <section data-transition="zoom">
+          <h3>Workflow: Video &amp; Projection Mapping</h3>
+          <div class="workflow-chart">
+            <div class="wf-step">
+              <span class="step-icon">&#127912;</span>
+              <span class="step-name">Source Material</span>
+              <span class="step-tool">Video, images, sketches</span>
+            </div>
+            <span class="wf-arrow arrow-pink">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#10024;</span>
+              <span class="step-name">AI Video Gen</span>
+              <span class="step-tool">Grok Imagine / ComfyUI</span>
+            </div>
+            <span class="wf-arrow arrow-pink">&rarr;</span>
+            <div class="wf-step">
+              <span class="step-icon">&#127916;</span>
+              <span class="step-name">StreamDiffusion</span>
+              <span class="step-tool">Generative &amp; interactive video</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- AI Video Examples -->
+        <section>
+          <h3>AI-Generated Video</h3>
+          <p class="grid-label">Video generation iterations</p>
+          <div class="video-grid">
+            <video data-autoplay muted loop playsinline>
+              <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/3.mp4" type="video/mp4">
+            </video>
+            <video data-autoplay muted loop playsinline>
+              <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/5.mp4" type="video/mp4">
+            </video>
+            <video data-autoplay muted loop playsinline>
+              <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/7.mp4" type="video/mp4">
+            </video>
+          </div>
+        </section>
+
+        <!-- Projection Mapping -->
+        <section class="slide-video">
+          <h3>Projection Mapping</h3>
+          <p class="grid-label">AI video projected onto 3D printed sculpture</p>
+          <video data-autoplay muted loop playsinline controls>
+            <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/Burial_Projection_2.mp4" type="video/mp4">
+          </video>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           SECTION 3: EXPERIMENTS, FAILURE, AND TIPS
+           ========================================== -->
+      <section data-theme="blue">
+
+        <section class="section-header theme-blue" data-transition="zoom">
+          <span class="section-badge badge-blue">Section 03</span>
+          <h2>Experiments, Failure &amp; Tips</h2>
+          <p class="section-desc">Not everything works. The process is messy and full of failures &mdash; and that's where the learning happens.</p>
+        </section>
+
+        <!-- Experiments -->
+        <section>
+          <h3>The Experiment Reel</h3>
+          <div class="photos-row">
+            <img data-src="Workflows/Experiments_Mistakes/1.png" alt="Experiment">
+          </div>
+        </section>
+
+        <section class="slide-video">
+          <h3>Experiments &amp; Mistakes</h3>
+          <video data-autoplay muted loop playsinline controls>
+            <source data-src="Workflows/Experiments_Mistakes/FinalEdit.mp4" type="video/mp4">
+          </video>
+        </section>
+
+        <!-- Tips -->
+        <section data-transition="slide">
+          <h3>Tips for Your AI Workflow</h3>
+          <div class="tips-grid">
+            <div class="tip-card">
+              <div class="tip-icon">&#127793;</div>
+              <h4>The Seed Is Your Work</h4>
+              <p>The seed is usually my original work. When it isn't, the end result is my original "collage" of AI &mdash; still uniquely mine.</p>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">&#129504;</div>
+              <h4>Get Smart with AI Planning</h4>
+              <p>Before you build, use AI to help you plan. Think through architecture, approach, and constraints upfront.</p>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">&#128221;</div>
+              <h4>Use AI to Rewrite Prompts</h4>
+              <p>Don't settle for your first prompt. Ask AI to improve, refine, and rewrite your prompts for better results.</p>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">&#128640;</div>
+              <h4>Start with What You Know</h4>
+              <p>Ideally start with hand-written scripts and sketches. AI amplifies your vision &mdash; you still need to have one.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           SECTION 4: DEMO
+           ========================================== -->
+      <section data-theme="green">
+
+        <section class="section-header theme-green" data-transition="zoom">
+          <span class="section-badge badge-green">Section 04</span>
+          <h2>Demo</h2>
+          <p class="section-desc">Watch the entire workflow come together &mdash; from sculpture to interactive screen, in real time.</p>
+        </section>
+
+        <!-- Demo Pipeline -->
+        <section data-transition="slide">
+          <h3>Demo Pipeline</h3>
+          <div class="pipeline">
+            <div class="pipeline-step">
+              <div class="step-icon">&#128444;</div>
+              <div class="step-label">Original Sculpture</div>
+              <div class="step-tool">Physical artwork</div>
+            </div>
+            <span class="pipeline-arrow">&rarr;</span>
+            <div class="pipeline-step">
+              <div class="step-icon">&#10024;</div>
+              <div class="step-label">AI 3D Model</div>
+              <div class="step-tool">AI generation</div>
+            </div>
+            <span class="pipeline-arrow">&rarr;</span>
+            <div class="pipeline-step">
+              <div class="step-icon">&#128187;</div>
+              <div class="step-label">Three.js</div>
+              <div class="step-tool">Vibe code it</div>
+            </div>
+            <span class="pipeline-arrow">&rarr;</span>
+            <div class="pipeline-step">
+              <div class="step-icon">&#127916;</div>
+              <div class="step-label">TouchDesigner</div>
+              <div class="step-tool">StreamDiffusion</div>
+            </div>
+            <span class="pipeline-arrow">&rarr;</span>
+            <div class="pipeline-step">
+              <div class="step-icon">&#10035;</div>
+              <div class="step-label">Interactive Output</div>
+              <div class="step-tool">Real-time animation</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live Demo Slide -->
+        <section class="slide-demo" data-transition="zoom">
+          <h2>Live Demo</h2>
+          <p style="color: var(--text-dim); font-size: 1.2em;">Switching to live environment...</p>
+        </section>
+
+        <!-- Demo Recap -->
+        <section class="slide-narrative" data-transition="slide">
+          <h3>What You Just Saw</h3>
+          <p><span class="accent-pink">Physical sculpture</span> &rarr; <span class="highlight">AI 3D model</span> &rarr; <span class="accent-blue">vibe-coded in three.js</span> &rarr; <span class="accent-green">real-time animation with StreamDiffusion</span></p>
+          <p>One artwork. <strong>Multiple mediums. All AI-assisted.</strong></p>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           SECTION 5: Q&A / SOCIAL MEDIA
+           ========================================== -->
+      <section class="slide-closing" data-transition="zoom" data-theme="default">
+        <h2>Q&amp;A</h2>
+        <p style="color: var(--text-secondary); font-size: 1.3em; margin-bottom: 0.5em;">Sydney Parks</p>
+        <div class="social-links">
+          <a class="social-link" href="https://sydneyparks.io" target="_blank">sydneyparks.io</a>
+          <!-- Add your social media links here -->
+          <a class="social-link" href="#">Instagram</a>
+          <a class="social-link" href="#">LinkedIn</a>
+        </div>
+        <p style="color: var(--text-dim); font-size: 0.9em; margin-top: 2em;">Thank you, Vibe Code Austin!</p>
+      </section>
+
+    </div><!-- /slides -->
+  </div><!-- /reveal -->
+
+  <!-- Reveal.js core JS -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+
+  <!-- Presentation JS (particles, reveal init, three.js viewer) -->
+  <script type="module" src="js/presentation.js"></script>
+</body>
+</html>

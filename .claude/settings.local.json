@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(cd:*)",
-      "WebFetch(domain:sydneyparks.io)"
+      "WebFetch(domain:sydneyparks.io)",
+      "WebSearch",
+      "Bash(sort -k5 -h)"
     ]
   }
 }

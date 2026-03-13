@@ -877,7 +877,7 @@
 
 .gif-display {
   display: flex;
-  gap: 3px;
+  gap: 2em;
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 1em;

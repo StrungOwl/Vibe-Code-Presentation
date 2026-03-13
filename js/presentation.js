@@ -31,12 +31,23 @@ Reveal.initialize({
   margin: 0.04,
   minScale: 0.2,
   maxScale: 2.0,
-  autoPlayMedia: false,
+  autoPlayMedia: null,
   preloadIframes: 'lazy',
   slideNumber: 'c/t',
-  keyboard: true,
+  keyboard: {
+    // Space bar (32): only advance fragments, never change slides
+    32: () => {
+      // If there are remaining fragments on the current slide, advance one
+      const fragments = Reveal.availableFragments();
+      if (fragments.next) {
+        Reveal.nextFragment();
+      }
+      // Otherwise do nothing — arrow keys handle slide transitions
+    }
+  },
   overview: true,
   touch: true,
+  plugins: [ RevealNotes ],
 }).then(() => {
   console.log('Reveal.js initialized');
   initVideoManager();

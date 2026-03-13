@@ -36,11 +36,35 @@
   background: var(--black) !important;
 }
 
+/* ============================================
+   RILEY BACKGROUND CANVAS
+   p5.js-drawn op-art patterns behind all content
+   ============================================ */
+#riley-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  transition: opacity 0.6s ease;
+}
+
+#riley-bg canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
 .reveal {
   font-family: 'Lato', sans-serif;
   font-size: 32px;
   font-weight: 400;
   color: var(--text-primary);
+  position: relative;
+  z-index: 1;
 }
 
 .reveal .slides {
@@ -56,6 +80,39 @@
 .reveal .slides > section,
 .reveal .slides > section > section {
   line-height: 1.6;
+}
+
+/* ============================================
+   DOWN ARROW - Title slide navigation
+   ============================================ */
+
+.reveal .controls .navigate-down {
+  display: none !important;
+}
+
+.down-arrow {
+  display: inline-block;
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.5em;
+  color: var(--text-primary);
+  text-decoration: none;
+  animation: bounce 2s infinite;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.down-arrow:hover {
+  opacity: 1;
+  color: var(--text-primary);
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+  40% { transform: translateX(-50%) translateY(-12px); }
+  60% { transform: translateX(-50%) translateY(-6px); }
 }
 
 /* ============================================
@@ -122,23 +179,6 @@
   position: relative;
 }
 
-/* Static concentric circle decoration behind title */
-.slide-title::before {
-  content: '';
-  position: absolute;
-  width: 700px;
-  height: 700px;
-  border-radius: 50%;
-  background: repeating-radial-gradient(
-    circle,
-    transparent 0px,
-    transparent 20px,
-    rgba(255,255,255,0.04) 20px,
-    rgba(255,255,255,0.04) 22px
-  );
-  pointer-events: none;
-  opacity: 0.7;
-}
 
 .slide-title h1 {
   font-size: 5.5em;
@@ -199,20 +239,6 @@
   position: relative;
 }
 
-/* Horizontal stripe background for section headers */
-.section-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 28px,
-    rgba(255,255,255,0.035) 28px,
-    rgba(255,255,255,0.035) 30px
-  );
-  pointer-events: none;
-}
 
 .section-badge {
   display: inline-block;
@@ -278,8 +304,8 @@
   left: 50%;
   top: 10%;
   bottom: 10%;
-  width: 1px;
-  background: rgba(255,255,255,0.08);
+  width: 2px;
+  background: rgba(255,255,255,0.14);
   pointer-events: none;
 }
 
@@ -307,23 +333,6 @@
   position: relative;
 }
 
-/* Diagonal stripe accent in corner */
-.slide-cinematic::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 200px;
-  height: 200px;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent 0px,
-    transparent 8px,
-    rgba(255,255,255,0.03) 8px,
-    rgba(255,255,255,0.03) 10px
-  );
-  pointer-events: none;
-}
 
 .slide-cinematic p {
   font-size: 2.0em;
@@ -349,16 +358,16 @@
   position: relative;
 }
 
-/* Subtle corner accents - lightweight */
+/* Corner accents — enhanced for op-art presence */
 .slide-climax::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 120px;
-  height: 120px;
-  border-left: 3px solid rgba(255,255,255,0.12);
-  border-top: 3px solid rgba(255,255,255,0.12);
+  width: 180px;
+  height: 180px;
+  border-left: 4px solid rgba(255,255,255,0.22);
+  border-top: 4px solid rgba(255,255,255,0.22);
   pointer-events: none;
 }
 .slide-climax::after {
@@ -366,10 +375,10 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 120px;
-  height: 120px;
-  border-right: 3px solid rgba(255,255,255,0.12);
-  border-bottom: 3px solid rgba(255,255,255,0.12);
+  width: 180px;
+  height: 180px;
+  border-right: 4px solid rgba(255,255,255,0.22);
+  border-bottom: 4px solid rgba(255,255,255,0.22);
   pointer-events: none;
 }
 
@@ -405,14 +414,14 @@
   position: relative;
 }
 
-/* Lens/vesica shape decoration */
+/* Lens/vesica shape decoration — enhanced */
 .slide-definition::before {
   content: '';
   position: absolute;
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.06);
+  border: 3px solid rgba(255,255,255,0.12);
   left: calc(50% - 150px);
   pointer-events: none;
 }
@@ -422,7 +431,7 @@
   width: 500px;
   height: 500px;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.06);
+  border: 3px solid rgba(255,255,255,0.12);
   left: calc(50% - 350px);
   pointer-events: none;
 }
@@ -903,14 +912,14 @@
   overflow: hidden;
 }
 
-/* Horizontal stripe decoration in top-right */
+/* Horizontal stripe decoration in top-right — enhanced */
 .tip-card::after {
   content: '';
   position: absolute;
   top: 0;
   right: 0;
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   background: repeating-linear-gradient(
     0deg,
     var(--white) 0px,
@@ -918,7 +927,7 @@
     transparent 3px,
     transparent 6px
   );
-  opacity: 0.15;
+  opacity: 0.25;
   pointer-events: none;
 }
 
@@ -998,16 +1007,16 @@
   position: relative;
 }
 
-/* Static checkerboard - no animation for performance */
+/* Static checkerboard — enhanced op-art */
 .slide-demo::before {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%);
+    linear-gradient(45deg, rgba(255,255,255,0.08) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,0.08) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.08) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.08) 75%);
   background-size: 60px 60px;
   background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
   pointer-events: none;
@@ -1035,24 +1044,6 @@
   position: relative;
 }
 
-.slide-closing::before {
-  content: '';
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.06);
-  pointer-events: none;
-}
-.slide-closing::after {
-  content: '';
-  position: absolute;
-  width: 350px;
-  height: 350px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.04);
-  pointer-events: none;
-}
 
 .slide-closing h2 {
   font-size: 4.0em;

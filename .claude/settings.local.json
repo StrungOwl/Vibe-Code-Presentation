@@ -4,7 +4,8 @@
       "Bash(cd:*)",
       "WebFetch(domain:sydneyparks.io)",
       "WebSearch",
-      "Bash(sort -k5 -h)"
+      "Bash(sort -k5 -h)",
+      "WebFetch(domain:www.figma.com)"
     ]
   }
 }

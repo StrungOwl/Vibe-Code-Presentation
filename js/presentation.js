@@ -1,20 +1,9 @@
 // ============================================
-// SECTION THEME DETECTION
-// ============================================
-
-function getSectionTheme(slide) {
-  let el = slide;
-  while (el) {
-    if (el.dataset && el.dataset.theme) return el.dataset.theme;
-    el = el.parentElement;
-    if (el && el.classList && el.classList.contains('slides')) break;
-  }
-  return 'default';
-}
-
-// ============================================
 // REVEAL.JS INITIALIZATION
 // ============================================
+
+// Wait for speaker notes to be injected before initializing
+await (window.speakerNotesReady || Promise.resolve());
 
 Reveal.initialize({
   hash: true,
@@ -265,3 +254,134 @@ async function loadThreeViewer() {
 
   initModelViewers();
 }
+
+// ============================================
+// POPOUT TOOLTIPS - Fixed position to escape Reveal overflow
+// ============================================
+
+(function initPopoutTooltips() {
+  // Move all tooltips to document.body so they aren't clipped
+  document.querySelectorAll('.has-popout').forEach(card => {
+    const tooltip = card.querySelector('.popout-tooltip');
+    if (!tooltip) return;
+
+    // Move tooltip to body
+    document.body.appendChild(tooltip);
+
+    let hideTimeout;
+
+    function showTooltip() {
+      clearTimeout(hideTimeout);
+      // Hide any other visible tooltips
+      document.querySelectorAll('.popout-tooltip.visible').forEach(t => {
+        if (t !== tooltip) t.classList.remove('visible');
+      });
+
+      // Get card position accounting for Reveal.js scale transforms
+      const rect = card.getBoundingClientRect();
+
+      tooltip.classList.add('visible');
+
+      // Position below the card
+      const tooltipRect = tooltip.getBoundingClientRect();
+      let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+      let top = rect.bottom + 10;
+
+      // Keep within viewport
+      if (left < 10) left = 10;
+      if (left + tooltipRect.width > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipRect.width - 10;
+      }
+      // If it goes below viewport, show above instead
+      if (top + tooltipRect.height > window.innerHeight - 10) {
+        top = rect.top - tooltipRect.height - 10;
+        // Flip arrow
+        tooltip.classList.add('popout-above');
+      } else {
+        tooltip.classList.remove('popout-above');
+      }
+
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+    }
+
+    function hideTooltip() {
+      hideTimeout = setTimeout(() => {
+        tooltip.classList.remove('visible');
+      }, 200);
+    }
+
+    card.addEventListener('mouseenter', showTooltip);
+    card.addEventListener('mouseleave', hideTooltip);
+    card.addEventListener('focus', showTooltip);
+    card.addEventListener('blur', hideTooltip);
+
+    // Keep tooltip visible when hovering over it
+    tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+    tooltip.addEventListener('mouseleave', hideTooltip);
+  });
+
+  // Hide tooltips on slide change
+  Reveal.on('slidechanged', () => {
+    document.querySelectorAll('.popout-tooltip.visible').forEach(t => {
+      t.classList.remove('visible');
+    });
+  });
+})();
+
+// ============================================
+// GLOBAL CLICK-TO-ENLARGE IMAGES
+// ============================================
+
+(function initImageEnlarge() {
+  // Create overlay
+  var overlay = document.createElement('div');
+  overlay.id = 'img-enlarge-overlay';
+  overlay.className = 'img-enlarge-overlay';
+  overlay.innerHTML = '<img id="img-enlarge-target" class="img-enlarge-target">';
+  document.body.appendChild(overlay);
+
+  var enlargedImg = document.getElementById('img-enlarge-target');
+
+  function openEnlarge(src, alt) {
+    enlargedImg.src = src;
+    enlargedImg.alt = alt || '';
+    overlay.classList.add('visible');
+  }
+
+  function closeEnlarge() {
+    overlay.classList.remove('visible');
+    setTimeout(function () {
+      if (!overlay.classList.contains('visible')) {
+        enlargedImg.src = '';
+      }
+    }, 200);
+  }
+
+  // Click any image inside slides to enlarge
+  document.querySelector('.reveal .slides').addEventListener('click', function (e) {
+    var img = e.target.closest('img');
+    if (!img) return;
+
+    // Skip images that have their own click handlers
+    if (img.classList.contains('ideation-img')) return;
+    // Skip images inside controls/UI
+    if (img.closest('.reveal .controls') || img.closest('.wf-preview-overlay') || img.closest('#project-model-overlay') || img.closest('#img-enlarge-overlay')) return;
+
+    e.stopPropagation();
+    openEnlarge(img.src, img.alt);
+  });
+
+  // Close on overlay click
+  overlay.addEventListener('click', closeEnlarge);
+
+  // Close on Escape
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('visible')) {
+      closeEnlarge();
+    }
+  });
+
+  // Close on slide change
+  Reveal.on('slidechanged', closeEnlarge);
+})();

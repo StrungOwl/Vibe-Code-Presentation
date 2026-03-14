@@ -1,0 +1,19 @@
+{
+  "name": "vibe-code-presentation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "npx serve . -l 8787",
+    "test": "node js/tests/screenshot.js",
+    "test:all": "node js/tests/screenshot.js --all",
+    "test:slide": "node js/tests/screenshot.js --slide"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "playwright": "^1.58.2",
+    "serve": "^14.2.6"
+  }
+}

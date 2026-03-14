@@ -190,6 +190,42 @@ Step-by-step guide with card layouts.
 
 ---
 
+## Build & Test Process
+
+### Prerequisites
+- **Node.js** (v18+)
+- Run `npm install` to install dev dependencies (Playwright, serve)
+- Run `npx playwright install chromium` to install the headless browser (first time only)
+
+### Local Dev Server
+```bash
+npm run serve        # Starts local server at http://localhost:8787
+```
+
+### Visual Screenshot Testing
+The project uses Playwright to launch a headless Chromium browser, serve the presentation locally, and capture screenshots. This allows Claude Code (or any agent) to visually verify changes without manual browser testing.
+
+```bash
+npm test                         # Screenshot the title slide (default)
+npm test -- --slide 5            # Screenshot slide 5
+npm test -- --slide 3 --slide 10 # Screenshot specific slides
+npm run test:all                 # Screenshot every slide
+```
+
+**Screenshots** are saved to `screenshots/` (gitignored). The test also captures any browser console errors and reports them.
+
+### Agent Workflow (Claude Code)
+When making visual changes, Claude Code should:
+1. Make the code change
+2. Run `npm test -- --slide <N>` targeting the affected slide(s)
+3. Read the screenshot from `screenshots/slide-XXX.png` to visually verify
+4. Report any browser console errors
+5. Iterate if the result doesn't look right
+
+This gives the agent a visual feedback loop without requiring manual browser testing for every change.
+
+---
+
 ## Technical Architecture
 
 ### Stack
@@ -255,10 +291,11 @@ Reveal.initialize({
 ```
 
 ### Key Interactions
+0. **Click-to-enlarge images**: Any image in the presentation can be clicked to open a fullscreen overlay. Clicking again or pressing Escape closes it. This is a global behavior applied to all `<img>` elements inside `.reveal .slides` (excluding images that already have their own click handlers like `.ideation-img`).
 1. **p5.js op-art backgrounds**: 7 unique patterns (one per theme) drawn on a shared canvas. Patterns redraw when section theme changes. Static rendering (`noLoop()`), no mouse reactivity. Canvas resizes on `window.resize`.
 2. **Three.js OBJ viewer**: Two interactive 3D model viewers (Burial: gma4.obj, Sitting Woman: sunflower1.obj) with auto-rotation, orbit controls, and B&W gallery lighting. Lazy-loaded on first encounter.
 3. **Fragment reveals**: Narrative slides use Reveal.js fragments for speaker-paced dramatic text reveals.
-4. **Card hover inversion**: Cards flip to white-on-black with translateY(-4px) lift.
+4. **Card hover inversion**: Only cards with `.has-popout` (tooltip) or that are clickable links flip to white-on-black on hover. Non-interactive cards have no hover effect.
 5. **Video manager**: Videos lazy-load sources on slide entry, auto-play, and fully unload on slide exit.
 6. **Workflow step alternation**: Workflow chart steps alternate black-on-white and white-on-black for op-art checkerboard feel.
 7. **Missing media placeholders**: JS checks each `<img>` and `<video>` src on slide entry. If file is missing (404 or `onerror`), replaces element with a styled placeholder div showing the expected filename.
@@ -307,7 +344,7 @@ Each top-level `<section>` has a `data-theme` attribute that controls:
 1. **No color** — everything is black and white. No colored accents, borders, or fills.
 2. **Never use border-radius** on cards, inputs, or containers. Sharp edges only.
 3. **Never use soft/neumorphic shadows**. Use subtle white borders or directional glow.
-4. **Cards invert on hover** — background becomes white, text becomes black, with translateY(-4px).
+4. **Hover effects only on interactive elements** — Only elements with a click handler, link, or `.has-popout` tooltip get hover styles (color inversion, transforms, cursor: pointer). Non-interactive containers (display-only cards, workflow steps, pipeline steps, tip cards, placeholder cards, image grids) must have no hover effect and use `cursor: default`. The `.has-popout` class is the opt-in mechanism for hover on cards.
 5. **All animations use cubic-bezier(0.16, 1, 0.3, 1)** for smooth, snappy motion.
 6. **Background is always pure black** (#000000). Content surfaces are #0C0C0C with 15-35% white borders.
 7. **Media has no rounded corners**, only white borders (1-3px).

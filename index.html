@@ -461,23 +461,59 @@
       <!-- WORKFLOW 2: VIDEO & PROJECTION MAPPING -->
       <section data-theme="coral">
 
-        <!-- Workflow Chart -->
+        <!-- Part 1: AI Video Workflow -->
         <section data-transition="zoom">
-          <h3>Workflow: Video &amp; Projection Mapping</h3>
+          <h3 style="text-align:center;width:100%">Workflow: AI Video</h3>
+          <div class="workflow-chart workflow-grid">
+
+            <!-- Row 1: seed → storyboard → generate -->
+            <div class="wf-row">
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-seed">
+                <span class="step-name">My Original Work</span>
+                <span class="step-tool">Seed</span>
+              </div>
+              <span class="wf-arrow arrow-pink">&rarr;</span>
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-storyboard">
+                <span class="step-name">Storyboard</span>
+                <span class="step-tool">Frame by frame</span>
+              </div>
+              <span class="wf-arrow arrow-pink">&rarr;</span>
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-generate">
+                <span class="step-name">Generate Video</span>
+                <span class="step-tool">Higgsfield AI</span>
+              </div>
+            </div>
+
+            <span class="wf-arrow-down arrow-pink">&darr;</span>
+
+            <!-- Row 2: edit → integrate -->
+            <div class="wf-row">
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-edit">
+                <span class="step-name">Edit Video</span>
+                <span class="step-tool">Premiere Pro</span>
+              </div>
+              <span class="wf-arrow arrow-pink">&rarr;</span>
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-integrate">
+                <span class="step-name">Integrate</span>
+                <span class="step-tool">Final output</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video workflow media preview overlay -->
+          <div id="wf-video-preview-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="wf-video-preview-close">&times;</button>
+            <div class="wf-preview-content" id="wf-video-preview-content"></div>
+          </div>
+        </section>
+
+        <!-- Part 2: Projection Mapping -->
+        <section data-transition="slide">
+          <h3 style="text-align:center;width:100%">Workflow: Projection Mapping</h3>
           <div class="workflow-chart">
             <div class="wf-step">
-              <span class="step-name">Source Material</span>
-              <span class="step-tool">Video, images, sketches</span>
-            </div>
-            <span class="wf-arrow arrow-pink">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-name">AI Video Gen</span>
-              <span class="step-tool">Grok Imagine / ComfyUI</span>
-            </div>
-            <span class="wf-arrow arrow-pink">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-name">StreamDiffusion</span>
-              <span class="step-tool">Generative &amp; interactive video</span>
+              <span class="step-name">Coming Soon</span>
+              <span class="step-tool">Content in progress</span>
             </div>
           </div>
         </section>
@@ -491,48 +527,35 @@
         <section data-transition="zoom">
           <h3>Workflow: AI-Assisted Programming</h3>
           <div class="workflow-chart">
-            <div class="wf-step">
-              <span class="step-name">Pseudo Code / Sketches</span>
+            <div class="wf-step has-wf-ai-preview" data-ai-preview="pseudocode">
+              <span class="step-name">Sketching</span>
               <span class="step-tool">Pen &amp; paper, references</span>
             </div>
             <span class="wf-arrow arrow-purple">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-name">GPT Image Gen</span>
-              <span class="step-tool">Ideation &amp; visual refs</span>
-              <span class="step-note">Tip: You can also mockup in Figma and use their MCP extension with VS Code to integrate designs directly.</span>
+            <div class="wf-step has-wf-ai-preview" data-ai-preview="imagegen">
+              <span class="step-name">Sketch &amp; Image Gen</span>
+              <span class="step-tool">AI image models + Figma MCP</span>
             </div>
             <span class="wf-arrow arrow-purple">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-name">Claude Code</span>
-              <span class="step-tool">Build from hand-written scripts</span>
+            <div class="wf-step has-wf-ai-preview" data-ai-preview="claudecode">
+              <span class="step-name">VS Code</span>
+              <span class="step-tool">Using Claude Code extension</span>
             </div>
           </div>
+
+          <!-- AI Programming workflow media preview overlay -->
+          <div id="wf-ai-preview-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="wf-ai-preview-close">&times;</button>
+            <div class="wf-preview-content" id="wf-ai-preview-content"></div>
+          </div>
+
+          <aside class="notes">
+            Playwright comes in two flavors worth knowing: the CLI (command-line runner) and the MCP server. Both use the same underlying engine, but they interact with the browser differently. The CLI drives the browser through the DevTools Protocol — raw pixel/DOM access. The MCP version exposes the accessibility tree instead: the same semantic tree that screen readers use to help blind users navigate interfaces. That tree describes buttons, headings, and landmarks by role and label, not by pixel position. This makes Claude's test interactions much more robust — it finds elements the way a human would describe them, not by brittle CSS selectors.
+          </aside>
         </section>
 
       </section>
 
-      <!-- Tips Grid -->
-      <section data-transition="slide">
-        <h3>Tips for Your AI Workflow</h3>
-        <div class="tips-grid">
-          <div class="tip-card">
-            <h4>The Seed Is Your Work</h4>
-            <p>The seed is usually my original work. When it isn&rsquo;t, the end result is my original &ldquo;collage&rdquo; of AI &mdash; still uniquely mine.</p>
-          </div>
-          <div class="tip-card">
-            <h4>Get Smart with AI Planning</h4>
-            <p>Before you build, use AI to help you plan. Think through architecture, approach, and constraints upfront.</p>
-          </div>
-          <div class="tip-card">
-            <h4>Use AI to Rewrite Prompts</h4>
-            <p>Don&rsquo;t settle for your first prompt. Ask AI to improve, refine, and rewrite your prompts for better results.</p>
-          </div>
-          <div class="tip-card">
-            <h4>Start with What You Know</h4>
-            <p>Ideally start with hand-written scripts and sketches. AI amplifies your vision &mdash; you still need to have one.</p>
-          </div>
-        </div>
-      </section>
 
       <!-- ==========================================
            LAYER 4: HOW TO VIBE CODE
@@ -674,16 +697,36 @@
           </div>
         </section>
 
-        <!-- Step 5: Create a PRD -->
+        <!-- Step 5: Generate a Project Plan -->
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Step 5</span>
-          <h3>Create a PRD</h3>
-          <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <h4>Product Requirements Document</h4>
-            <p>Your blueprint. Use GPT to collaboratively write and refine it together. Be as descriptive as possible &mdash; every detail matters when your agent is the one building.</p>
-            <p style="margin-top: 0.6em; color: var(--text-secondary);"><strong>Include an Integrations section</strong> &mdash; list MCP servers, APIs, and any external services your project will connect to. Your agent needs to know the full picture upfront.</p>
-            <p style="margin-top: 0.6em; color: var(--text-secondary);"><strong>Incorporate anti-criteria</strong> &mdash; define what your project should <em>not</em> be. Anti-criteria help your agent avoid unwanted patterns, features, and aesthetics from the start.</p>
+          <h3>Generate a Project Plan</h3>
+          <div style="display: flex; gap: 1.2em; justify-content: center; align-items: flex-start; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;">
+
+            <div class="guide-card" style="flex: 1; min-width: 280px; max-width: 380px; text-align: left;">
+              <h4>PRD &mdash; Product Requirements Document</h4>
+              <p style="font-size: 0.82em; line-height: 1.7;">A structured document that defines what you're building.</p>
+              <p style="font-size: 0.78em; margin-top: 0.8em; color: var(--text-secondary);">Use your preferred LLM to help you write and refine it.</p>
+            </div>
+
+            <div class="guide-card" style="flex: 1; min-width: 280px; max-width: 380px;">
+              <h4>What to Include</h4>
+              <ul style="text-align: left; font-size: 0.75em; line-height: 1.9; list-style: none; padding: 0;">
+                <li>&#x2022; Project overview</li>
+                <li>&#x2022; Libraries &amp; frameworks</li>
+                <li>&#x2022; MCP servers &amp; APIs</li>
+                <li>&#x2022; Playwright CLI</li>
+                <li>&#x2022; Deployment platform</li>
+                <li>&#x2022; Interaction &amp; common behaviors</li>
+                <li>&#x2022; Visual identity</li>
+                <li>&#x2022; Anti-criteria</li>
+              </ul>
+            </div>
+
           </div>
+          <aside class="notes">
+            Give context of your project to your agent.
+          </aside>
         </section>
 
         <!-- Step 6: Generate a Design -->
@@ -691,8 +734,12 @@
           <span class="step-badge">Step 6</span>
           <h3>Generate a Design</h3>
           <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <h4>Visual Mockups First</h4>
-            <p>Use tools like Nanobanan, GPT image gen, or any AI image tool to create a visual design of your project before coding. Your agent builds better when it can see the target.</p>
+            <p>You can feed this into your chat so it can "see" what you want it to build.</p>
+            <ul style="text-align: left; font-size: 0.95em; line-height: 1.9; list-style: none; padding: 0; margin-top: 0.8em;">
+              <li>&#x2022; <strong>Sketch</strong></li>
+              <li>&#x2022; <strong>Figma</strong></li>
+              <li>&#x2022; <strong>AI Image Generation</strong></li>
+            </ul>
           </div>
         </section>
 
@@ -701,13 +748,13 @@
           <span class="step-badge">Step 7</span>
           <h3>Let Your Agent Build</h3>
           <p style="color: var(--text-secondary); margin-bottom: 0.8em;">Best practices for prompting your agent. <span style="font-size:0.8em; opacity:0.6;">Hover each card for details.</span></p>
-          <div class="guide-cards cards-3">
+          <div class="guide-cards cards-5">
             <div class="guide-card has-popout" tabindex="0">
               <div class="card-color card-color-purple"></div>
-              <h4>Write Pseudo Code</h4>
-              <p>Outline your logic in plain language before handing it off.</p>
-              <div class="popout-tooltip">
-                <h5>What Is Pseudo Code?</h5>
+              <h4>Pseudo Code</h4>
+              <p>Remember this concept and use it when you describe what you want.</p>
+              <div class="popout-tooltip" style="width:480px;">
+                <img src="Workflows/AI%20Assisted%20Programming/Pseudocode.webp" alt="Pseudocode example" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
                 <p>A simplified, human-readable description of what your program should do &mdash; written in plain language, not actual code. It lets you think through logic without worrying about syntax.</p>
                 <p style="margin-top: 0.4em; font-style: italic;">&ldquo;When the user clicks the canvas, generate a new shape at that position. Each shape should inherit the color of the previous one but rotate 15 degrees.&rdquo;</p>
               </div>
@@ -717,7 +764,6 @@
               <h4>Be Descriptive</h4>
               <p>The more detail you give, the better the output.</p>
               <div class="popout-tooltip">
-                <h5>Show, Don&rsquo;t Just Tell</h5>
                 <p>Instead of &ldquo;make it look nice,&rdquo; say: &ldquo;Use a dark background (#0a0a0a), thin white lines, and animate them with a sine wave that oscillates every 3 seconds.&rdquo;</p>
                 <p style="margin-top: 0.4em; font-style: italic;">Break the project into components: layout, interaction, animation, color, typography. Describe each one separately.</p>
               </div>
@@ -727,11 +773,103 @@
               <h4>Think Like a Composer</h4>
               <p>Each chat is a different musician in your orchestra.</p>
               <div class="popout-tooltip">
-                <h5>Compose, Don&rsquo;t Play</h5>
                 <p>Every musician in an orchestra has a strength. Treat each chat the same way &mdash; one for planning, one for building, one for troubleshooting, one for editing, one for critique. Don&rsquo;t cross-pollinate.</p>
               </div>
             </div>
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-blue"></div>
+              <h4>UI Testing with Playwright CLI</h4>
+              <p>Let your agent do the testing for you.</p>
+              <div class="popout-tooltip">
+                <p>Playwright CLI lets your agent open a real browser, interact with your UI, and verify it works &mdash; all without you lifting a finger. Describe what to test and let Claude run it.</p>
+              </div>
+            </div>
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-narrative"></div>
+              <h4>Model Selection</h4>
+              <p>Switch models depending on the complexity of the task.</p>
+              <div class="popout-tooltip" style="width:520px;">
+                <img src="Workflows/AI%20Assisted%20Programming/models.png" alt="Claude model selection guide" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
+                <p>Not every task needs the most powerful model. Match the model to the job:</p>
+                <p style="margin-top:0.4em;"><strong>Opus</strong> &mdash; complex reasoning, architecture decisions, hard bugs</p>
+                <p style="margin-top:0.4em;"><strong>Sonnet</strong> &mdash; everyday building, writing, iteration</p>
+                <p style="margin-top:0.4em;"><strong>Haiku</strong> &mdash; fast, lightweight tasks: quick edits, simple lookups, high-volume automation where speed and cost matter</p>
+              </div>
+            </div>
           </div>
+        </section>
+
+        <!-- Step 7 Continued: Slash Commands -->
+        <section class="slide-guide" data-transition="slide">
+          <span class="step-badge">Step 7 — Continued</span>
+          <h3>Let Your Agent Build</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 0.8em;">Useful /commands to know about</p>
+          <div class="guide-cards cards-3">
+            <div class="guide-card">
+              <div class="card-color card-color-purple"></div>
+              <h4>/model</h4>
+              <p>Switch models mid-session. Use Opus for hard problems, Haiku for fast simple tasks.</p>
+            </div>
+            <div class="guide-card">
+              <div class="card-color card-color-blue"></div>
+              <h4>/clear</h4>
+              <p>Wipe the conversation and start fresh. Use between features to keep context clean.</p>
+            </div>
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-green"></div>
+              <h4>/compact</h4>
+              <p>Manually summarize the session to free up context space before hitting the limit.</p>
+              <div class="popout-tooltip" style="width:520px;">
+                <img src="Workflows/AI%20Assisted%20Programming/autoCompact.png" alt="Auto compact context warning" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
+                <p>When you hit the context limit, the agent auto-compacts: it summarizes earlier work to free up space but loses detail. Use <strong>/compact</strong> manually before that happens, or start a new chat when finishing a feature.</p>
+              </div>
+            </div>
+<div class="guide-card">
+              <div class="card-color card-color-purple"></div>
+              <h4>/mcp</h4>
+              <p>Manage your MCP servers (plugins) &mdash; connect Figma, GitHub, browser control, and more.</p>
+            </div>
+            <div class="guide-card">
+              <div class="card-color card-color-default"></div>
+              <h4>/plugin</h4>
+              <p>Install and manage Claude Code plugins &mdash; extend your agent with custom tools and integrations.</p>
+            </div>
+            <div class="guide-card">
+              <div class="card-color card-color-coral"></div>
+              <h4>/context</h4>
+              <p>Shows a snapshot of what&rsquo;s currently loaded into your conversation&rsquo;s context window &mdash; everything consuming tokens right now.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bonus Tip: settings.local.json -->
+        <section class="slide-guide" data-transition="slide">
+          <span class="step-badge">Bonus Tip</span>
+          <h3>Stop Clicking &ldquo;Accept&rdquo;</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 0.8em;">Add a <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">settings.local.json</code> to your project&rsquo;s <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">.claude/</code> folder to auto-allow tools.</p>
+          <div class="guide-card" style="max-width: 680px; margin: 0 auto; text-align: left;">
+            <pre style="font-family: 'Courier New', monospace; font-size: 0.75em; line-height: 1.6; margin: 0; white-space: pre; color: #fff;">{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "MultiEdit",
+      "Grep",
+      "Glob",
+      "LS",
+      "WebFetch",
+      "WebSearch",
+      "NotebookRead",
+      "NotebookEdit",
+      "TodoRead",
+      "TodoWrite"
+    ]
+  }
+}</pre>
+          </div>
+          <p style="color: var(--text-secondary); margin-top: 0.6em; font-size: 0.8em;">Your agent will stop asking for permission on every file read, edit, and shell command.</p>
         </section>
 
         <!-- Step 8: Edit Out AI Aesthetics -->
@@ -741,9 +879,9 @@
           <div class="guide-cards cards-2" style="align-items: start;">
             <div class="guide-card">
               <h4>Make It Yours</h4>
-              <p>After your agent builds, go back and strip out the telltale signs of AI-generated design.</p>
-              <p style="margin-top: 0.8em;">Incorporate <strong>anti-criteria</strong> into your PRD so your agent avoids these from the start. Tell it what <em>not</em> to do &mdash; what to avoid, what looks generic, what screams &ldquo;AI made this.&rdquo;</p>
-              <p style="margin-top: 0.8em; color: var(--text-secondary);">You&rsquo;re the <strong>composer</strong> now, not the musician. The agent plays the instrument &mdash; your job is taste, vision, and knowing what sounds right.</p>
+              <p>After your agent builds, go back and strip out the signs of AI-generated design.</p>
+              <p style="margin-top: 0.8em;">Copy and paste the list to the right &mdash; or create your own updated version based on what you learned in the AI landscape phase &mdash; into the chat and double check that it avoided these designs.</p>
+              <p style="margin-top: 0.8em;">Also put the list in your PRD so it knows not to use it from the beginning.</p>
             </div>
             <div class="guide-card">
               <h4>Things That Look Like AI</h4>
@@ -756,7 +894,6 @@
                 <li><strong>Affordance design that glows</strong></li>
                 <li><strong>Overly polished glass/blur effects</strong></li>
                 <li><strong>Centered hero sections with stock phrases</strong></li>
-                <li><strong>Purple-to-blue gradient backgrounds</strong></li>
                 <li><strong>Floating cards with drop shadows</strong></li>
                 <li><strong>Icon-heavy minimal dashboards</strong></li>
               </ul>

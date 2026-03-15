@@ -291,7 +291,7 @@ Reveal.initialize({
 ```
 
 ### Key Interactions
-0. **Click-to-enlarge images**: Any image in the presentation can be clicked to open a fullscreen overlay. Clicking again or pressing Escape closes it. This is a global behavior applied to all `<img>` elements inside `.reveal .slides` (excluding images that already have their own click handlers like `.ideation-img`).
+0. **Click-to-enlarge images**: Any image in the presentation can be clicked to open the global `#img-enlarge-overlay` fullscreen lightbox. Clicking the overlay or pressing Escape closes it. This is a global behavior applied to ALL `<img>` elements inside `.reveal .slides` AND inside `.wf-preview-overlay` popups — no exceptions (only `#project-model-overlay` and nav controls are excluded). All clickable images must use `cursor: zoom-in`. Do NOT add per-image custom click handlers for enlarging — the global handler in `presentation.js` covers all cases.
 1. **p5.js op-art backgrounds**: 7 unique patterns (one per theme) drawn on a shared canvas. Patterns redraw when section theme changes. Static rendering (`noLoop()`), no mouse reactivity. Canvas resizes on `window.resize`.
 2. **Three.js OBJ viewer**: Two interactive 3D model viewers (Burial: gma4.obj, Sitting Woman: sunflower1.obj) with auto-rotation, orbit controls, and B&W gallery lighting. Lazy-loaded on first encounter.
 3. **Fragment reveals**: Narrative slides use Reveal.js fragments for speaker-paced dramatic text reveals.

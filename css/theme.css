@@ -625,17 +625,25 @@
   cursor: default;
 }
 
-.wf-step.has-wf-preview {
+.wf-step.has-wf-preview,
+.wf-step.has-wf-video-preview,
+.wf-step.has-wf-ai-preview {
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.wf-step.has-wf-preview:hover {
+.wf-step.has-wf-preview:hover,
+.wf-step.has-wf-video-preview:hover,
+.wf-step.has-wf-ai-preview:hover {
   background: var(--white);
   border-color: var(--white);
 }
-.wf-step.has-wf-preview:hover .step-name { color: var(--black); }
-.wf-step.has-wf-preview:hover .step-tool { color: #555; }
+.wf-step.has-wf-preview:hover .step-name,
+.wf-step.has-wf-video-preview:hover .step-name,
+.wf-step.has-wf-ai-preview:hover .step-name { color: var(--black); }
+.wf-step.has-wf-preview:hover .step-tool,
+.wf-step.has-wf-video-preview:hover .step-tool,
+.wf-step.has-wf-ai-preview:hover .step-tool { color: #555; }
 
 /* Alternating: odd steps (1st, 3rd in each row) are white-on-black */
 .wf-row .wf-step:first-child {
@@ -646,12 +654,15 @@
 .wf-row .wf-step:first-child .step-tool { color: #555; }
 
 /* Invert hover for already-white (first) steps */
-.wf-row .wf-step.has-wf-preview:first-child:hover {
+.wf-row .wf-step.has-wf-preview:first-child:hover,
+.wf-row .wf-step.has-wf-video-preview:first-child:hover {
   background: var(--black);
   border-color: var(--white);
 }
-.wf-row .wf-step.has-wf-preview:first-child:hover .step-name { color: var(--white); }
-.wf-row .wf-step.has-wf-preview:first-child:hover .step-tool { color: var(--text-dim); }
+.wf-row .wf-step.has-wf-preview:first-child:hover .step-name,
+.wf-row .wf-step.has-wf-video-preview:first-child:hover .step-name { color: var(--white); }
+.wf-row .wf-step.has-wf-preview:first-child:hover .step-tool,
+.wf-row .wf-step.has-wf-video-preview:first-child:hover .step-tool { color: var(--text-dim); }
 
 
 .wf-step .step-name {
@@ -1152,8 +1163,12 @@
   margin-top: 0.8em;
   width: 100%;
   max-width: 1200px;
+  justify-content: center;
 }
 
+.guide-cards.cards-6 { grid-template-columns: repeat(3, 1fr); }
+.guide-cards.cards-5 { grid-template-columns: repeat(5, 1fr); }
+.guide-cards.cards-4 { grid-template-columns: repeat(4, 1fr); }
 .guide-cards.cards-3 { grid-template-columns: repeat(3, 1fr); }
 .guide-cards.cards-2 { grid-template-columns: repeat(2, 1fr); }
 
@@ -1613,12 +1628,25 @@
   text-align: center;
 }
 
+/* All images inside any preview overlay get zoom cursor + click-to-enlarge affordance */
+.wf-preview-content img {
+  cursor: zoom-in;
+}
+.wf-preview-content img:hover {
+  opacity: 0.85;
+}
+
 /* Single image preview */
 .wf-preview-content .preview-single-img {
   max-width: 100%;
   max-height: 94vh;
   border: 2px solid var(--white);
   object-fit: contain;
+  cursor: zoom-in;
+  transition: opacity 0.2s;
+}
+.wf-preview-content .preview-single-img:hover {
+  opacity: 0.85;
 }
 
 /* Image grid for ideation */
@@ -1641,30 +1669,12 @@
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 2px;
-  cursor: pointer;
+  cursor: zoom-in;
   transition: opacity 0.2s;
 }
 
 .wf-preview-grid img:hover {
   opacity: 0.8;
-}
-
-.wf-preview-grid img.ideation-fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  max-height: none;
-  aspect-ratio: auto;
-  object-fit: contain;
-  background: rgba(0, 0, 0, 0.95);
-  border: none;
-  border-radius: 0;
-  z-index: 10002;
-  cursor: zoom-out;
-  opacity: 1;
 }
 
 /* Video preview */
@@ -1713,6 +1723,62 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 12px;
+}
+
+/* Tool info block inside AI programming preview */
+.wf-preview-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  max-width: 700px;
+  width: 100%;
+}
+
+.wf-tool-info {
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: #0c0c0c;
+}
+
+.wf-tool-info p {
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75em;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+}
+
+/* Clickable tool link card */
+.wf-tool-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  border: 2px solid var(--white);
+  background: #000;
+  color: var(--white);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.wf-tool-link:hover {
+  background: var(--white);
+  color: #000;
+}
+
+.wf-tool-link .tool-link-name {
+  font-family: 'Erica One', cursive;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wf-tool-link .tool-link-sub {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.65em;
+  opacity: 0.7;
 }
 
 /* ============================================
@@ -1807,8 +1873,7 @@
   cursor: zoom-in;
 }
 
-/* Exclude images that aren't enlargeable */
-.reveal .slides .ideation-img,
+/* Navigation controls should not show zoom cursor */
 .reveal .slides .controls img {
   cursor: pointer;
 }
@@ -1827,6 +1892,9 @@
   .slide-cinematic p { font-size: 1.4em; }
   .slide-climax p { font-size: 1.6em; }
   .slide-definition h1 { font-size: 3.0em; }
+  .guide-cards.cards-6 { grid-template-columns: 1fr; }
+  .guide-cards.cards-5 { grid-template-columns: 1fr; }
+  .guide-cards.cards-4 { grid-template-columns: 1fr; }
   .guide-cards.cards-3 { grid-template-columns: 1fr; }
   .guide-cards.cards-2 { grid-template-columns: 1fr; }
   .harness-row { grid-template-columns: 1fr; }

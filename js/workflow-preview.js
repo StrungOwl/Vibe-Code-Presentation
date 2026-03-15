@@ -37,22 +37,6 @@
         });
         html += '</div>';
         return html;
-      },
-      afterRender: function () {
-        content.querySelectorAll('.ideation-img').forEach(function (img) {
-          img.addEventListener('click', function (e) {
-            e.stopPropagation();
-            if (img.classList.contains('ideation-fullscreen')) {
-              img.classList.remove('ideation-fullscreen');
-            } else {
-              // Remove fullscreen from any other image first
-              content.querySelectorAll('.ideation-fullscreen').forEach(function (other) {
-                other.classList.remove('ideation-fullscreen');
-              });
-              img.classList.add('ideation-fullscreen');
-            }
-          });
-        });
       }
     },
     '3dmodel': {
@@ -96,21 +80,6 @@
         });
         html += '</div>';
         return html;
-      },
-      afterRender: function () {
-        content.querySelectorAll('.ideation-img').forEach(function (img) {
-          img.addEventListener('click', function (e) {
-            e.stopPropagation();
-            if (img.classList.contains('ideation-fullscreen')) {
-              img.classList.remove('ideation-fullscreen');
-            } else {
-              content.querySelectorAll('.ideation-fullscreen').forEach(function (other) {
-                other.classList.remove('ideation-fullscreen');
-              });
-              img.classList.add('ideation-fullscreen');
-            }
-          });
-        });
       }
     },
     '3dprint': {
@@ -286,4 +255,231 @@
       closeProjectModel();
     }
   });
+})();
+
+// =============================================================
+// AI PROGRAMMING WORKFLOW — click-to-preview handlers
+// =============================================================
+(function initAIProgrammingPreviews() {
+  var overlay = document.getElementById('wf-ai-preview-overlay');
+  var content = document.getElementById('wf-ai-preview-content');
+  if (!overlay || !content) return;
+
+  var base = 'Workflows/AI%20Assisted%20Programming';
+
+  var previews = {
+    pseudocode: {
+      render: function () {
+        return '<div class="wf-preview-label">Pseudo Code &amp; Sketches</div>' +
+          '<img src="' + base + '/sketchUI.jpg" alt="Sketch UI" class="preview-single-img">';
+      }
+    },
+    imagegen: {
+      render: function () {
+        return '<div class="wf-preview-label">Sketch &amp; Image Gen &mdash; Mockup Your Design</div>' +
+          '<img src="' + base + '/figmaMockup.png" alt="Figma Mockup" class="preview-single-img" style="max-height:60vh;">' +
+          '<div class="wf-preview-tools" style="align-items:center;margin:16px auto 0;">' +
+          '<a href="https://youtu.be/Cq-7lFMNESk?si=o72JkbtFCuxhlo4B" target="_blank" rel="noopener" class="wf-tool-link" style="text-align:center;">' +
+          '<span class="tool-link-name">Figma MCP &amp; VS Code Extension</span>' +
+          '<span class="tool-link-sub">Connect your Figma designs directly to your AI agent &rarr;</span>' +
+          '</a>' +
+          '</div>';
+      }
+    },
+    claudecode: {
+      render: function () {
+        return '<div class="wf-preview-label">VS Code &mdash; Claude Code Extension</div>' +
+          '<div class="wf-preview-tools" style="align-items:center;margin:16px auto 0;">' +
+          '<div class="wf-tool-link" style="text-align:center;cursor:default;">' +
+          '<span class="tool-link-name">Create a PRD</span>' +
+          '<span class="tool-link-sub">Define your project requirements before building &mdash; your agent will reference it throughout</span>' +
+          '</div>' +
+          '<div class="wf-tool-link" style="text-align:center;cursor:default;">' +
+          '<span class="tool-link-name">Use Any Claude Skills You Need</span>' +
+          '<span class="tool-link-sub">Use skill-creator to verify Claude is actually running the skill</span>' +
+          '</div>' +
+          '<a href="https://playwright.dev/docs/cli" target="_blank" rel="noopener" class="wf-tool-link" style="text-align:center;">' +
+          '<span class="tool-link-name">Playwright CLI</span>' +
+          '<span class="tool-link-sub">Allow your agent to test UI in the browser &mdash; see your app run in a real browser &rarr;</span>' +
+          '</a>' +
+          '</div>';
+      }
+    }
+  };
+
+  var currentPreview = null;
+
+  function showPreview(key) {
+    var config = previews[key];
+    if (!config) return;
+    if (currentPreview === key && overlay.classList.contains('visible')) {
+      closePreview();
+      return;
+    }
+    content.innerHTML = config.render();
+    overlay.classList.add('visible');
+    currentPreview = key;
+  }
+
+  function closePreview() {
+    overlay.classList.remove('visible');
+    currentPreview = null;
+    setTimeout(function () {
+      if (!overlay.classList.contains('visible')) content.innerHTML = '';
+    }, 100);
+  }
+
+  document.querySelectorAll('.has-wf-ai-preview').forEach(function (step) {
+    var key = step.dataset.aiPreview;
+    if (!key) return;
+    step.addEventListener('click', function (e) {
+      e.stopPropagation();
+      showPreview(key);
+    });
+  });
+
+  // Close when clicking the dark backdrop (anything outside the content panel)
+  overlay.addEventListener('click', function (e) {
+    if (!e.target.closest('.wf-preview-content') && !e.target.closest('.wf-preview-close')) {
+      closePreview();
+    }
+  });
+
+  var closeBtn = document.getElementById('wf-ai-preview-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closePreview();
+    });
+  }
+
+  // Image click-to-enlarge: use direct delegation on content so Reveal.js can't intercept
+  content.addEventListener('click', function (e) {
+    var img = e.target.closest('img');
+    if (!img) return;
+    e.stopPropagation();
+    if (window.openImageEnlarge) {
+      window.openImageEnlarge(img.src || img.dataset.src, img.alt);
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('visible')) closePreview();
+  });
+
+  if (typeof Reveal !== 'undefined') {
+    Reveal.on('slidechanged', function () { closePreview(); });
+  }
+})();
+
+// =============================================================
+// AI VIDEO WORKFLOW — click-to-preview handlers
+// =============================================================
+(function initVideoWorkflowPreviews() {
+  var overlay = document.getElementById('wf-video-preview-overlay');
+  var content = document.getElementById('wf-video-preview-content');
+  if (!overlay || !content) return;
+
+  var base = 'Workflows/AI%20Video';
+
+  var previews = {
+    'vid-seed': {
+      render: function () {
+        return '<div class="wf-preview-label">My Original Work &mdash; Seed</div>' +
+          '<img class="preview-single-img" src="' + base + '/Website%20Drawing/seed.png" alt="Website Drawing Seed">';
+      }
+    },
+    'vid-storyboard': {
+      render: function () {
+        var html = '<div class="wf-preview-label">Storyboard</div>';
+        html += '<div class="wf-preview-grid" id="vid-storyboard-grid">';
+        for (var i = 1; i <= 7; i++) {
+          html += '<img src="' + base + '/Website%20Drawing/Storyboard/' + i + '.png" alt="Storyboard ' + i + '" class="ideation-img">';
+        }
+        html += '</div>';
+        return html;
+      }
+    },
+    'vid-generate': {
+      render: function () {
+        return '<div class="wf-preview-label">Generate Video &mdash; Higgsfield AI</div>' +
+          '<div class="wf-preview-combo">' +
+          '<video autoplay loop muted playsinline>' +
+          '<source src="' + base + '/Website%20Drawing/oneClip.mp4" type="video/mp4">' +
+          '</video>' +
+          '<img src="' + base + '/higgsfield_ai.png" alt="Higgsfield AI">' +
+          '</div>';
+      }
+    },
+    'vid-edit': {
+      render: function () {
+        return '<div class="wf-preview-label">Edit Video &mdash; Premiere Pro</div>' +
+          '<video autoplay loop muted playsinline>' +
+          '<source src="' + base + '/Website%20Drawing/stitchedTogether.mp4" type="video/mp4">' +
+          '</video>';
+      }
+    },
+    'vid-integrate': {
+      render: function () {
+        return '<div class="wf-preview-label">Integrate</div>' +
+          '<video autoplay loop muted playsinline>' +
+          '<source src="' + base + '/Website%20Drawing/integrate.mp4" type="video/mp4">' +
+          '</video>';
+      }
+    }
+  };
+
+  var currentPreview = null;
+
+  function showPreview(key) {
+    var config = previews[key];
+    if (!config) return;
+    if (currentPreview === key && overlay.classList.contains('visible')) {
+      closePreview();
+      return;
+    }
+    content.innerHTML = config.render();
+    overlay.classList.add('visible');
+    currentPreview = key;
+    content.querySelectorAll('video').forEach(function (v) { v.play().catch(function () {}); });
+    if (config.afterRender) config.afterRender();
+  }
+
+  function closePreview() {
+    overlay.classList.remove('visible');
+    content.querySelectorAll('video').forEach(function (v) { v.pause(); });
+    currentPreview = null;
+    setTimeout(function () {
+      if (!overlay.classList.contains('visible')) content.innerHTML = '';
+    }, 100);
+  }
+
+  document.querySelectorAll('.has-wf-video-preview').forEach(function (step) {
+    var key = step.dataset.videoPreview;
+    if (!key) return;
+    step.addEventListener('click', function (e) {
+      e.stopPropagation();
+      showPreview(key);
+    });
+  });
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closePreview();
+  });
+
+  var closeBtn = document.getElementById('wf-video-preview-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closePreview();
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('visible')) closePreview();
+  });
+
+  if (typeof Reveal !== 'undefined') {
+    Reveal.on('slidechanged', function () { closePreview(); });
+  }
 })();

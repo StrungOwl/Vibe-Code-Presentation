@@ -1,12 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cd:*)",
-      "WebFetch(domain:sydneyparks.io)",
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "MultiEdit",
+      "Grep",
+      "Glob",
+      "LS",
+      "WebFetch",
       "WebSearch",
-      "Bash(sort -k5 -h)",
-      "WebFetch(domain:www.figma.com)",
-      "Bash(gh run:*)"
+      "NotebookRead",
+      "NotebookEdit",
+      "TodoRead",
+      "TodoWrite"
     ]
   }
 }

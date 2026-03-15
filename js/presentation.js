@@ -348,6 +348,8 @@ async function loadThreeViewer() {
     enlargedImg.alt = alt || '';
     overlay.classList.add('visible');
   }
+  // Expose globally so other scripts (workflow-preview.js) can call it directly
+  window.openImageEnlarge = openEnlarge;
 
   function closeEnlarge() {
     overlay.classList.remove('visible');
@@ -358,18 +360,18 @@ async function loadThreeViewer() {
     }, 200);
   }
 
-  // Click any image inside slides to enlarge
-  document.querySelector('.reveal .slides').addEventListener('click', function (e) {
+  // Click any image inside slides or preview overlays to enlarge
+  document.addEventListener('click', function (e) {
     var img = e.target.closest('img');
     if (!img) return;
 
-    // Skip images that have their own click handlers
-    if (img.classList.contains('ideation-img')) return;
-    // Skip images inside controls/UI
-    if (img.closest('.reveal .controls') || img.closest('.wf-preview-overlay') || img.closest('#project-model-overlay') || img.closest('#img-enlarge-overlay')) return;
+    // Skip images inside controls/UI or the enlarge overlay itself
+    if (img.closest('.reveal .controls') || img.closest('#project-model-overlay') || img.closest('#img-enlarge-overlay')) return;
+    // Must be inside slides or a workflow preview overlay
+    if (!img.closest('.reveal .slides') && !img.closest('.wf-preview-overlay')) return;
 
     e.stopPropagation();
-    openEnlarge(img.src, img.alt);
+    openEnlarge(img.src || img.dataset.src, img.alt);
   });
 
   // Close on overlay click

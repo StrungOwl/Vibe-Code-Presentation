@@ -411,6 +411,19 @@
           '</div>';
       }
     },
+    'vid-comfyui': {
+      render: function () {
+        return '<div class="wf-preview-label">Image-to-Video Skill</div>' +
+          '<p style="text-align:center;color:var(--text-secondary);font-size:0.85em;margin:0 0 16px;">Playwright CLI is embedded into the skill</p>' +
+          '<div style="display:flex;flex-direction:column;gap:16px;align-items:center;">' +
+          '<video autoplay loop muted playsinline style="width:100%;max-width:800px;border-radius:8px;">' +
+          '<source src="' + base + '/ComfyUI/comfyUIVideo.mp4" type="video/mp4">' +
+          '</video>' +
+          '<img src="' + base + '/ComfyUI/ClaudeandComfy.png" alt="Claude and ComfyUI" style="width:100%;max-width:800px;height:auto;object-fit:contain;border-radius:8px;">' +
+          '<img src="' + base + '/ComfyUI/comfyFolders.png" alt="ComfyUI Folders" style="width:100%;max-width:800px;height:auto;object-fit:contain;border-radius:8px;">' +
+          '</div>';
+      }
+    },
     'vid-edit': {
       render: function () {
         return '<div class="wf-preview-label">Edit Video &mdash; Premiere Pro</div>' +
@@ -454,13 +467,23 @@
     }, 100);
   }
 
-  document.querySelectorAll('.has-wf-video-preview').forEach(function (step) {
-    var key = step.dataset.videoPreview;
+  document.querySelectorAll('.has-wf-video-preview').forEach(function (el) {
+    var key = el.dataset.videoPreview;
     if (!key) return;
-    step.addEventListener('click', function (e) {
+    el.addEventListener('click', function (e) {
       e.stopPropagation();
       showPreview(key);
     });
+  });
+
+  // Image click-to-enlarge inside video preview overlay
+  content.addEventListener('click', function (e) {
+    var img = e.target.closest('img');
+    if (!img) return;
+    e.stopPropagation();
+    if (window.openImageEnlarge) {
+      window.openImageEnlarge(img.src || img.dataset.src, img.alt);
+    }
   });
 
   overlay.addEventListener('click', function (e) {

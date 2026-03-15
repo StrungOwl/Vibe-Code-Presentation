@@ -1,6 +1,7 @@
 //after having a short chat with chatGPT I had it render the following text. 
 //bring second laptop that the project is rendering on while I give the presentation? 
 
+
 Use google AI studio at first?? 
 
 Product Requirements Document (PRD)

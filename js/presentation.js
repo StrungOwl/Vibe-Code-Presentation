@@ -300,6 +300,8 @@ async function loadThreeViewer() {
       } else {
         tooltip.classList.remove('popout-above');
       }
+      // Clamp top so it never goes above viewport
+      if (top < 10) top = 10;
 
       tooltip.style.left = left + 'px';
       tooltip.style.top = top + 'px';
@@ -386,4 +388,56 @@ async function loadThreeViewer() {
 
   // Close on slide change
   Reveal.on('slidechanged', closeEnlarge);
+})();
+
+// ============================================
+// LAYER TOGGLE MENU
+// ============================================
+
+(function initLayerToggle() {
+  const toggle = document.getElementById('layer-toggle');
+  const btn = document.getElementById('layer-toggle-btn');
+  const menu = document.getElementById('layer-toggle-menu');
+  if (!toggle || !btn || !menu) return;
+
+  // Layer start indices (horizontal slide index)
+  const layers = [
+    { start: 0, end: 1 },
+    { start: 2, end: 2 },
+    { start: 3, end: 6 },
+    { start: 7, end: 7 },
+    { start: 8, end: 9 },
+  ];
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggle.classList.toggle('open');
+  });
+
+  // Jump to layer on click
+  menu.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', () => {
+      const slideIdx = parseInt(li.dataset.slide, 10);
+      Reveal.slide(slideIdx, 0);
+      toggle.classList.remove('open');
+    });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', () => {
+    toggle.classList.remove('open');
+  });
+  toggle.addEventListener('click', (e) => e.stopPropagation());
+
+  // Highlight active layer
+  function updateActiveLayer() {
+    const h = Reveal.getIndices().h;
+    const items = menu.querySelectorAll('li');
+    items.forEach((li, i) => {
+      li.classList.toggle('active', h >= layers[i].start && h <= layers[i].end);
+    });
+  }
+
+  Reveal.on('slidechanged', updateActiveLayer);
+  Reveal.on('ready', updateActiveLayer);
 })();

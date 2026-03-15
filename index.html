@@ -35,6 +35,18 @@
   <!-- p5.js Riley op-art background canvas -->
   <div id="riley-bg"></div>
 
+  <!-- Layer quick-jump toggle -->
+  <div id="layer-toggle">
+    <button id="layer-toggle-btn" aria-label="Jump to layer">&#9776;</button>
+    <ul id="layer-toggle-menu">
+      <li data-slide="0">1 &middot; Origin Story</li>
+      <li data-slide="2">2 &middot; Artwork</li>
+      <li data-slide="3">3 &middot; Workflows</li>
+      <li data-slide="7">4 &middot; Vibe Code</li>
+      <li data-slide="8">5 &middot; Demo</li>
+    </ul>
+  </div>
+
   <div class="reveal">
     <div class="slides">
 
@@ -478,9 +490,10 @@
                 <span class="step-tool">Frame by frame</span>
               </div>
               <span class="wf-arrow arrow-pink">&rarr;</span>
-              <div class="wf-step has-wf-video-preview" data-video-preview="vid-generate">
+              <div class="wf-step wf-step-multi">
                 <span class="step-name">Generate Video</span>
-                <span class="step-tool">Higgsfield AI</span>
+                <span class="step-tool has-wf-video-preview" data-video-preview="vid-generate">Higgsfield AI</span>
+                <span class="step-tool has-wf-video-preview" data-video-preview="vid-comfyui">ComfyUI + Claude Code</span>
               </div>
             </div>
 
@@ -784,17 +797,10 @@
                 <p>Playwright CLI lets your agent open a real browser, interact with your UI, and verify it works &mdash; all without you lifting a finger. Describe what to test and let Claude run it.</p>
               </div>
             </div>
-            <div class="guide-card has-popout" tabindex="0">
+            <div class="guide-card">
               <div class="card-color card-color-narrative"></div>
               <h4>Model Selection</h4>
               <p>Switch models depending on the complexity of the task.</p>
-              <div class="popout-tooltip" style="width:520px;">
-                <img src="Workflows/AI%20Assisted%20Programming/models.png" alt="Claude model selection guide" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
-                <p>Not every task needs the most powerful model. Match the model to the job:</p>
-                <p style="margin-top:0.4em;"><strong>Opus</strong> &mdash; complex reasoning, architecture decisions, hard bugs</p>
-                <p style="margin-top:0.4em;"><strong>Sonnet</strong> &mdash; everyday building, writing, iteration</p>
-                <p style="margin-top:0.4em;"><strong>Haiku</strong> &mdash; fast, lightweight tasks: quick edits, simple lookups, high-volume automation where speed and cost matter</p>
-              </div>
             </div>
           </div>
         </section>
@@ -805,10 +811,17 @@
           <h3>Let Your Agent Build</h3>
           <p style="color: var(--text-secondary); margin-bottom: 0.8em;">Useful /commands to know about</p>
           <div class="guide-cards cards-3">
-            <div class="guide-card">
+            <div class="guide-card has-popout" tabindex="0">
               <div class="card-color card-color-purple"></div>
               <h4>/model</h4>
               <p>Switch models mid-session. Use Opus for hard problems, Haiku for fast simple tasks.</p>
+              <div class="popout-tooltip" style="width:520px;">
+                <img src="Workflows/AI%20Assisted%20Programming/models.png" alt="Claude model selection guide" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
+                <p>Not every task needs the most powerful model. Match the model to the job:</p>
+                <p style="margin-top:0.4em;"><strong>Opus</strong> &mdash; complex reasoning, architecture decisions, hard bugs</p>
+                <p style="margin-top:0.4em;"><strong>Sonnet</strong> &mdash; everyday building, writing, iteration</p>
+                <p style="margin-top:0.4em;"><strong>Haiku</strong> &mdash; fast, lightweight tasks: quick edits, simple lookups, high-volume automation where speed and cost matter</p>
+              </div>
             </div>
             <div class="guide-card">
               <div class="card-color card-color-blue"></div>
@@ -846,30 +859,35 @@
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Bonus Tip</span>
           <h3>Stop Clicking &ldquo;Accept&rdquo;</h3>
-          <p style="color: var(--text-secondary); margin-bottom: 0.8em;">Add a <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">settings.local.json</code> to your project&rsquo;s <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">.claude/</code> folder to auto-allow tools.</p>
-          <div class="guide-card" style="max-width: 680px; margin: 0 auto; text-align: left;">
-            <pre style="font-family: 'Courier New', monospace; font-size: 0.75em; line-height: 1.6; margin: 0; white-space: pre; color: #fff;">{
+          <p style="color: var(--text-secondary); margin-bottom: 0.6em; font-size: 0.85em;">Open Explorer, navigate to the <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">.claude</code> folder, open <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">settings.local.json</code>, and paste in the following permissions.</p>
+          <div class="guide-card" style="max-width: 520px; margin: 0 auto; text-align: left;">
+            <pre style="font-family: 'Courier New', monospace; font-size: 0.65em; line-height: 1.5; margin: 0; white-space: pre; color: #fff;">{
   "permissions": {
     "allow": [
-      "Bash",
+      <span style="color:#ffcc00;font-weight:bold;">"Bash"</span>,
       "Read",
-      "Edit",
-      "Write",
-      "MultiEdit",
-      "Grep",
-      "Glob",
-      "LS",
-      "WebFetch",
-      "WebSearch",
+      <span style="color:#ffcc00;font-weight:bold;">"Edit"</span>,
+      <span style="color:#ffcc00;font-weight:bold;">"Write"</span>,
+      <span style="color:#ffcc00;font-weight:bold;">"MultiEdit"</span>,
+      "Grep", "Glob", "LS",
+      <span style="color:#ffcc00;font-weight:bold;">"WebFetch"</span>,
+      <span style="color:#ffcc00;font-weight:bold;">"WebSearch"</span>,
       "NotebookRead",
       "NotebookEdit",
-      "TodoRead",
-      "TodoWrite"
+      "TodoRead", "TodoWrite"
     ]
   }
 }</pre>
           </div>
-          <p style="color: var(--text-secondary); margin-top: 0.6em; font-size: 0.8em;">Your agent will stop asking for permission on every file read, edit, and shell command.</p>
+          <p style="color: var(--text-secondary); margin-top: 0.5em; font-size: 0.75em;"><span style="color:#ffcc00;">Highlighted</span> = common requests from Claude.</p>
+          <aside class="notes">
+            Bash — run shell commands (npm, git, scripts)
+            Edit — modify files with diffs
+            Write — create or overwrite files
+            MultiEdit — batch edits in one shot
+            WebFetch — pull content from a URL
+            WebSearch — search the web
+          </aside>
         </section>
 
         <!-- Step 8: Edit Out AI Aesthetics -->

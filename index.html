@@ -525,9 +525,25 @@
           <h3 style="text-align:center;width:100%">Workflow: Projection Mapping</h3>
           <div class="workflow-chart">
             <div class="wf-step">
-              <span class="step-name">Coming Soon</span>
-              <span class="step-tool">Content in progress</span>
+              <span class="step-name">Record Video</span>
+              <span class="step-tool">Camera capture</span>
             </div>
+            <span class="wf-arrow arrow-pink">&rarr;</span>
+            <div class="wf-step has-wf-pm-preview" data-pm-preview="streamdiffusion">
+              <span class="step-name">TouchDesigner &amp; StreamDiffusion</span>
+              <span class="step-tool">Real-time style transfer</span>
+            </div>
+            <span class="wf-arrow arrow-pink">&rarr;</span>
+            <div class="wf-step has-wf-pm-preview" data-pm-preview="projection">
+              <span class="step-name">Projection Map</span>
+              <span class="step-tool">Kantan Mapper</span>
+            </div>
+          </div>
+
+          <!-- Projection Mapping workflow media preview overlay -->
+          <div id="wf-pm-preview-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="wf-pm-preview-close">&times;</button>
+            <div class="wf-preview-content" id="wf-pm-preview-content"></div>
           </div>
         </section>
 

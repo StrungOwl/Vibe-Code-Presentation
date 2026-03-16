@@ -617,33 +617,37 @@
 .wf-step {
   background: var(--black);
   border: 2px solid var(--white);
-  padding: 22px 24px;
+  padding: 22px 32px;
   text-align: center;
-  min-width: 150px;
-  max-width: 210px;
+  min-width: 180px;
+  max-width: 280px;
   position: relative;
   cursor: default;
 }
 
 .wf-step.has-wf-preview,
 .wf-step.has-wf-video-preview,
-.wf-step.has-wf-ai-preview {
+.wf-step.has-wf-ai-preview,
+.wf-step.has-wf-pm-preview {
   cursor: pointer;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .wf-step.has-wf-preview:hover,
 .wf-step.has-wf-video-preview:hover,
-.wf-step.has-wf-ai-preview:hover {
+.wf-step.has-wf-ai-preview:hover,
+.wf-step.has-wf-pm-preview:hover {
   background: var(--white);
   border-color: var(--white);
 }
 .wf-step.has-wf-preview:hover .step-name,
 .wf-step.has-wf-video-preview:hover .step-name,
-.wf-step.has-wf-ai-preview:hover .step-name { color: var(--black); }
+.wf-step.has-wf-ai-preview:hover .step-name,
+.wf-step.has-wf-pm-preview:hover .step-name { color: var(--black); }
 .wf-step.has-wf-preview:hover .step-tool,
 .wf-step.has-wf-video-preview:hover .step-tool,
-.wf-step.has-wf-ai-preview:hover .step-tool { color: #555; }
+.wf-step.has-wf-ai-preview:hover .step-tool,
+.wf-step.has-wf-pm-preview:hover .step-tool { color: #555; }
 
 /* Alternating: odd steps (1st, 3rd in each row) are white-on-black */
 .wf-row .wf-step:first-child {

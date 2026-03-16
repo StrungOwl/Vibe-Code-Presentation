@@ -506,3 +506,90 @@
     Reveal.on('slidechanged', function () { closePreview(); });
   }
 })();
+
+// =============================================================
+// PROJECTION MAPPING WORKFLOW — click-to-preview handlers
+// =============================================================
+(function initPMWorkflowPreviews() {
+  var overlay = document.getElementById('wf-pm-preview-overlay');
+  var content = document.getElementById('wf-pm-preview-content');
+  if (!overlay || !content) return;
+
+  var base = 'Workflows/AI%20Video/StreamDiffusion';
+
+  var previews = {
+    streamdiffusion: {
+      render: function () {
+        return '<div class="wf-preview-label">StreamDiffusion</div>' +
+          '<video autoplay loop muted playsinline>' +
+          '<source src="' + base + '/edited.mp4" type="video/mp4">' +
+          '</video>' +
+          '<p style="text-align:center;color:var(--text-secondary);font-size:0.85em;margin:16px auto 0;max-width:700px;line-height:1.5;">' +
+          'A real-time diffusion pipeline that runs Stable Diffusion up to 50&times; faster, enabling live image and video style transfer at interactive framerates. Integrated with TouchDesigner via StreamDiffusionTD, it transforms camera feeds and visuals in real time &mdash; ideal for projection mapping and live visual performances.' +
+          '</p>';
+      }
+    },
+    projection: {
+      render: function () {
+        return '<div class="wf-preview-label">Projection Mapping</div>' +
+          '<div class="wf-preview-combo">' +
+          '<img src="' + base + '/sample.png" alt="Projection Mapping Sample">' +
+          '<img src="' + base + '/wood.png" alt="Wood Reference">' +
+          '</div>';
+      }
+    }
+  };
+
+  var currentPreview = null;
+
+  function showPreview(key) {
+    var config = previews[key];
+    if (!config) return;
+    if (currentPreview === key && overlay.classList.contains('visible')) {
+      closePreview();
+      return;
+    }
+    content.innerHTML = config.render();
+    overlay.classList.add('visible');
+    currentPreview = key;
+    content.querySelectorAll('video').forEach(function (v) { v.play().catch(function () {}); });
+  }
+
+  function closePreview() {
+    overlay.classList.remove('visible');
+    content.querySelectorAll('video').forEach(function (v) { v.pause(); });
+    currentPreview = null;
+    setTimeout(function () {
+      if (!overlay.classList.contains('visible')) content.innerHTML = '';
+    }, 100);
+  }
+
+  document.querySelectorAll('.has-wf-pm-preview').forEach(function (el) {
+    var key = el.dataset.pmPreview;
+    if (!key) return;
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      showPreview(key);
+    });
+  });
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closePreview();
+  });
+
+  var pmCloseBtn = document.getElementById('wf-pm-preview-close');
+  if (pmCloseBtn) {
+    pmCloseBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closePreview();
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('visible')) closePreview();
+  });
+
+  if (typeof Reveal !== 'undefined') {
+    Reveal.on('slidechanged', function () { closePreview(); });
+  }
+})();

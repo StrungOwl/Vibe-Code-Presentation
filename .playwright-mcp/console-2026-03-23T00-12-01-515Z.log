@@ -1,0 +1,11 @@
+[     642ms] [WARNING] Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation @ https://unpkg.com/three@0.152.0/build/three.min.js:0
+[    1278ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:8766/favicon.ico:0
+[    5358ms] [WARNING] Received multiple options arguments, but only a single options is supported.
+          The last options will be used. @ https://unpkg.com/ml5@1/dist/ml5.min.js:18325
+[    5358ms] [WARNING] 🟪ml5.js warns: The 'modelType' option for bodyPose has to be set to 'SINGLEPOSE_LIGHTNING', 'SINGLEPOSE_THUNDER', or 'MULTIPOSE_LIGHTNING', but it is being set to 'MoveNet' instead.
+
+ml5.js is using default value of 'MULTIPOSE_LIGHTNING'. @ https://unpkg.com/ml5@1/dist/ml5.min.js:18325
+[    5363ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ https://unpkg.com/ml5@1/dist/ml5.min.js:18519
+[    7031ms] TypeError: this.bodyPose.detectStart is not a function
+    at http://localhost:8766/js/poseTracker.js:41:21
+    at https://unpkg.com/ml5@1/dist/ml5.min.js:18326:252

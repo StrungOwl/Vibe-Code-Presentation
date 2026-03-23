@@ -1,0 +1,7 @@
+[     844ms] ReferenceError: THREE is not defined
+    at http://localhost:8090/js/main.js:10:21
+    at http://localhost:8090/js/main.js:85:3
+[     848ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8090/favicon.ico:0
+[   58945ms] ReferenceError: THREE is not defined
+    at http://localhost:8090/js/main.js:10:21
+    at http://localhost:8090/js/main.js:85:3

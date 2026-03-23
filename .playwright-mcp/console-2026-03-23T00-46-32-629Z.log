@@ -1,0 +1,3 @@
+[     728ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[  631315ms] [ERROR] Failed to load resource: net::ERR_CACHE_READ_FAILURE @ http://localhost:3000/@vite/client:0
+[  631320ms] [ERROR] Failed to load resource: net::ERR_CACHE_READ_FAILURE @ http://localhost:3000/src/UIEntities.js:0

@@ -283,10 +283,13 @@
           '<span class="tool-link-name">Figma MCP &amp; VS Code Extension</span>' +
           '<span class="tool-link-sub">Connect your Figma designs directly to your AI agent &rarr;</span>' +
           '</a>' +
+<<<<<<< Updated upstream
           '<a href="https://stitch.withgoogle.com/" target="_blank" rel="noopener" class="wf-tool-link" style="text-align:center;">' +
           '<span class="tool-link-name">Stitch by Google</span>' +
           '<span class="tool-link-sub">AI-native design canvas &mdash; turn sketches, prompts, and voice into high-fidelity UI with exportable code &rarr;</span>' +
           '</a>' +
+=======
+>>>>>>> Stashed changes
           '</div>';
       }
     },
@@ -302,10 +305,13 @@
           '<span class="tool-link-name">Use Any Claude Skills You Need</span>' +
           '<span class="tool-link-sub">Use skill-creator to verify Claude is actually running the skill</span>' +
           '</div>' +
+<<<<<<< Updated upstream
           '<a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noopener" class="wf-tool-link" style="text-align:center;">' +
           '<span class="tool-link-name">UI/UX Pro Max</span>' +
           '<span class="tool-link-sub">Design intelligence skill &mdash; 50+ UI styles, 97 color palettes, 57 font pairings, and 99 UX guidelines for Claude Code &rarr;</span>' +
           '</a>' +
+=======
+>>>>>>> Stashed changes
           '<a href="https://playwright.dev/docs/cli" target="_blank" rel="noopener" class="wf-tool-link" style="text-align:center;">' +
           '<span class="tool-link-name">Playwright CLI</span>' +
           '<span class="tool-link-sub">Allow your agent to test UI in the browser &mdash; see your app run in a real browser &rarr;</span>' +

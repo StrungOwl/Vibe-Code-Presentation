@@ -14,6 +14,9 @@
   <!-- p5.js for Bridget Riley-inspired backgrounds -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
 
+  <!-- Google model-viewer for GLB previews -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
   <!-- Three.js import map (3D model viewers only) -->
   <script type="importmap">
   {
@@ -32,6 +35,18 @@
   <!-- p5.js Riley op-art background canvas -->
   <div id="riley-bg"></div>
 
+  <!-- Layer quick-jump toggle -->
+  <div id="layer-toggle">
+    <button id="layer-toggle-btn" aria-label="Jump to layer">&#9776;</button>
+    <ul id="layer-toggle-menu">
+      <li data-slide="0">1 &middot; Origin Story</li>
+      <li data-slide="2">2 &middot; Artwork</li>
+      <li data-slide="3">3 &middot; Workflows</li>
+      <li data-slide="7">4 &middot; Vibe Code</li>
+      <li data-slide="8">5 &middot; Demo</li>
+    </ul>
+  </div>
+
   <div class="reveal">
     <div class="slides">
 
@@ -48,9 +63,6 @@
           <a href="#" class="down-arrow" onclick="Reveal.down(); return false;">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </a>
-          <aside class="notes">
-            Introduce self as professor and artist. Worked as assistant director at a high-end gallery in Houston and worked as a creative coder.
-          </aside>
         </section>
 
         <section data-background-image="Other%20Artists/Bridget%20Riley/bridgetRiley.jpg"
@@ -72,9 +84,6 @@
                  data-background-color="#000"
                  data-autoplay
                  data-transition="fade">
-          <aside class="notes">
-            How I went from painting 24/7 to programming
-          </aside>
         </section>
 
         <!-- The Pivotal Moment -->
@@ -89,9 +98,6 @@
           <p>It moved. It breathed.</p>
           <p class="fragment">But it wasn&rsquo;t enough.</p>
           <p class="fragment">It was missing <span class="highlight">emergence</span>.</p>
-          <aside class="notes">
-            That element of unpredictability and organic movement that exists in nature.
-          </aside>
         </section>
 
         <!-- Emergence Definition -->
@@ -100,9 +106,6 @@
           <div class="definition-card">
             <p>The phenomenon where complex, unexpected behaviors, patterns, or properties arise from the interaction of simple, individual components or rules within a system.</p>
           </div>
-          <aside class="notes">
-            These emergent properties are not explicitly programmed into the components themselves but "emerge" when the system operates as a whole.
-          </aside>
         </section>
 
         <!-- The Click Moment -->
@@ -110,9 +113,6 @@
           <p>I looked down at my paint-covered computer&hellip;</p>
           <p class="fragment">&hellip;the tool I&rsquo;d only ever used for painterly means&hellip;</p>
           <p class="fragment">&hellip;and realized <span class="gradient-text">something</span>&hellip;</p>
-          <aside class="notes">
-            This laptop is what I should be understanding and creating from because it's the future.
-          </aside>
         </section>
 
         <!-- Refik Anadol -->
@@ -123,9 +123,6 @@
                  data-background-size="contain"
                  data-background-color="#000"
                  data-autoplay>
-          <aside class="notes">
-            I discovered Refik Anadol — an artist who creates generative AI systems (before LLMs) to display "machine hallucinations." These visualizations are created from a database of images and use latent space to build up the form, color, and other design elements.
-          </aside>
         </section>
 
         <!-- Latent Space Definition -->
@@ -134,9 +131,6 @@
           <div class="definition-card">
             <p>A multi-dimensional mathematical landscape where a model stores a compressed, abstract representation of data.</p>
           </div>
-          <aside class="notes">
-            If you ever use ComfyUI or image generators, it's helpful to understand that concept.
-          </aside>
         </section>
 
         <!-- The Learning Path -->
@@ -149,15 +143,54 @@
         <!-- Where I Am Now -->
         <section class="slide-cinematic"
                  data-transition="slide">
-          <p>Today I&rsquo;m a professor at <span class="highlight">UT&rsquo;s AET department</span>, teaching VR, code, fabrication, user interaction, and immersive art installations.</p>
+          <p>Today I&rsquo;m a professor at <span class="highlight">UT&rsquo;s AET department</span>.</p>
+          <ul style="text-align: left; display: inline-block; margin-top: 0.8em; line-height: 1.8; font-size: 0.9em;">
+            <li>Exploring User Interaction</li>
+            <li>Art Making in VR</li>
+            <li>Code &amp; Fabrication</li>
+            <li>Immersive Art Installations</li>
+          </ul>
         </section>
 
         <!-- Student Challenge -->
         <section class="slide-cinematic" data-transition="fade">
           <p>My students are skeptical. Many of them hate AI &mdash; for a variety of reasons.</p>
-          <aside class="notes">
-            My job is to change the hearts and minds about what's possible.
-          </aside>
+        </section>
+
+        <!-- Student Work Showcase: Carly Mills -->
+        <section class="slide-student-showcase" data-transition="fade">
+          <h3>Student Spotlight</h3>
+          <p class="student-name">Carly Mills &mdash; <em>The Image Fryer</em></p>
+          <div class="carousel-container">
+            <button class="carousel-btn carousel-prev" aria-label="Previous slide">&larr;</button>
+            <div class="carousel-track-wrapper">
+              <div class="carousel-track" id="carlyCarousel">
+                <div class="carousel-slide">
+                  <img data-src="Who%20Am%20I/Student%20Work/Carly/Screenshot%202026-03-13%20151914.png" alt="The Image Fryer - Title">
+                </div>
+                <div class="carousel-slide">
+                  <img data-src="Who%20Am%20I/Student%20Work/Carly/Screenshot%202026-03-13%20151927.png" alt="The Image Fryer - Concept">
+                </div>
+                <div class="carousel-slide">
+                  <img data-src="Who%20Am%20I/Student%20Work/Carly/Screenshot%202026-03-13%20151939.png" alt="The Image Fryer - Ideation">
+                </div>
+                <div class="carousel-slide">
+                  <img data-src="Who%20Am%20I/Student%20Work/Carly/Screenshot%202026-03-13%20151952.png" alt="The Image Fryer - Figma Sketch">
+                </div>
+                <div class="carousel-slide">
+                  <img data-src="Who%20Am%20I/Student%20Work/Carly/Screenshot%202026-03-13%20152005.png" alt="The Image Fryer - Animation">
+                </div>
+                <div class="carousel-slide">
+                  <img data-src="Who%20Am%20I/Student%20Work/Carly/Screenshot%202026-03-13%20152017.png" alt="The Image Fryer - Process">
+                </div>
+                <div class="carousel-slide carousel-slide-video">
+                  <iframe src="https://www.youtube.com/embed/0bVyXSsgvxg" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+            <button class="carousel-btn carousel-next" aria-label="Next slide">&rarr;</button>
+          </div>
+          <div class="carousel-dots" id="carlyDots"></div>
         </section>
 
         <!-- Transition to Act 2 -->
@@ -197,9 +230,6 @@
           <video muted loop playsinline controls preload="none">
             <source data-src="Who%20Am%20I/My%20Work/Nameless%20Dread/Explore%20Algo.mp4" type="video/mp4">
           </video>
-          <aside class="notes">
-            This was the first time I truly used AI to assist my creative process. The AI was a knowledge source when I got stuck — but I still programmed everything myself.
-          </aside>
         </section>
 
         <!-- Nameless Dread GIFs -->
@@ -285,9 +315,6 @@
           <p class="fragment">The goal was to become so fluent in programming that I could create with code like I create with my paintbrush&hellip;</p>
           <p class="fragment">&hellip;and then <span class="gradient-text">Opus 4.5</span> came out&hellip;</p>
           <p class="fragment">&hellip;and brought me to that place so much more quickly than I could possibly imagine.</p>
-          <aside class="notes">
-            Now, the move isn't to learn how to program — it's to learn how to speak. Be descriptive. Break projects into components. The better you speak, the better you prompt your agent.
-          </aside>
         </section>
 
         <!-- Vibe Coded Title -->
@@ -305,11 +332,11 @@
           </video>
         </section>
 
-        <!-- Vibe Coded: Flow Performance (placeholder) -->
+        <!-- Vibe Coded: Flow Performance -->
         <section class="slide-cinematic" data-transition="fade">
           <h3>Flow Performance</h3>
-          <p class="grid-label">Interactive performance piece</p>
-          <p style="color: var(--text-dim); font-size: 1.2em; margin-top: 2em;">Coming soon</p>
+          <video data-src="Workflows/AI%20Assisted%20Programming/Flow%20Performance/both.mp4" controls muted playsinline style="max-height: 70vh; max-width: 95%; border-radius: 12px; margin-top: 0.5em;">
+          </video>
         </section>
 
         <!-- Vibe Coded: sydneyparks.io -->
@@ -317,22 +344,258 @@
           <h3>sydneyparks.io</h3>
           <p class="grid-label">My portfolio website</p>
           <a href="https://sydneyparks.io" target="_blank" style="display: flex; justify-content: center;">
-            <img data-src="Who%20Am%20I/My%20Work/Vibe%20Coded/website.png" alt="sydneyparks.io" style="max-height: 80vh; max-width: 95%; border-radius: 8px; object-fit: contain;">
+            <img data-src="Who%20Am%20I/My%20Work/Vibe%20Coded/website.png" alt="sydneyparks.io" style="max-height: 80vh; max-width: 95%; object-fit: contain;">
           </a>
         </section>
 
       </section>
 
       <!-- ==========================================
-           LAYER 3: HOW TO VIBE CODE
+           LAYER 3: WORKFLOWS
+           ========================================== -->
+
+      <!-- Workflows Overview -->
+      <section data-theme="pink">
+        <section class="section-header theme-pink" data-transition="zoom">
+          <span class="section-badge badge-pink badge-act">Layer 3</span>
+          <h2>My AI Workflows</h2>
+          <p class="section-desc">3 AI-assisted workflows I created based on what I want to build</p>
+        </section>
+
+        <section data-transition="slide">
+          <div class="workflow-cards">
+            <div class="workflow-card">
+              <div class="card-color card-color-green"></div>
+              <h3>3D Printed Sculpture</h3>
+            </div>
+            <div class="workflow-card">
+              <div class="card-color card-color-coral"></div>
+              <h3>Video &amp; Projection</h3>
+            </div>
+            <div class="workflow-card">
+              <div class="card-color card-color-purple"></div>
+              <h3>AI-Assisted Programming</h3>
+              <p>Websites, Apps, Digital Art</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- WORKFLOW 1: SCULPTURE -->
+      <section data-theme="green">
+
+        <!-- Workflow Chart -->
+        <section data-transition="zoom">
+          <h3 style="text-align:center;width:100%">Workflow: 3D Printed Sculpture</h3>
+          <div class="workflow-chart workflow-grid">
+
+            <!-- Row 1: 3 boxes -->
+            <div class="wf-row">
+              <div class="wf-step has-wf-preview" data-preview="sketch">
+                <span class="step-name">Sketch</span>
+                <span class="step-tool">Pen &amp; paper</span>
+              </div>
+              <span class="wf-arrow arrow-green">&rarr;</span>
+              <div class="wf-step has-wf-preview" data-preview="ideation">
+                <span class="step-name">GPT Image Gen</span>
+                <span class="step-tool">Ideation</span>
+              </div>
+              <span class="wf-arrow arrow-green">&rarr;</span>
+              <div class="wf-step has-wf-preview" data-preview="3dmodel">
+                <span class="step-name">AI 3D Model</span>
+                <span class="step-tool">ComfyUI / Meshy</span>
+              </div>
+            </div>
+
+            <span class="wf-arrow-down arrow-green">&darr;</span>
+
+            <!-- Row 2: 2 boxes -->
+            <div class="wf-row">
+              <div class="wf-step has-wf-preview" data-preview="vrsculpt">
+                <span class="step-name">VR Sculpt</span>
+                <span class="step-tool">ShapeLab + Blender</span>
+              </div>
+              <span class="wf-arrow arrow-green">&rarr;</span>
+              <div class="wf-step has-wf-preview" data-preview="3dprint">
+                <span class="step-name">3D Print</span>
+                <span class="step-tool">Creality K1 Max</span>
+              </div>
+            </div>
+
+            <span class="wf-arrow-down arrow-green">&darr;</span>
+
+            <!-- Row 3: 2 boxes -->
+            <div class="wf-row">
+              <div class="wf-step has-wf-preview" data-preview="paintideation">
+                <span class="step-name">GPT Image Gen</span>
+                <span class="step-tool">Paint Ideation</span>
+              </div>
+              <span class="wf-arrow arrow-green">&rarr;</span>
+              <div class="wf-step has-wf-preview" data-preview="paint">
+                <span class="step-name">Paint &amp; Finish</span>
+                <span class="step-tool">Acrylic, oil, resin pour</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Workflow media preview overlay -->
+          <div id="wf-preview-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="wf-preview-close">&times;</button>
+            <div class="wf-preview-content" id="wf-preview-content"></div>
+          </div>
+        </section>
+
+        <!-- Other Projects Using This Workflow -->
+        <section data-transition="slide">
+          <h3 style="text-align:center;width:100%">Other Projects</h3>
+          <div class="project-showcase">
+            <div class="project-card" id="card-thinkingwoman">
+              <img src="Workflows/3DPrintedSculpture/3DModels/thinkingWoman.jpg" alt="Thinking Woman sculpture">
+              <div class="project-card-label">Thinking Woman</div>
+              <button class="project-3d-btn" data-model="thinkingwoman">View 3D Model</button>
+            </div>
+            <div class="project-card" id="card-agony">
+              <img src="Workflows/3DPrintedSculpture/3DModels/Agony.jpg" alt="Agony sculpture">
+              <div class="project-card-label">Agony</div>
+              <button class="project-3d-btn" data-model="agony">View 3D Model</button>
+            </div>
+          </div>
+
+          <!-- 3D model overlay for thinkingWoman -->
+          <div id="project-model-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="project-model-close">&times;</button>
+            <div class="wf-preview-content" id="project-model-content"></div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- WORKFLOW 2: VIDEO & PROJECTION MAPPING -->
+      <section data-theme="coral">
+
+        <!-- Part 1: AI Video Workflow -->
+        <section data-transition="zoom">
+          <h3 style="text-align:center;width:100%">Workflow: AI Video</h3>
+          <div class="workflow-chart workflow-grid">
+
+            <!-- Row 1: seed → storyboard → generate -->
+            <div class="wf-row">
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-seed">
+                <span class="step-name">My Original Work</span>
+                <span class="step-tool">Seed</span>
+              </div>
+              <span class="wf-arrow arrow-pink">&rarr;</span>
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-storyboard">
+                <span class="step-name">Storyboard</span>
+                <span class="step-tool">Frame by frame</span>
+              </div>
+              <span class="wf-arrow arrow-pink">&rarr;</span>
+              <div class="wf-step wf-step-multi">
+                <span class="step-name">Generate Video</span>
+                <span class="step-tool has-wf-video-preview" data-video-preview="vid-generate">Higgsfield AI</span>
+                <span class="step-tool has-wf-video-preview" data-video-preview="vid-comfyui">ComfyUI + Claude Code</span>
+              </div>
+            </div>
+
+            <span class="wf-arrow-down arrow-pink">&darr;</span>
+
+            <!-- Row 2: edit → integrate -->
+            <div class="wf-row">
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-edit">
+                <span class="step-name">Edit Video</span>
+                <span class="step-tool">Premiere Pro</span>
+              </div>
+              <span class="wf-arrow arrow-pink">&rarr;</span>
+              <div class="wf-step has-wf-video-preview" data-video-preview="vid-integrate">
+                <span class="step-name">Integrate</span>
+                <span class="step-tool">Final output</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video workflow media preview overlay -->
+          <div id="wf-video-preview-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="wf-video-preview-close">&times;</button>
+            <div class="wf-preview-content" id="wf-video-preview-content"></div>
+          </div>
+        </section>
+
+        <!-- Part 2: Projection Mapping -->
+        <section data-transition="slide">
+          <h3 style="text-align:center;width:100%">Workflow: Projection Mapping</h3>
+          <div class="workflow-chart">
+            <div class="wf-step">
+              <span class="step-name">Record Video</span>
+              <span class="step-tool">Camera capture</span>
+            </div>
+            <span class="wf-arrow arrow-pink">&rarr;</span>
+            <div class="wf-step has-wf-pm-preview" data-pm-preview="streamdiffusion">
+              <span class="step-name">TouchDesigner &amp; StreamDiffusion</span>
+              <span class="step-tool">Real-time style transfer</span>
+            </div>
+            <span class="wf-arrow arrow-pink">&rarr;</span>
+            <div class="wf-step has-wf-pm-preview" data-pm-preview="projection">
+              <span class="step-name">Projection Map</span>
+              <span class="step-tool">Kantan Mapper</span>
+            </div>
+          </div>
+
+          <!-- Projection Mapping workflow media preview overlay -->
+          <div id="wf-pm-preview-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="wf-pm-preview-close">&times;</button>
+            <div class="wf-preview-content" id="wf-pm-preview-content"></div>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- WORKFLOW 3: AI-ASSISTED PROGRAMMING -->
+      <section data-theme="purple">
+
+        <!-- Workflow Chart -->
+        <section data-transition="zoom">
+          <h3>Workflow: AI-Assisted Programming</h3>
+          <div class="workflow-chart">
+            <div class="wf-step has-wf-ai-preview" data-ai-preview="pseudocode">
+              <span class="step-name">Sketching</span>
+              <span class="step-tool">Pen &amp; paper, references</span>
+            </div>
+            <span class="wf-arrow arrow-purple">&rarr;</span>
+            <div class="wf-step has-wf-ai-preview" data-ai-preview="imagegen">
+              <span class="step-name">Sketch &amp; Image Gen</span>
+              <span class="step-tool">AI image models + Figma MCP</span>
+            </div>
+            <span class="wf-arrow arrow-purple">&rarr;</span>
+            <div class="wf-step has-wf-ai-preview" data-ai-preview="claudecode">
+              <span class="step-name">VS Code</span>
+              <span class="step-tool">Using Claude Code extension</span>
+            </div>
+          </div>
+
+          <!-- AI Programming workflow media preview overlay -->
+          <div id="wf-ai-preview-overlay" class="wf-preview-overlay">
+            <button class="wf-preview-close" id="wf-ai-preview-close">&times;</button>
+            <div class="wf-preview-content" id="wf-ai-preview-content"></div>
+          </div>
+
+          <aside class="notes">
+            Playwright comes in two flavors worth knowing: the CLI (command-line runner) and the MCP server. Both use the same underlying engine, but they interact with the browser differently. The CLI drives the browser through the DevTools Protocol — raw pixel/DOM access. The MCP version exposes the accessibility tree instead: the same semantic tree that screen readers use to help blind users navigate interfaces. That tree describes buttons, headings, and landmarks by role and label, not by pixel position. This makes Claude's test interactions much more robust — it finds elements the way a human would describe them, not by brittle CSS selectors.
+          </aside>
+        </section>
+
+      </section>
+
+
+      <!-- ==========================================
+           LAYER 4: HOW TO VIBE CODE
            ========================================== -->
       <section data-theme="blue">
 
         <!-- How I Vibe Code Header -->
         <section class="section-header theme-blue" data-transition="zoom">
-          <span class="section-badge badge-blue badge-act">Layer 3</span>
-          <h2>How to Vibe Code</h2>
-          <p class="section-desc">A step-by-step guide to building with AI agents.</p>
+          <span class="section-badge badge-blue badge-act">Layer 4</span>
+          <h2>My Vibe Code Process &amp; Tips</h2>
+
         </section>
 
         <!-- Step 1: Learn the Fundamentals -->
@@ -340,9 +603,8 @@
           <span class="step-badge">Step 1</span>
           <h3>Learn the Fundamentals</h3>
           <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <span class="card-icon">&#128218;</span>
             <h4>Programming Basics</h4>
-            <p>Before you vibe, learn the building blocks: <strong>loops</strong>, <strong>conditional statements</strong>, <strong>variable types</strong>, <strong>functions</strong>, and <strong>data structures</strong>. You don&rsquo;t need to master them &mdash; but understanding what your agent is writing makes you a far better collaborator.</p>
+            <p><strong>loops</strong>, <strong>conditional statements</strong>, <strong>variable types</strong>, <strong>functions</strong>, and <strong>data structures</strong></p>
           </div>
         </section>
 
@@ -353,87 +615,160 @@
           <div class="guide-cards cards-3">
             <div class="guide-card">
               <div class="card-color card-color-purple"></div>
-              <span class="card-icon">&#9998;</span>
               <h4>Cursor</h4>
               <p>AI-native code editor with built-in agent capabilities and multi-model support.</p>
             </div>
             <div class="guide-card">
               <div class="card-color card-color-green"></div>
-              <span class="card-icon">&#127760;</span>
               <h4>Google Antigravity</h4>
               <p>Google&rsquo;s agent-first IDE powered by Gemini. Free public preview. Agents plan, execute, and verify autonomously.</p>
             </div>
             <div class="guide-card">
               <div class="card-color card-color-blue"></div>
-              <span class="card-icon">&#128187;</span>
               <h4>VS Code + Claude Code</h4>
               <p>Claude&rsquo;s CLI agent running inside VS Code. Terminal-native, powerful, and deeply integrated.</p>
             </div>
           </div>
         </section>
 
-        <!-- Step 3: Choose Your LLM -->
+        <!-- Step 3: Understand the AI Landscape -->
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Step 3</span>
-          <h3>Choose Your LLM</h3>
+          <h3>Understand the Ever-Evolving AI Landscape</h3>
+          <h3 style="margin-top: 0.6em; font-size: 1.2em;">Choose Your Agentic Platform</h3>
           <div class="guide-cards cards-2">
-            <div class="guide-card">
+            <div class="guide-card has-popout" tabindex="0">
               <div class="card-color card-color-coral"></div>
-              <span class="card-icon">&#10024;</span>
-              <h4>Codex (OpenAI)</h4>
-              <p>OpenAI&rsquo;s coding model. Strong at generation, widely supported across tools.</p>
+              <h4>Claude Code</h4>
+              <p>Anthropic&rsquo;s agentic coding CLI.</p>
+              <div class="popout-tooltip">
+                <h5>Claude Code</h5>
+                <p>Anthropic&rsquo;s agentic coding tool that lives in your terminal, understands your entire codebase, and helps you code faster through natural language. It can read issues, write code, run tests, and submit PRs autonomously &mdash; with extensions for VS Code, Cursor, and JetBrains.</p>
+              </div>
             </div>
-            <div class="guide-card">
+            <div class="guide-card has-popout" tabindex="0">
               <div class="card-color card-color-purple"></div>
-              <span class="card-icon">&#128172;</span>
-              <h4>Claude (Anthropic)</h4>
-              <p>Anthropic&rsquo;s reasoning model. Excels at long context, planning, and agentic coding workflows.</p>
+              <h4>Codex</h4>
+              <p>OpenAI&rsquo;s agentic coding platform.</p>
+              <div class="popout-tooltip">
+                <h5>Codex (OpenAI)</h5>
+                <p>OpenAI&rsquo;s cloud-based agentic coding platform that works on many tasks in parallel using isolated cloud environments. It includes a CLI, an app, and IDE extensions &mdash; supporting autonomous workflows like issue triage, CI/CD monitoring, and code review.</p>
+              </div>
             </div>
           </div>
           <h3 style="margin-top: 0.8em; font-size: 1.3em;">Agent Harnesses</h3>
           <div class="harness-row">
-            <div class="harness-card">
+            <div class="harness-card has-popout" tabindex="0">
               <h4>PAI</h4>
-              <p>Personal AI Infrastructure &mdash; a Claude Code-native agentic platform that connects goals, skills, and memory into a unified system.</p>
+              <p>Personal AI Infrastructure</p>
+              <div class="popout-tooltip">
+                <h5>PAI &mdash; Personal AI Infrastructure</h5>
+                <p>A Claude Code-native agentic platform that connects goals, skills, and memory into a unified system. PAI studies and formulates best practices for responsible AI development, spanning media integrity, workforce impact, justice, transparency, and AI security.</p>
+              </div>
             </div>
-            <div class="harness-card">
+            <div class="harness-card has-popout" tabindex="0">
               <h4>OpenClaw</h4>
-              <p>Open-source AI agent that brings vibe coding to messaging apps like WhatsApp and Discord, autonomously generating code.</p>
+              <p>Open-source AI agent framework</p>
+              <div class="popout-tooltip">
+                <h5>OpenClaw</h5>
+                <p>An open-source, self-hosted AI agent daemon that connects 12+ messaging platforms (WhatsApp, Telegram, Discord, iMessage, etc.) to AI coding agents. It ships with 100+ preconfigured skills for shell commands, file management, and web automation &mdash; all running on your own infrastructure with no telemetry.</p>
+              </div>
             </div>
           </div>
         </section>
 
-        <!-- Step 4: Create a PRD -->
+        <!-- Step 4: Research Libraries -->
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Step 4</span>
-          <h3>Create a PRD</h3>
-          <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <span class="card-icon">&#128221;</span>
-            <h4>Product Requirements Document</h4>
-            <p>Your blueprint. Use GPT to collaboratively write and refine it together. Be as descriptive as possible &mdash; every detail matters when your agent is the one building.</p>
-            <p style="margin-top: 0.6em; color: var(--text-secondary);"><strong>Include an Integrations section</strong> &mdash; list MCP servers, APIs, and any external services your project will connect to. Your agent needs to know the full picture upfront.</p>
+          <h3>Research Libraries</h3>
+          <p style="max-width: 900px; margin: 0 auto 0.6em; font-size: 0.85em; opacity: 0.7;">Use AI to research what libraries and frameworks you&rsquo;ll need <em>before</em> your agent starts building.</p>
+          <div style="display: flex; gap: 1.2em; justify-content: center; align-items: flex-start; flex-wrap: wrap; max-width: 1400px; margin: 0 auto;">
+
+            <!-- Websites -->
+            <div class="guide-card" style="flex: 1; min-width: 280px; max-width: 420px;">
+              <h4>Websites</h4>
+              <ul style="text-align: left; font-size: 0.75em; line-height: 1.8; list-style: none; padding: 0;">
+                <li><strong>React</strong> &mdash; component-based UI</li>
+                <li><strong>Next.js</strong> &mdash; full-stack React framework</li>
+                <li><strong>Tailwind CSS</strong> &mdash; utility-first styling</li>
+                <li><strong>GSAP</strong> &mdash; scroll &amp; motion animation</li>
+                <li><strong>Astro</strong> &mdash; fast static sites</li>
+                <li><strong>Svelte</strong> &mdash; lightweight reactive UI</li>
+              </ul>
+            </div>
+
+            <!-- Apps -->
+            <div class="guide-card" style="flex: 1; min-width: 280px; max-width: 420px;">
+              <h4>Apps</h4>
+              <ul style="text-align: left; font-size: 0.75em; line-height: 1.8; list-style: none; padding: 0;">
+                <li><strong>Express / Fastify</strong> &mdash; Node.js server</li>
+                <li><strong>Firebase</strong> &mdash; auth, database, hosting</li>
+                <li><strong>Socket.io</strong> &mdash; real-time communication</li>
+                <li><strong>Electron</strong> &mdash; desktop apps with JS</li>
+                <li><strong>React Native</strong> &mdash; cross-platform mobile</li>
+                <li><strong>Supabase</strong> &mdash; open-source backend</li>
+              </ul>
+            </div>
+
+            <!-- Art -->
+            <div class="guide-card" style="flex: 1; min-width: 280px; max-width: 420px;">
+              <h4>Art &amp; Creative</h4>
+              <ul style="text-align: left; font-size: 0.75em; line-height: 1.8; list-style: none; padding: 0;">
+                <li><strong>p5.js</strong> &mdash; creative coding &amp; sketches</li>
+                <li><strong>Three.js</strong> &mdash; 3D graphics &amp; WebGL</li>
+                <li><strong>Tone.js</strong> &mdash; audio synthesis &amp; music</li>
+                <li><strong>MediaPipe</strong> &mdash; face, hand &amp; body tracking</li>
+                <li><strong>ml5.js</strong> &mdash; friendly machine learning</li>
+                <li><strong>Shader Park</strong> &mdash; code-driven shaders</li>
+              </ul>
+            </div>
+
           </div>
         </section>
 
-        <!-- Step 5: Generate a Design -->
+        <!-- Step 5: Generate a Project Plan -->
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Step 5</span>
-          <h3>Generate a Design</h3>
-          <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <span class="card-icon">&#127912;</span>
-            <h4>Visual Mockups First</h4>
-            <p>Use tools like Nanobanan, GPT image gen, or any AI image tool to create a visual design of your project before coding. Your agent builds better when it can see the target.</p>
+          <h3>Generate a Project Plan</h3>
+          <div style="display: flex; gap: 1.2em; justify-content: center; align-items: flex-start; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;">
+
+            <div class="guide-card" style="flex: 1; min-width: 280px; max-width: 380px; text-align: left;">
+              <h4>PRD &mdash; Product Requirements Document</h4>
+              <p style="font-size: 0.82em; line-height: 1.7;">A structured document that defines what you're building.</p>
+              <p style="font-size: 0.78em; margin-top: 0.8em; color: var(--text-secondary);">Use your preferred LLM to help you write and refine it.</p>
+            </div>
+
+            <div class="guide-card" style="flex: 1; min-width: 280px; max-width: 380px;">
+              <h4>What to Include</h4>
+              <ul style="text-align: left; font-size: 0.75em; line-height: 1.9; list-style: none; padding: 0;">
+                <li>&#x2022; Project overview</li>
+                <li>&#x2022; Libraries &amp; frameworks</li>
+                <li>&#x2022; MCP servers &amp; APIs</li>
+                <li>&#x2022; Playwright CLI</li>
+                <li>&#x2022; Deployment platform</li>
+                <li>&#x2022; Interaction &amp; common behaviors</li>
+                <li>&#x2022; Visual identity</li>
+                <li>&#x2022; Anti-criteria</li>
+              </ul>
+            </div>
+
           </div>
+          <aside class="notes">
+            Give context of your project to your agent.
+          </aside>
         </section>
 
-        <!-- Step 6: Research Libraries -->
+        <!-- Step 6: Generate a Design -->
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Step 6</span>
-          <h3>Research Libraries</h3>
+          <h3>Generate a Design</h3>
           <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <span class="card-icon">&#128218;</span>
-            <h4>Know Your Tools First</h4>
-            <p>Use AI to research what libraries and frameworks you&rsquo;ll need. Do this before your agent starts building so it has the right tools from the start.</p>
+            <p>You can feed this into your chat so it can "see" what you want it to build.</p>
+            <ul style="text-align: left; font-size: 0.95em; line-height: 1.9; list-style: none; padding: 0; margin-top: 0.8em;">
+              <li>&#x2022; <strong>Sketch</strong></li>
+              <li>&#x2022; <strong>Figma</strong></li>
+              <li>&#x2022; <strong>AI Image Generation</strong></li>
+            </ul>
           </div>
         </section>
 
@@ -441,380 +776,176 @@
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Step 7</span>
           <h3>Let Your Agent Build</h3>
-          <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <span class="card-icon">&#128640;</span>
-            <h4>Hand It Off</h4>
-            <p>Guide with pseudo code and descriptions. The more you break the project into its components, the better the output. Think like an architect, not a bricklayer.</p>
+          <p style="color: var(--text-secondary); margin-bottom: 0.8em;">Best practices for prompting your agent. <span style="font-size:0.8em; opacity:0.6;">Hover each card for details.</span></p>
+          <div class="guide-cards cards-5">
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-purple"></div>
+              <h4>Pseudo Code</h4>
+              <p>Remember this concept and use it when you describe what you want.</p>
+              <div class="popout-tooltip" style="width:480px;">
+                <img src="Workflows/AI%20Assisted%20Programming/Pseudocode.webp" alt="Pseudocode example" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
+                <p>A simplified, human-readable description of what your program should do &mdash; written in plain language, not actual code. It lets you think through logic without worrying about syntax.</p>
+                <p style="margin-top: 0.4em; font-style: italic;">&ldquo;When the user clicks the canvas, generate a new shape at that position. Each shape should inherit the color of the previous one but rotate 15 degrees.&rdquo;</p>
+              </div>
+            </div>
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-green"></div>
+              <h4>Be Descriptive</h4>
+              <p>The more detail you give, the better the output.</p>
+              <div class="popout-tooltip">
+                <p>Instead of &ldquo;make it look nice,&rdquo; say: &ldquo;Use a dark background (#0a0a0a), thin white lines, and animate them with a sine wave that oscillates every 3 seconds.&rdquo;</p>
+                <p style="margin-top: 0.4em; font-style: italic;">Break the project into components: layout, interaction, animation, color, typography. Describe each one separately.</p>
+              </div>
+            </div>
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-coral"></div>
+              <h4>Think Like a Composer</h4>
+              <p>Each chat is a different musician in your orchestra.</p>
+              <div class="popout-tooltip">
+                <p>Every musician in an orchestra has a strength. Treat each chat the same way &mdash; one for planning, one for building, one for troubleshooting, one for editing, one for critique. Don&rsquo;t cross-pollinate.</p>
+              </div>
+            </div>
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-blue"></div>
+              <h4>UI Testing with Playwright CLI</h4>
+              <p>Let your agent do the testing for you.</p>
+              <div class="popout-tooltip">
+                <p>Playwright CLI lets your agent open a real browser, interact with your UI, and verify it works &mdash; all without you lifting a finger. Describe what to test and let Claude run it.</p>
+              </div>
+            </div>
+            <div class="guide-card">
+              <div class="card-color card-color-narrative"></div>
+              <h4>Model Selection</h4>
+              <p>Switch models depending on the complexity of the task.</p>
+            </div>
           </div>
+        </section>
+
+        <!-- Step 7 Continued: Slash Commands -->
+        <section class="slide-guide" data-transition="slide">
+          <span class="step-badge">Step 7 — Continued</span>
+          <h3>Let Your Agent Build</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 0.8em;">Useful /commands to know about</p>
+          <div class="guide-cards cards-3">
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-purple"></div>
+              <h4>/model</h4>
+              <p>Switch models mid-session. Use Opus for hard problems, Haiku for fast simple tasks.</p>
+              <div class="popout-tooltip" style="width:520px;">
+                <img src="Workflows/AI%20Assisted%20Programming/models.png" alt="Claude model selection guide" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
+                <p>Not every task needs the most powerful model. Match the model to the job:</p>
+                <p style="margin-top:0.4em;"><strong>Opus</strong> &mdash; complex reasoning, architecture decisions, hard bugs</p>
+                <p style="margin-top:0.4em;"><strong>Sonnet</strong> &mdash; everyday building, writing, iteration</p>
+                <p style="margin-top:0.4em;"><strong>Haiku</strong> &mdash; fast, lightweight tasks: quick edits, simple lookups, high-volume automation where speed and cost matter</p>
+              </div>
+            </div>
+            <div class="guide-card">
+              <div class="card-color card-color-blue"></div>
+              <h4>/clear</h4>
+              <p>Wipe the conversation and start fresh. Use between features to keep context clean.</p>
+            </div>
+            <div class="guide-card has-popout" tabindex="0">
+              <div class="card-color card-color-green"></div>
+              <h4>/compact</h4>
+              <p>Manually summarize the session to free up context space before hitting the limit.</p>
+              <div class="popout-tooltip" style="width:520px;">
+                <img src="Workflows/AI%20Assisted%20Programming/autoCompact.png" alt="Auto compact context warning" style="width:100%;display:block;margin:0 0 10px;border:1px solid rgba(255,255,255,0.25);">
+                <p>When you hit the context limit, the agent auto-compacts: it summarizes earlier work to free up space but loses detail. Use <strong>/compact</strong> manually before that happens, or start a new chat when finishing a feature.</p>
+              </div>
+            </div>
+<div class="guide-card">
+              <div class="card-color card-color-purple"></div>
+              <h4>/mcp</h4>
+              <p>Manage your MCP servers (plugins) &mdash; connect Figma, GitHub, browser control, and more.</p>
+            </div>
+            <div class="guide-card">
+              <div class="card-color card-color-default"></div>
+              <h4>/plugin</h4>
+              <p>Install and manage Claude Code plugins &mdash; extend your agent with custom tools and integrations.</p>
+            </div>
+            <div class="guide-card">
+              <div class="card-color card-color-coral"></div>
+              <h4>/context</h4>
+              <p>Shows a snapshot of what&rsquo;s currently loaded into your conversation&rsquo;s context window &mdash; everything consuming tokens right now.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bonus Tip: settings.local.json -->
+        <section class="slide-guide" data-transition="slide">
+          <span class="step-badge">Bonus Tip</span>
+          <h3>Stop Clicking &ldquo;Accept&rdquo;</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 0.6em; font-size: 0.85em;">Open Explorer, navigate to the <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">.claude</code> folder, open <code style="background:rgba(255,255,255,0.12);padding:0.15em 0.4em;">settings.local.json</code>, and paste in the following permissions.</p>
+          <div class="guide-card" style="max-width: 520px; margin: 0 auto; text-align: left;">
+            <pre style="font-family: 'Courier New', monospace; font-size: 0.65em; line-height: 1.5; margin: 0; white-space: pre; color: #fff;">{
+  "permissions": {
+    "allow": [
+      <span style="color:#ffcc00;font-weight:bold;">"Bash"</span>,
+      "Read",
+      <span style="color:#ffcc00;font-weight:bold;">"Edit"</span>,
+      <span style="color:#ffcc00;font-weight:bold;">"Write"</span>,
+      <span style="color:#ffcc00;font-weight:bold;">"MultiEdit"</span>,
+      "Grep", "Glob", "LS",
+      <span style="color:#ffcc00;font-weight:bold;">"WebFetch"</span>,
+      <span style="color:#ffcc00;font-weight:bold;">"WebSearch"</span>,
+      "NotebookRead",
+      "NotebookEdit",
+      "TodoRead", "TodoWrite"
+    ]
+  }
+}</pre>
+          </div>
+          <p style="color: var(--text-secondary); margin-top: 0.5em; font-size: 0.75em;"><span style="color:#ffcc00;">Highlighted</span> = common requests from Claude.</p>
+          <aside class="notes">
+            Bash — run shell commands (npm, git, scripts)
+            Edit — modify files with diffs
+            Write — create or overwrite files
+            MultiEdit — batch edits in one shot
+            WebFetch — pull content from a URL
+            WebSearch — search the web
+          </aside>
         </section>
 
         <!-- Step 8: Edit Out AI Aesthetics -->
         <section class="slide-guide" data-transition="slide">
           <span class="step-badge">Step 8</span>
           <h3>Edit Out the AI Aesthetic</h3>
+          <div class="guide-cards cards-2" style="align-items: start;">
+            <div class="guide-card">
+              <h4>Make It Yours</h4>
+              <p>After your agent builds, go back and strip out the signs of AI-generated design.</p>
+              <p style="margin-top: 0.8em;">Copy and paste the list to the right &mdash; or create your own updated version based on what you learned in the AI landscape phase &mdash; into the chat and double check that it avoided these designs.</p>
+              <p style="margin-top: 0.8em;">Also put the list in your PRD so it knows not to use it from the beginning.</p>
+            </div>
+            <div class="guide-card">
+              <h4>Things That Look Like AI</h4>
+              <ul style="text-align: left; line-height: 1.7; font-size: 0.85em;">
+                <li><strong>Beveled corners</strong> on everything</li>
+                <li><strong>Default AI fonts</strong> (Inter, system defaults)</li>
+                <li><strong>Left-side menu bars</strong></li>
+                <li><strong>Cookie-cutter layouts</strong></li>
+                <li><strong>Generic gradient choices</strong></li>
+                <li><strong>Affordance design that glows</strong></li>
+                <li><strong>Overly polished glass/blur effects</strong></li>
+                <li><strong>Centered hero sections with stock phrases</strong></li>
+                <li><strong>Floating cards with drop shadows</strong></li>
+                <li><strong>Icon-heavy minimal dashboards</strong></li>
+              </ul>
+              <p style="margin-top: 0.8em; font-size: 0.85em;"><strong>Example:</strong> <a href="https://openclaw.ai/" target="_blank" style="color: var(--accent-blue);">openclaw.ai</a></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 9: Thank the AI -->
+        <section class="slide-guide" data-transition="slide">
+          <span class="step-badge">Step 9</span>
+          <h3>Don&rsquo;t Forget to Thank the AI</h3>
           <div class="guide-card" style="max-width: 700px; margin: 0 auto;">
-            <span class="card-icon">&#9986;</span>
-            <h4>Make It Yours</h4>
-            <p>After your agent builds, go back and strip out the telltale signs of AI-generated design: <strong>beveled corners</strong>, <strong>default AI fonts</strong>, <strong>left-side menu bars</strong>, cookie-cutter layouts, and generic gradient choices. If it screams &ldquo;AI made this,&rdquo; redesign it until it doesn&rsquo;t.</p>
-            <p style="margin-top: 0.6em; color: var(--text-secondary);">You&rsquo;re the <strong>composer</strong> now, not the musician. The agent plays the instrument &mdash; your job is taste, vision, and knowing what sounds right. Taste matters more than technical skill in this new workflow.</p>
+            <p style="font-size: 1.1em;">So they know not to kill you after the singularity.</p>
           </div>
         </section>
 
 
-      </section>
-
-      <!-- ==========================================
-           LAYER 4: WORKFLOWS
-           ========================================== -->
-
-      <!-- Workflows Overview -->
-      <section data-theme="pink">
-        <section class="section-header theme-pink" data-transition="zoom">
-          <span class="section-badge badge-pink badge-act">Layer 4</span>
-          <h2>My Process &amp; Workflows</h2>
-          <p class="section-desc">Three AI-assisted workflows I&rsquo;ve built for myself &mdash; each one starts with my original work as the seed.</p>
-        </section>
-
-        <section data-transition="slide">
-          <div class="workflow-cards">
-            <div class="workflow-card">
-              <div class="card-color card-color-purple"></div>
-              <span class="card-icon">&#128187;</span>
-              <h3>AI-Assisted Programming</h3>
-              <p>Pseudo code &amp; sketches &rarr; GPT image gen &rarr; Claude Code to build</p>
-            </div>
-            <div class="workflow-card">
-              <div class="card-color card-color-green"></div>
-              <span class="card-icon">&#9881;</span>
-              <h3>3D Printed Sculpture</h3>
-              <p>Sketch &rarr; AI ideation &rarr; 3D model &rarr; VR sculpt &rarr; print &rarr; paint</p>
-            </div>
-            <div class="workflow-card">
-              <div class="card-color card-color-coral"></div>
-              <span class="card-icon">&#127916;</span>
-              <h3>Video &amp; Projection</h3>
-              <p>Create source material &rarr; AI video gen &rarr; StreamDiffusion interactive output</p>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <!-- WORKFLOW 1: AI-ASSISTED PROGRAMMING -->
-      <section data-theme="purple">
-
-        <!-- Workflow Chart -->
-        <section data-transition="zoom">
-          <h3>Workflow: AI-Assisted Programming</h3>
-          <div class="workflow-chart">
-            <div class="wf-step">
-              <span class="step-icon">&#9998;</span>
-              <span class="step-name">Pseudo Code / Sketches</span>
-              <span class="step-tool">Pen &amp; paper, references</span>
-            </div>
-            <span class="wf-arrow arrow-purple">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#10024;</span>
-              <span class="step-name">GPT Image Gen</span>
-              <span class="step-tool">Ideation &amp; visual refs</span>
-              <span class="step-note">Tip: You can also mockup in Figma and use their MCP extension with VS Code to integrate designs directly.</span>
-            </div>
-            <span class="wf-arrow arrow-purple">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#128187;</span>
-              <span class="step-name">Claude Code</span>
-              <span class="step-tool">Build from hand-written scripts</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Example: Kinetic Contemplations -->
-        <section>
-          <h3>Kinetic Contemplations</h3>
-          <p class="grid-label">JavaScript generative art</p>
-          <div class="image-grid grid-3">
-            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/Seeding%2022.png" alt="Seeding 22">
-            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/Seedling%206.png" alt="Seedling 6">
-            <img data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/Seedling%2028.png" alt="Seedling 28">
-          </div>
-        </section>
-
-        <section class="slide-video">
-          <h3>Kinetic Contemplations &mdash; In Motion</h3>
-          <video muted loop playsinline controls preload="none">
-            <source data-src="Workflows/AI%20Assisted%20Programming/JavaScript%20%26%20Generative%20Art/Kinetic%20Contemplations/published.mp4" type="video/mp4">
-          </video>
-        </section>
-
-        <!-- Example: Arduino -->
-        <section class="slide-video">
-          <h3>Arduino &amp; Interactive Art</h3>
-          <p class="grid-label">Physical computing meets AI-assisted code</p>
-          <video muted loop playsinline controls preload="none">
-            <source data-src="Workflows/AI%20Assisted%20Programming/Arduino%20%26%20Interactive%20Art/Final.mp4" type="video/mp4">
-          </video>
-        </section>
-
-        <section class="slide-video">
-          <h3>In the Clouds &mdash; How It Works</h3>
-          <video muted loop playsinline controls preload="none">
-            <source data-src="Workflows/AI%20Assisted%20Programming/Arduino%20%26%20Interactive%20Art/HowTo_IntheClouds.mp4" type="video/mp4">
-          </video>
-        </section>
-      </section>
-
-      <!-- WORKFLOW 2: SCULPTURE -->
-      <section data-theme="green">
-
-        <!-- Workflow Chart -->
-        <section data-transition="zoom">
-          <h3>Workflow: 3D Printed Sculpture</h3>
-          <div class="workflow-chart">
-            <div class="wf-step">
-              <span class="step-icon">&#9998;</span>
-              <span class="step-name">Sketch</span>
-              <span class="step-tool">Pen &amp; paper</span>
-            </div>
-            <span class="wf-arrow arrow-green">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#10024;</span>
-              <span class="step-name">GPT Image Gen</span>
-              <span class="step-tool">Ideation</span>
-            </div>
-            <span class="wf-arrow arrow-green">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#9641;</span>
-              <span class="step-name">AI 3D Model</span>
-              <span class="step-tool">ComfyUI / Meshy</span>
-            </div>
-            <span class="wf-arrow arrow-green">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#127760;</span>
-              <span class="step-name">VR Sculpt</span>
-              <span class="step-tool">ShapeLab + Blender</span>
-            </div>
-            <span class="wf-arrow arrow-green">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#9881;</span>
-              <span class="step-name">3D Print</span>
-              <span class="step-tool">Creality K1 Max</span>
-            </div>
-            <span class="wf-arrow arrow-green">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#127912;</span>
-              <span class="step-name">Paint &amp; Finish</span>
-              <span class="step-tool">Acrylic, oil, resin pour</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- CRYING MAN -->
-        <section class="project-title" data-transition="convex">
-          <h3>Crying Man</h3>
-          <p class="project-medium">3D Printed Sculpture, Hand Painted</p>
-        </section>
-
-        <section>
-          <h3>ChatGPT Ideation</h3>
-          <p class="grid-label">Exploring form through AI image generation</p>
-          <div class="image-grid grid-6">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_12%20AM.png" alt="Concept 1">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_14%20AM.png" alt="Concept 2">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_18%20AM.png" alt="Concept 3">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_24%20AM.png" alt="Concept 4">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_32%20AM.png" alt="Concept 5">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/2%20ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_39_41%20AM.png" alt="Concept 6">
-          </div>
-        </section>
-
-        <section>
-          <h3>Final Sculpture</h3>
-          <div class="photos-row">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/4%20Paint/Parks_CryingMan_1.jpg" alt="Crying Man 1">
-            <img data-src="Workflows/3DPrintedSculpture/Crying%20Man/4%20Paint/Parks_CryingMan_3.jpg" alt="Crying Man 3">
-          </div>
-        </section>
-
-        <!-- BURIAL -->
-        <section class="project-title" data-transition="convex">
-          <h3>Burial</h3>
-          <p class="project-medium">3D Printed Sculpture, AI Video, Projection</p>
-        </section>
-
-        <section>
-          <h3>ChatGPT Ideation</h3>
-          <div class="image-grid grid-6">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_42_51%20AM.png" alt="Burial concept 1">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_42_59%20AM.png" alt="Burial concept 2">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_05%20AM.png" alt="Burial concept 3">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_26%20AM.png" alt="Burial concept 4">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_33%20AM.png" alt="Burial concept 5">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/ChatGPT%20Ideation/ChatGPT%20Image%20Feb%2012,%202026,%2011_43_36%20AM.png" alt="Burial concept 6">
-          </div>
-        </section>
-
-        <section>
-          <h3>AI-Generated 3D Model</h3>
-          <p class="grid-label">Interactive &mdash; click and drag to rotate</p>
-          <div class="model-viewer-container" data-model="Workflows/3DPrintedSculpture/Burial/gma4.obj">
-            <div class="model-loading">
-              <div class="spinner"></div>
-              <p class="loading-text">Loading model...</p>
-            </div>
-            <div class="model-controls-hint">Drag to rotate &bull; Scroll to zoom</div>
-          </div>
-        </section>
-
-        <section>
-          <h3>Final Sculpture</h3>
-          <div class="photos-row">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/Burial_Parks_1.jpg" alt="Burial final 1">
-            <img data-src="Workflows/3DPrintedSculpture/Burial/Burial_Parks_2.jpg" alt="Burial final 2">
-          </div>
-        </section>
-
-        <section class="slide-video">
-          <h3>Burial &mdash; Final Video</h3>
-          <video muted loop playsinline controls preload="none">
-            <source data-src="Workflows/3DPrintedSculpture/Burial/Burial_Final.mp4" type="video/mp4">
-          </video>
-        </section>
-
-        <!-- SITTING WOMAN -->
-        <section class="project-title" data-transition="convex">
-          <h3>Sitting Woman</h3>
-          <p class="project-medium">AI Image Gen, AI 3D Modeling</p>
-        </section>
-
-        <section>
-          <h3>GPT Image Generation</h3>
-          <p class="grid-label">Iterating on form through AI</p>
-          <div class="image-grid grid-6">
-            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_46_55%20AM.png" alt="Sitting Woman 1">
-            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_01%20AM.png" alt="Sitting Woman 2">
-            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_22%20AM.png" alt="Sitting Woman 3">
-            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_37%20AM.png" alt="Sitting Woman 4">
-            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_46%20AM.png" alt="Sitting Woman 5">
-            <img data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/GPT%20Image%20Gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_47_54%20AM.png" alt="Sitting Woman 6">
-          </div>
-        </section>
-
-        <section>
-          <h3>AI-Generated 3D Model</h3>
-          <p class="grid-label">Interactive viewer</p>
-          <div class="model-viewer-container" data-model="Workflows/3DPrintedSculpture/Sitting%20Woman/ai%20Model/sunflower1.obj">
-            <div class="model-loading">
-              <div class="spinner"></div>
-              <p class="loading-text">Loading model...</p>
-            </div>
-            <div class="model-controls-hint">Drag to rotate &bull; Scroll to zoom</div>
-          </div>
-        </section>
-
-        <section class="slide-video">
-          <h3>Work in Progress</h3>
-          <video muted loop playsinline controls preload="none">
-            <source data-src="Workflows/3DPrintedSculpture/Sitting%20Woman/progress/Final_1.mp4" type="video/mp4">
-          </video>
-        </section>
-
-        <!-- FLOWER FINGERS -->
-        <section class="project-title" data-transition="convex">
-          <h3>Flower Fingers</h3>
-          <p class="project-medium">AI Image Generation, 3D Modeling</p>
-        </section>
-
-        <section>
-          <h3>AI Image Generation</h3>
-          <p class="grid-label">Exploring organic hybrid forms</p>
-          <div class="image-grid grid-5">
-            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_34%20AM.png" alt="Flower 1">
-            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_35%20AM.png" alt="Flower 2">
-            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_36%20AM.png" alt="Flower 3">
-            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_37%20AM.png" alt="Flower 4">
-            <img data-src="Workflows/3DPrintedSculpture/Flower%20Fingers/ai%20image%20gen/ChatGPT%20Image%20Feb%2012,%202026,%2011_51_39%20AM.png" alt="Flower 5">
-          </div>
-        </section>
-      </section>
-
-      <!-- WORKFLOW 3: VIDEO & PROJECTION MAPPING -->
-      <section data-theme="coral">
-
-        <!-- Workflow Chart -->
-        <section data-transition="zoom">
-          <h3>Workflow: Video &amp; Projection Mapping</h3>
-          <div class="workflow-chart">
-            <div class="wf-step">
-              <span class="step-icon">&#127912;</span>
-              <span class="step-name">Source Material</span>
-              <span class="step-tool">Video, images, sketches</span>
-            </div>
-            <span class="wf-arrow arrow-pink">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#10024;</span>
-              <span class="step-name">AI Video Gen</span>
-              <span class="step-tool">Grok Imagine / ComfyUI</span>
-            </div>
-            <span class="wf-arrow arrow-pink">&rarr;</span>
-            <div class="wf-step">
-              <span class="step-icon">&#127916;</span>
-              <span class="step-name">StreamDiffusion</span>
-              <span class="step-tool">Generative &amp; interactive video</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- AI Video Examples -->
-        <section>
-          <h3>AI-Generated Video</h3>
-          <p class="grid-label">Video generation iterations</p>
-          <div class="video-grid">
-            <video muted loop playsinline preload="none">
-              <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/3.mp4" type="video/mp4">
-            </video>
-            <video muted loop playsinline preload="none">
-              <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/5.mp4" type="video/mp4">
-            </video>
-            <video muted loop playsinline preload="none">
-              <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/7.mp4" type="video/mp4">
-            </video>
-          </div>
-        </section>
-
-        <!-- Projection Mapping -->
-        <section class="slide-video">
-          <h3>Projection Mapping</h3>
-          <p class="grid-label">AI video projected onto 3D printed sculpture</p>
-          <video muted loop playsinline controls preload="none">
-            <source data-src="Workflows/3DPrintedSculpture/Burial/ai%20video/Burial_Projection_2.mp4" type="video/mp4">
-          </video>
-        </section>
-      </section>
-
-      <!-- Tips Grid -->
-      <section data-transition="slide">
-        <h3>Tips for Your AI Workflow</h3>
-        <div class="tips-grid">
-          <div class="tip-card">
-            <div class="tip-icon">&#127793;</div>
-            <h4>The Seed Is Your Work</h4>
-            <p>The seed is usually my original work. When it isn&rsquo;t, the end result is my original &ldquo;collage&rdquo; of AI &mdash; still uniquely mine.</p>
-          </div>
-          <div class="tip-card">
-            <div class="tip-icon">&#129504;</div>
-            <h4>Get Smart with AI Planning</h4>
-            <p>Before you build, use AI to help you plan. Think through architecture, approach, and constraints upfront.</p>
-          </div>
-          <div class="tip-card">
-            <div class="tip-icon">&#128221;</div>
-            <h4>Use AI to Rewrite Prompts</h4>
-            <p>Don&rsquo;t settle for your first prompt. Ask AI to improve, refine, and rewrite your prompts for better results.</p>
-          </div>
-          <div class="tip-card">
-            <div class="tip-icon">&#128640;</div>
-            <h4>Start with What You Know</h4>
-            <p>Ideally start with hand-written scripts and sketches. AI amplifies your vision &mdash; you still need to have one.</p>
-          </div>
-        </div>
       </section>
 
       <!-- ==========================================
@@ -833,31 +964,26 @@
           <h3>Demo Pipeline</h3>
           <div class="pipeline">
             <div class="pipeline-step">
-              <div class="step-icon">&#128444;</div>
               <div class="step-label">Original Sculpture</div>
               <div class="step-tool">Physical artwork</div>
             </div>
             <span class="pipeline-arrow">&rarr;</span>
             <div class="pipeline-step">
-              <div class="step-icon">&#10024;</div>
               <div class="step-label">AI 3D Model</div>
               <div class="step-tool">AI generation</div>
             </div>
             <span class="pipeline-arrow">&rarr;</span>
             <div class="pipeline-step">
-              <div class="step-icon">&#128187;</div>
               <div class="step-label">Three.js</div>
               <div class="step-tool">Vibe code it</div>
             </div>
             <span class="pipeline-arrow">&rarr;</span>
             <div class="pipeline-step">
-              <div class="step-icon">&#127916;</div>
               <div class="step-label">TouchDesigner</div>
               <div class="step-tool">StreamDiffusion</div>
             </div>
             <span class="pipeline-arrow">&rarr;</span>
             <div class="pipeline-step">
-              <div class="step-icon">&#10035;</div>
               <div class="step-label">Interactive Output</div>
               <div class="step-tool">Real-time animation</div>
             </div>
@@ -900,10 +1026,22 @@
   <!-- Reveal.js Notes plugin (speaker view) -->
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
 
+  <!-- Speaker notes (loaded from speaker-notes.json) -->
+  <script src="js/speaker-notes.js"></script>
+
   <!-- Presentation JS (reveal init, three.js viewer) -->
   <script type="module" src="js/presentation.js"></script>
 
   <!-- Bridget Riley-inspired p5.js backgrounds -->
   <script src="js/backgrounds.js"></script>
+
+  <!-- Card particle hover effect -->
+  <script src="js/card-particles.js"></script>
+
+  <!-- Student showcase carousel -->
+  <script src="js/carousel.js"></script>
+
+  <!-- Workflow hover media previews -->
+  <script src="js/workflow-preview.js"></script>
 </body>
 </html>

@@ -1,0 +1,29 @@
+{
+  "1": "Introduce self as professor and artist. Worked as assistant director at a high-end gallery in Houston and worked as a creative coder.",
+
+  "3": "How I went from painting 24/7 to programming",
+
+  "5": "That element of unpredictability and organic movement that exists in nature.",
+
+  "6": "These emergent properties are not explicitly programmed into the components themselves but \"emerge\" when the system operates as a whole.",
+
+  "7": "This laptop is what I should be understanding and creating from because it's the future.",
+
+  "8": "I discovered Refik Anadol — an artist who creates generative AI systems (before LLMs) to display \"machine hallucinations.\" These visualizations are created from a database of images and use latent space to build up the form, color, and other design elements.",
+
+  "9": "If you ever use ComfyUI or image generators, it's helpful to understand that concept.",
+
+  "12": "My job is to change the hearts and minds about what's possible.",
+
+  "16": "This was the first time I truly used AI to assist my creative process. The AI was a knowledge source when I got stuck — but I still programmed everything myself.",
+
+  "24": "Now, the move isn't to learn how to program — it's to learn how to speak. Be descriptive. Break projects into components. The better you speak, the better you prompt your agent.",
+
+  "30": "You don't need to master them, but it's the language your agent is writing in and will make you a better collaborator if you understand that infrastructure.",
+
+  "32": "Hover over each step to show examples. For the AI 3D Model step — I used <strong>Hunyuan3D</strong> (Tencent's open-source 3D generation model) to create the initial mesh from reference images. It generates both geometry and textures in one pass, which saved a lot of manual modeling time before refining in VR.<br><br>Mention <strong>Nono Banana</strong> — talk about their work and relevance to this workflow.",
+
+  "36": "<strong>Composer metaphor:</strong> Each musician in an orchestra has a strength. Treat each chat like a different musician. One chat can be for planning, one for functionality, one for troubleshooting, one for editing, one for critique. Try not to cross-pollinate — keeping chats focused produces better results because the context stays clean and the agent doesn't get confused by competing instructions.",
+
+  "37": "Show openclaw.ai as a live example of AI aesthetic — it checks many of the boxes on the list (glass effects, gradients, floating cards, etc.)."
+}

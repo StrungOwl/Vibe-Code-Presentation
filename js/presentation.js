@@ -1,20 +1,9 @@
 // ============================================
-// SECTION THEME DETECTION
-// ============================================
-
-function getSectionTheme(slide) {
-  let el = slide;
-  while (el) {
-    if (el.dataset && el.dataset.theme) return el.dataset.theme;
-    el = el.parentElement;
-    if (el && el.classList && el.classList.contains('slides')) break;
-  }
-  return 'default';
-}
-
-// ============================================
 // REVEAL.JS INITIALIZATION
 // ============================================
+
+// Wait for speaker notes to be injected before initializing
+await (window.speakerNotesReady || Promise.resolve());
 
 Reveal.initialize({
   hash: true,
@@ -265,3 +254,190 @@ async function loadThreeViewer() {
 
   initModelViewers();
 }
+
+// ============================================
+// POPOUT TOOLTIPS - Fixed position to escape Reveal overflow
+// ============================================
+
+(function initPopoutTooltips() {
+  // Move all tooltips to document.body so they aren't clipped
+  document.querySelectorAll('.has-popout').forEach(card => {
+    const tooltip = card.querySelector('.popout-tooltip');
+    if (!tooltip) return;
+
+    // Move tooltip to body
+    document.body.appendChild(tooltip);
+
+    let hideTimeout;
+
+    function showTooltip() {
+      clearTimeout(hideTimeout);
+      // Hide any other visible tooltips
+      document.querySelectorAll('.popout-tooltip.visible').forEach(t => {
+        if (t !== tooltip) t.classList.remove('visible');
+      });
+
+      // Get card position accounting for Reveal.js scale transforms
+      const rect = card.getBoundingClientRect();
+
+      tooltip.classList.add('visible');
+
+      // Position below the card
+      const tooltipRect = tooltip.getBoundingClientRect();
+      let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+      let top = rect.bottom + 10;
+
+      // Keep within viewport
+      if (left < 10) left = 10;
+      if (left + tooltipRect.width > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipRect.width - 10;
+      }
+      // If it goes below viewport, show above instead
+      if (top + tooltipRect.height > window.innerHeight - 10) {
+        top = rect.top - tooltipRect.height - 10;
+        // Flip arrow
+        tooltip.classList.add('popout-above');
+      } else {
+        tooltip.classList.remove('popout-above');
+      }
+      // Clamp top so it never goes above viewport
+      if (top < 10) top = 10;
+
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+    }
+
+    function hideTooltip() {
+      hideTimeout = setTimeout(() => {
+        tooltip.classList.remove('visible');
+      }, 200);
+    }
+
+    card.addEventListener('mouseenter', showTooltip);
+    card.addEventListener('mouseleave', hideTooltip);
+    card.addEventListener('focus', showTooltip);
+    card.addEventListener('blur', hideTooltip);
+
+    // Keep tooltip visible when hovering over it
+    tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+    tooltip.addEventListener('mouseleave', hideTooltip);
+  });
+
+  // Hide tooltips on slide change
+  Reveal.on('slidechanged', () => {
+    document.querySelectorAll('.popout-tooltip.visible').forEach(t => {
+      t.classList.remove('visible');
+    });
+  });
+})();
+
+// ============================================
+// GLOBAL CLICK-TO-ENLARGE IMAGES
+// ============================================
+
+(function initImageEnlarge() {
+  // Create overlay
+  var overlay = document.createElement('div');
+  overlay.id = 'img-enlarge-overlay';
+  overlay.className = 'img-enlarge-overlay';
+  overlay.innerHTML = '<img id="img-enlarge-target" class="img-enlarge-target">';
+  document.body.appendChild(overlay);
+
+  var enlargedImg = document.getElementById('img-enlarge-target');
+
+  function openEnlarge(src, alt) {
+    enlargedImg.src = src;
+    enlargedImg.alt = alt || '';
+    overlay.classList.add('visible');
+  }
+  // Expose globally so other scripts (workflow-preview.js) can call it directly
+  window.openImageEnlarge = openEnlarge;
+
+  function closeEnlarge() {
+    overlay.classList.remove('visible');
+    setTimeout(function () {
+      if (!overlay.classList.contains('visible')) {
+        enlargedImg.src = '';
+      }
+    }, 200);
+  }
+
+  // Click any image inside slides or preview overlays to enlarge
+  document.addEventListener('click', function (e) {
+    var img = e.target.closest('img');
+    if (!img) return;
+
+    // Skip images inside controls/UI or the enlarge overlay itself
+    if (img.closest('.reveal .controls') || img.closest('#project-model-overlay') || img.closest('#img-enlarge-overlay')) return;
+    // Must be inside slides or a workflow preview overlay
+    if (!img.closest('.reveal .slides') && !img.closest('.wf-preview-overlay')) return;
+
+    e.stopPropagation();
+    openEnlarge(img.src || img.dataset.src, img.alt);
+  });
+
+  // Close on overlay click
+  overlay.addEventListener('click', closeEnlarge);
+
+  // Close on Escape
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('visible')) {
+      closeEnlarge();
+    }
+  });
+
+  // Close on slide change
+  Reveal.on('slidechanged', closeEnlarge);
+})();
+
+// ============================================
+// LAYER TOGGLE MENU
+// ============================================
+
+(function initLayerToggle() {
+  const toggle = document.getElementById('layer-toggle');
+  const btn = document.getElementById('layer-toggle-btn');
+  const menu = document.getElementById('layer-toggle-menu');
+  if (!toggle || !btn || !menu) return;
+
+  // Layer start indices (horizontal slide index)
+  const layers = [
+    { start: 0, end: 1 },
+    { start: 2, end: 2 },
+    { start: 3, end: 6 },
+    { start: 7, end: 7 },
+    { start: 8, end: 9 },
+  ];
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggle.classList.toggle('open');
+  });
+
+  // Jump to layer on click
+  menu.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', () => {
+      const slideIdx = parseInt(li.dataset.slide, 10);
+      Reveal.slide(slideIdx, 0);
+      toggle.classList.remove('open');
+    });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', () => {
+    toggle.classList.remove('open');
+  });
+  toggle.addEventListener('click', (e) => e.stopPropagation());
+
+  // Highlight active layer
+  function updateActiveLayer() {
+    const h = Reveal.getIndices().h;
+    const items = menu.querySelectorAll('li');
+    items.forEach((li, i) => {
+      li.classList.toggle('active', h >= layers[i].start && h <= layers[i].end);
+    });
+  }
+
+  Reveal.on('slidechanged', updateActiveLayer);
+  Reveal.on('ready', updateActiveLayer);
+})();

@@ -285,10 +285,13 @@
           '</a>' +
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           '<a href="https://stitch.withgoogle.com/" target="_blank" rel="noopener" class="wf-tool-link" style="text-align:center;">' +
           '<span class="tool-link-name">Stitch by Google</span>' +
           '<span class="tool-link-sub">AI-native design canvas &mdash; turn sketches, prompts, and voice into high-fidelity UI with exportable code &rarr;</span>' +
           '</a>' +
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -310,10 +313,13 @@
           '</div>' +
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           '<a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank" rel="noopener" class="wf-tool-link" style="text-align:center;">' +
           '<span class="tool-link-name">UI/UX Pro Max</span>' +
           '<span class="tool-link-sub">Design intelligence skill &mdash; 50+ UI styles, 97 color palettes, 57 font pairings, and 99 UX guidelines for Claude Code &rarr;</span>' +
           '</a>' +
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======

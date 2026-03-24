@@ -1,0 +1,4 @@
+[    5577ms] ReferenceError: __name is not defined
+    at https://uupm.cc/:10:11
+    at https://uupm.cc/:17:11
+[    5797ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://uupm.cc/api/auth/me:0

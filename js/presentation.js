@@ -20,7 +20,7 @@ Reveal.initialize({
   margin: 0.04,
   minScale: 0.2,
   maxScale: 2.0,
-  autoPlayMedia: null,
+  autoPlayMedia: true,
   preloadIframes: 'lazy',
   slideNumber: 'c/t',
   keyboard: {
@@ -39,7 +39,21 @@ Reveal.initialize({
   plugins: [ RevealNotes ],
 }).then(() => {
   console.log('Reveal.js initialized');
-  initVideoManager();
+
+  // Resume any paused videos when returning to the tab/window
+  const resumeCurrentSlideVideos = () => {
+    const slide = Reveal.getCurrentSlide();
+    if (!slide) return;
+    slide.querySelectorAll('video').forEach(video => {
+      if (video.paused && !video.closest('.wf-preview-overlay')) {
+        video.play().catch(() => {});
+      }
+    });
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') resumeCurrentSlideVideos();
+  });
+  window.addEventListener('focus', resumeCurrentSlideVideos);
 
   // Lazy-load Three.js only when a 3D model slide is reached
   let threeLoaded = false;
@@ -51,58 +65,6 @@ Reveal.initialize({
     }
   });
 });
-
-// ============================================
-// VIDEO MANAGER - Only play videos on current slide
-// ============================================
-
-function initVideoManager() {
-  // Ensure all videos are paused and unloaded at start
-  document.querySelectorAll('video').forEach(video => {
-    video.preload = 'none';
-    video.pause();
-  });
-
-  // Handle current slide on load
-  const currentSlide = Reveal.getCurrentSlide();
-  if (currentSlide) activateSlideVideos(currentSlide);
-
-  Reveal.on('slidechanged', event => {
-    if (event.previousSlide) deactivateSlideVideos(event.previousSlide);
-    activateSlideVideos(event.currentSlide);
-  });
-}
-
-function activateSlideVideos(slide) {
-  if (!slide) return;
-  slide.querySelectorAll('video').forEach(video => {
-    // Skip videos inside preview overlays — managed by workflow-preview.js
-    if (video.closest('.wf-preview-overlay')) return;
-    const source = video.querySelector('source[data-src]');
-    if (source && !source.src) {
-      source.src = source.dataset.src;
-      video.load();
-    }
-    video.preload = 'auto';
-    video.play().catch(() => {});
-  });
-}
-
-function deactivateSlideVideos(slide) {
-  if (!slide) return;
-  slide.querySelectorAll('video').forEach(video => {
-    // Skip videos inside preview overlays — managed by workflow-preview.js
-    if (video.closest('.wf-preview-overlay')) return;
-    video.pause();
-    video.currentTime = 0;
-    video.preload = 'none';
-    const source = video.querySelector('source');
-    if (source && source.dataset.src) {
-      source.removeAttribute('src');
-      video.load();
-    }
-  });
-}
 
 // ============================================
 // THREE.JS 3D MODEL VIEWER (lazy loaded)

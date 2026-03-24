@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEBULA | The Living Ecosystem</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error-container": "#8a1632",
+              "on-primary-container": "#000000",
+              "on-tertiary": "#005762",
+              "primary-fixed-dim": "#ff93aa",
+              "secondary": "#ffb866",
+              "on-secondary": "#5e3700",
+              "on-primary-fixed": "#560020",
+              "background": "#140727",
+              "on-surface": "#eee0ff",
+              "on-secondary-container": "#e29328",
+              "secondary-fixed": "#ffddba",
+              "surface-container": "#210e3e",
+              "on-primary": "#48001a",
+              "on-tertiary-fixed": "#003840",
+              "inverse-primary": "#bd0050",
+              "primary-dim": "#ff6c91",
+              "outline": "#8369ad",
+              "surface-container-highest": "#301657",
+              "surface-dim": "#140727",
+              "tertiary": "#81ecff",
+              "on-tertiary-fixed-variant": "#005762",
+              "surface-container-high": "#29124a",
+              "on-secondary-fixed-variant": "#835000",
+              "inverse-on-surface": "#5d4e73",
+              "tertiary-dim": "#00d4ec",
+              "secondary-fixed-dim": "#ffcb93",
+              "on-error": "#490013",
+              "on-primary-fixed-variant": "#8d003a",
+              "surface": "#140727",
+              "on-error-container": "#ff97a3",
+              "tertiary-fixed-dim": "#00d4ec",
+              "surface-variant": "#301657",
+              "error-dim": "#c8475d",
+              "on-surface-variant": "#ba9ee7",
+              "outline-variant": "#543b7c",
+              "surface-container-low": "#1a0a32",
+              "on-tertiary-container": "#004d57",
+              "tertiary-container": "#00e3fd",
+              "on-secondary-fixed": "#5c3700",
+              "tertiary-fixed": "#00e3fd",
+              "surface-container-lowest": "#000000",
+              "inverse-surface": "#fef7ff",
+              "secondary-container": "#392000",
+              "secondary-dim": "#f4a237",
+              "primary": "#ff6c91",
+              "error": "#fd6f85",
+              "surface-bright": "#381a64",
+              "surface-tint": "#ff6c91",
+              "on-background": "#eee0ff",
+              "primary-fixed": "#ffa9b9",
+              "primary-container": "#fb3b78"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        background-color: #140727;
+        color: #eee0ff;
+        overflow-x: hidden;
+      }
+      .nebula-glow {
+        background: radial-gradient(circle at 50% 50%, rgba(251, 59, 120, 0.15) 0%, rgba(129, 236, 255, 0.05) 50%, transparent 100%);
+      }
+      .iridescent-text {
+        background: linear-gradient(90deg, #ff93aa, #81ecff, #ffb866);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .glass-card {
+        background: rgba(48, 22, 87, 0.4);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/30">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
+<nav class="bg-purple-950/60 backdrop-blur-2xl rounded-full mt-4 mx-auto max-w-fit px-8 py-2 flex items-center gap-8 shadow-[0_0_40px_-15px_rgba(255,108,145,0.3)]">
+<div class="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-cyan-400 font-headline">NEBULA</div>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-pink-400 font-bold border-b-2 border-pink-500 pb-1 font-label text-sm" href="#">Emotion Shaper</a>
+<a class="text-purple-200/70 hover:text-white transition-colors font-label text-sm hover:scale-105 transition-all duration-300" href="#">Nose Cursor</a>
+<a class="text-purple-200/70 hover:text-white transition-colors font-label text-sm hover:scale-105 transition-all duration-300" href="#">Visions</a>
+<a class="text-purple-200/70 hover:text-white transition-colors font-label text-sm hover:scale-105 transition-all duration-300" href="#">Ecosystem</a>
+</div>
+<div class="flex items-center gap-4 border-l border-white/10 pl-6">
+<button class="text-purple-200/70 hover:scale-105 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">blur_on</span>
+</button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary-container px-5 py-1.5 rounded-full text-sm font-bold hover:scale-105 transition-all duration-300 active:scale-95">
+                    Connect
+                </button>
+</div>
+</nav>
+</header>
+<main class="relative">
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center pt-24 overflow-hidden">
+<!-- Background Elements -->
+<div class="absolute inset-0 z-0">
+<img alt="Bioluminescent deep space nebula" class="w-full h-full object-cover opacity-40 scale-110" data-alt="Vibrant pink and blue swirling cosmic nebula clouds" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGVpCY5n64xRZsAfVNL3eR9fWORfZwn7vUs-5L-TF93pKRoFAMNloBYw-whSmXR6J_8jVtsBsBho9rIOqbQIoZaoG_Fc0WgGbmEsOAqLLFXzIISqK2EOSPRFDGNBw4sxXJPH6gLhDenS2dgYxlwiWvxqPogMv-vu9fxCEd7ms0w8QtxJ-Fk4wLwOg-bpY5XS2Sk7y9zSSdLSPDlu2g_zObrQbus5GHzcyLVTR7wbWhUyuGnofjPUWAoUZzw5mNpr1ZZOk1cvojwmY"/>
+<div class="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] nebula-glow rounded-full blur-[120px]"></div>
+</div>
+<!-- Central Content -->
+<div class="relative z-10 text-center px-6 max-w-5xl">
+<div class="glass-card p-12 md:p-20 rounded-xl border border-white/5 shadow-2xl">
+<h1 class="font-headline text-6xl md:text-9xl font-black tracking-tight leading-none mb-6">
+<span class="block">THE LIVING</span>
+<span class="iridescent-text italic">NEBULA</span>
+</h1>
+<p class="text-lg md:text-2xl text-on-surface-variant font-light max-w-2xl mx-auto mb-10 leading-relaxed">
+                        Experience an interface that breathes with you. Organic interactions powered by bioluminescent intelligence.
+                    </p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-6">
+<button class="bg-primary text-on-primary-container px-10 py-4 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,108,145,0.4)]">
+                            Begin Immersion
+                        </button>
+<button class="glass-card px-10 py-4 rounded-full font-bold text-lg text-white border border-outline/20 hover:bg-white/10 transition-all">
+                            Explore Visions
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Feature Bento Grid / Organic Bubble Section -->
+<section class="relative py-32 px-6 max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+<!-- Emotion Shaper -->
+<div class="md:col-span-7 glass-card rounded-lg p-10 flex flex-col justify-between group hover:bg-white/5 transition-all duration-500 overflow-hidden relative border border-white/5">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-primary text-5xl mb-6 block" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<h3 class="font-headline text-4xl font-bold mb-4">Emotion Shaper</h3>
+<p class="text-on-surface-variant text-lg max-w-md">The UI adapts its chromatic frequency based on your bio-rhythms. A truly empathetic experience.</p>
+</div>
+<div class="mt-12 flex justify-end relative z-10">
+<div class="w-32 h-32 rounded-full bg-primary/20 blur-2xl group-hover:scale-150 transition-transform"></div>
+</div>
+<img class="absolute inset-0 object-cover opacity-10 group-hover:opacity-20 transition-opacity" data-alt="Abstract fluid waves in dark magenta tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbR7TtcrY4FGUGUtrDCVet4CNlkgNDxQanbJeSC25_SIIPgVRHGX4dLP5c-AkV7-cn0iAytnsY2StYdBIqZeRlcOVZ7-1W45sDwL-a94JHDyIk8HFFBcafRHtq4i9foYEoo9Jsx5rG-HAX4YvMeUscS3cWcj2KS4R4Xpg3Ncb0q0aoZlxNMH3l8Ebbqy52mRvaJ5TZFK9vQNnyE_raBqz_ausVZI0nkPqbu586hkU0on6SXA9w3t3fOrvLA30amcaXYP0jG2kV_RI"/>
+</div>
+<!-- Nose Cursor -->
+<div class="md:col-span-5 glass-card rounded-full p-12 flex flex-col items-center text-center justify-center gap-6 border border-white/5 group hover:shadow-[0_0_50px_rgba(129,236,255,0.2)] transition-all">
+<span class="material-symbols-outlined text-tertiary text-6xl" style="font-variation-settings: 'FILL' 0;">near_me</span>
+<div>
+<h3 class="font-headline text-3xl font-bold mb-2">Nose Cursor</h3>
+<p class="text-on-surface-variant text-sm px-6">Precision tracking without hands. The world's first olfactory-aligned navigation system.</p>
+</div>
+</div>
+<!-- Brow Scroll -->
+<div class="md:col-span-5 glass-card rounded-lg p-10 border border-white/5 relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl"></div>
+<span class="material-symbols-outlined text-secondary text-5xl mb-6 block">visibility</span>
+<h3 class="font-headline text-4xl font-bold mb-4">Brow Scroll</h3>
+<p class="text-on-surface-variant text-lg">Subtle facial muscle detection allows for seamless vertical navigation through vast datasets.</p>
+</div>
+<!-- Clap to Click -->
+<div class="md:col-span-7 glass-card rounded-lg p-10 border border-white/5 flex flex-col md:flex-row items-center gap-10 group">
+<div class="flex-1">
+<span class="material-symbols-outlined text-white text-5xl mb-6 block">pan_tool</span>
+<h3 class="font-headline text-4xl font-bold mb-4">Clap to Click</h3>
+<p class="text-on-surface-variant text-lg">Acoustic interaction mapping. Execute complex commands with simple rhythmic gestures.</p>
+</div>
+<div class="w-48 h-48 rounded-full bg-gradient-to-tr from-surface-container-highest to-surface-bright flex items-center justify-center border border-white/10 group-hover:rotate-12 transition-transform shadow-inner">
+<span class="material-symbols-outlined text-primary-dim text-7xl" style="font-variation-settings: 'FILL' 1;">sensors</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Ecosystem Stats -->
+<section class="py-24 relative px-6">
+<div class="max-w-6xl mx-auto flex flex-wrap justify-center gap-16 md:gap-32">
+<div class="text-center">
+<div class="font-headline text-7xl font-black text-white mb-2">12M+</div>
+<div class="font-label text-xs tracking-[0.4em] uppercase text-tertiary">Active Nodes</div>
+</div>
+<div class="text-center">
+<div class="font-headline text-7xl font-black text-white mb-2">0.2ms</div>
+<div class="font-label text-xs tracking-[0.4em] uppercase text-primary">Bio-Latency</div>
+</div>
+<div class="text-center">
+<div class="font-headline text-7xl font-black text-white mb-2">Infinite</div>
+<div class="font-label text-xs tracking-[0.4em] uppercase text-secondary">Visions</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-32 px-6">
+<div class="max-w-5xl mx-auto glass-card rounded-xl p-1 md:p-2 bg-gradient-to-r from-primary/20 via-tertiary/20 to-secondary/20">
+<div class="bg-background rounded-lg p-12 md:p-24 text-center">
+<h2 class="font-headline text-5xl md:text-7xl font-bold mb-8 leading-tight">Ready to transcend the <br/><span class="text-primary italic">Static Web?</span></h2>
+<button class="bg-white text-background px-12 py-5 rounded-full font-black text-xl hover:scale-105 transition-all shadow-xl hover:shadow-primary/20">
+                        Initialize Connection
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full flex flex-col items-center gap-6 px-8 bg-transparent pb-12 pt-24 border-t border-white/5">
+<div class="text-lg font-bold text-purple-300 font-headline tracking-tighter">NEBULA</div>
+<div class="flex gap-10">
+<a class="font-manrope text-[10px] tracking-[0.2em] uppercase text-purple-400/60 hover:text-pink-400 transition-all" href="#">Privacy</a>
+<a class="font-manrope text-[10px] tracking-[0.2em] uppercase text-purple-400/60 hover:text-pink-400 transition-all" href="#">Terms</a>
+<a class="font-manrope text-[10px] tracking-[0.2em] uppercase text-purple-400/60 hover:text-pink-400 transition-all" href="#">Void Contact</a>
+</div>
+<div class="font-manrope text-[10px] tracking-[0.2em] uppercase text-purple-400/60 mt-4">
+            © 2024 THE LIVING NEBULA. ALL RIGHTS RESERVED.
+        </div>
+</footer>
+</body></html>

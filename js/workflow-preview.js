@@ -123,9 +123,13 @@
     overlay.classList.add('visible');
     currentPreview = key;
 
-    // Auto-play any videos
-    var videos = content.querySelectorAll('video');
-    videos.forEach(function (v) { v.play().catch(function () {}); });
+    // Auto-play any videos — wait for ready state
+    content.querySelectorAll('video').forEach(function (v) {
+      v.load();
+      function tryPlay() { v.play().catch(function () {}); }
+      if (v.readyState >= 3) tryPlay();
+      else v.addEventListener('canplay', tryPlay, { once: true });
+    });
 
     // Run post-render hooks (e.g. click-to-expand on ideation grid)
     if (config.afterRender) config.afterRender();
@@ -155,7 +159,9 @@
   });
 
   // Click overlay background or close button to close
+  // stopPropagation prevents Reveal.js from intercepting clicks
   overlay.addEventListener('click', function (e) {
+    e.stopPropagation();
     if (e.target === overlay) {
       closePreview();
     }
@@ -239,6 +245,7 @@
 
   if (projectOverlay) {
     projectOverlay.addEventListener('click', function (e) {
+      e.stopPropagation();
       if (e.target === projectOverlay) closeProjectModel();
     });
   }
@@ -347,7 +354,9 @@
   });
 
   // Close when clicking the dark backdrop (anything outside the content panel)
+  // stopPropagation prevents Reveal.js from intercepting clicks
   overlay.addEventListener('click', function (e) {
+    e.stopPropagation();
     if (!e.target.closest('.wf-preview-content') && !e.target.closest('.wf-preview-close')) {
       closePreview();
     }
@@ -462,7 +471,12 @@
     content.innerHTML = config.render();
     overlay.classList.add('visible');
     currentPreview = key;
-    content.querySelectorAll('video').forEach(function (v) { v.play().catch(function () {}); });
+    content.querySelectorAll('video').forEach(function (v) {
+      v.load();
+      function tryPlay() { v.play().catch(function () {}); }
+      if (v.readyState >= 3) tryPlay();
+      else v.addEventListener('canplay', tryPlay, { once: true });
+    });
     if (config.afterRender) config.afterRender();
   }
 
@@ -495,6 +509,7 @@
   });
 
   overlay.addEventListener('click', function (e) {
+    e.stopPropagation();
     if (e.target === overlay) closePreview();
   });
 
@@ -560,7 +575,12 @@
     content.innerHTML = config.render();
     overlay.classList.add('visible');
     currentPreview = key;
-    content.querySelectorAll('video').forEach(function (v) { v.play().catch(function () {}); });
+    content.querySelectorAll('video').forEach(function (v) {
+      v.load();
+      function tryPlay() { v.play().catch(function () {}); }
+      if (v.readyState >= 3) tryPlay();
+      else v.addEventListener('canplay', tryPlay, { once: true });
+    });
   }
 
   function closePreview() {
@@ -582,6 +602,7 @@
   });
 
   overlay.addEventListener('click', function (e) {
+    e.stopPropagation();
     if (e.target === overlay) closePreview();
   });
 

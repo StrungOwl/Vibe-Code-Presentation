@@ -76,6 +76,8 @@ function initVideoManager() {
 function activateSlideVideos(slide) {
   if (!slide) return;
   slide.querySelectorAll('video').forEach(video => {
+    // Skip videos inside preview overlays — managed by workflow-preview.js
+    if (video.closest('.wf-preview-overlay')) return;
     const source = video.querySelector('source[data-src]');
     if (source && !source.src) {
       source.src = source.dataset.src;
@@ -89,6 +91,8 @@ function activateSlideVideos(slide) {
 function deactivateSlideVideos(slide) {
   if (!slide) return;
   slide.querySelectorAll('video').forEach(video => {
+    // Skip videos inside preview overlays — managed by workflow-preview.js
+    if (video.closest('.wf-preview-overlay')) return;
     video.pause();
     video.currentTime = 0;
     video.preload = 'none';

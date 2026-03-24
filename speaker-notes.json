@@ -23,7 +23,7 @@
 
   "30": "You don't need to master them, but it's the language your agent is writing in and will make you a better collaborator if you understand that infrastructure.",
 
-  "32": "Hover over each step to show examples. For the AI 3D Model step — I used <strong>Hunyuan3D</strong> (Tencent's open-source 3D generation model) to create the initial mesh from reference images. It generates both geometry and textures in one pass, which saved a lot of manual modeling time before refining in VR.<br><br>Mention <strong>Nono Banana</strong> — talk about their work and relevance to this workflow.",
+  "32": "Hunyuan3D or Meshy",
 
   "36": "<strong>Composer metaphor:</strong> Each musician in an orchestra has a strength. Treat each chat like a different musician. One chat can be for planning, one for functionality, one for troubleshooting, one for editing, one for critique. Try not to cross-pollinate — keeping chats focused produces better results because the context stays clean and the agent doesn't get confused by competing instructions.",
 

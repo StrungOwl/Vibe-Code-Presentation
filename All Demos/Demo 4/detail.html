@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FloralNet Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background": "#fff8f1",
+          "on-error": "#fff7f6",
+          "surface-container-high": "#f8e7bf",
+          "primary-fixed": "#ffaba5",
+          "tertiary": "#5e55a0",
+          "on-primary-fixed": "#580007",
+          "tertiary-fixed": "#b9afff",
+          "on-surface-variant": "#6b5e3c",
+          "secondary-fixed": "#e2f8cc",
+          "surface-tint": "#ba1b24",
+          "on-secondary-container": "#4d603e",
+          "surface-container-highest": "#f3e1b5",
+          "surface": "#fff8f1",
+          "primary-container": "#ffaba5",
+          "surface-container": "#fcedc9",
+          "secondary-container": "#e2f8cc",
+          "primary": "#ba1b24",
+          "on-secondary-fixed": "#3b4d2d",
+          "surface-container-low": "#fff2d9",
+          "surface-variant": "#f3e1b5",
+          "secondary-dim": "#465938",
+          "outline": "#887a55",
+          "on-background": "#3c3113",
+          "on-surface": "#3c3113",
+          "outline-variant": "#c1b188",
+          "on-tertiary": "#fcf7ff",
+          "on-tertiary-container": "#352b74",
+          "tertiary-container": "#b9afff",
+          "error": "#ac3434",
+          "secondary": "#526543",
+          "surface-container-lowest": "#ffffff",
+          "on-primary-container": "#7f000f",
+          "on-primary": "#fff7f6"
+        },
+        fontFamily: {
+          "headline": ["Work Sans"],
+          "body": ["Inter"],
+          "label": ["Inter"]
+        },
+        borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .floral-bg {
+    background-color: #7dd3fc;
+    background-image: radial-gradient(circle at 20% 30%, #fcedc9 0%, transparent 40%),
+                      radial-gradient(circle at 80% 10%, #fff2d9 0%, transparent 35%),
+                      radial-gradient(circle at 50% 80%, #f3e1b5 0%, transparent 50%);
+  }
+  .beveled-outset {
+    box-shadow: inset 2px 2px 0px 0px #ffffff, inset -2px -2px 0px 0px #c1b188;
+  }
+  .beveled-inset {
+    box-shadow: inset -1px -1px 0px 0px #ffffff, inset 1px 1px 0px 0px #887a55;
+  }
+  .custom-scrollbar::-webkit-scrollbar { width: 16px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #fff2d9; }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #526543;
+    border: 4px solid #fff2d9;
+  }
+  body { min-height: max(884px, 100dvh); }
+
+  /* ---- Cursor — injected into <html> to escape body overflow:hidden ---- */
+  * { cursor: none !important; }
+
+  #nose-cursor {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    background: #ba1b24;
+    border: 3px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2147483647;
+    left: -200px; top: -200px;
+    box-shadow: 0 0 0 2px #ba1b24, 0 4px 14px rgba(0,0,0,0.45);
+    transition: background 0.1s ease, box-shadow 0.1s ease, transform 0.12s ease;
+  }
+  #nose-cursor.hovering {
+    background: #5e55a0;
+    box-shadow: 0 0 0 2px #5e55a0, 0 4px 14px rgba(94,85,160,0.5);
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+  #nose-cursor.clicking {
+    background: white;
+    box-shadow: 0 0 0 4px #ba1b24, 0 0 20px rgba(186,27,36,0.6);
+    transform: translate(-50%, -50%) scale(0.75);
+  }
+
+  #wiggle-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    left: -100px; top: -100px;
+  }
+  #wiggle-track {
+    position: fixed;
+    bottom: 48px;
+    left: 0; right: 0;
+    height: 3px;
+    background: rgba(0,0,0,0.06);
+    z-index: 9000;
+    pointer-events: none;
+  }
+  #wiggle-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #526543, #ba1b24);
+    transition: width 0.06s ease;
+  }
+  #nose-status {
+    position: fixed;
+    top: 0.5rem; right: 0.75rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: rgba(60, 49, 19, 0.45);
+    z-index: 9000;
+    pointer-events: none;
+  }
+  #webcam-wrap {
+    position: fixed;
+    top: 2.5rem; right: 0.75rem;
+    z-index: 8000;
+    border: 2px solid #c1b188;
+    box-shadow: inset 2px 2px 0 #fff, inset -2px -2px 0 #887a55,
+                3px 3px 0 rgba(0,0,0,0.15);
+  }
+  #webcam-titlebar {
+    background: #5e55a0;
+    height: 16px;
+    display: flex; align-items: center;
+    padding: 0 4px;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  #webcam {
+    width: 120px; height: 90px;
+    object-fit: cover;
+    transform: scaleX(-1);
+    display: block;
+  }
+
+  /* Back button hover */
+  .back-btn.nose-hover,
+  .back-btn:hover {
+    background: #5e55a0 !important;
+    color: white !important;
+  }
+  .back-btn.nose-hover .btn-icon { color: white; }
+
+  /* File-list items */
+  .file-item.nose-hover {
+    background: #5e55a0 !important;
+    color: white !important;
+  }
+  .file-item.nose-hover .mat-icon { color: white; }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden h-screen select-none floral-bg">
+
+  <!-- Webcam preview -->
+  <div id="webcam-wrap">
+    <div id="webcam-titlebar">📷 Nose Cam</div>
+    <video id="webcam" autoplay playsinline muted></video>
+  </div>
+
+  <!-- Nose cursor dot (moved to <html> via JS) -->
+  <div id="nose-cursor"></div>
+
+  <!-- Circular wiggle ring -->
+  <svg id="wiggle-ring" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(186,27,36,0.12)" stroke-width="2"/>
+    <circle id="wiggle-arc" cx="18" cy="18" r="16" fill="none"
+      stroke="#5e55a0" stroke-width="2.5"
+      stroke-dasharray="0 100.5"
+      stroke-linecap="round"
+      transform="rotate(-90 18 18)"
+      style="transition: stroke-dasharray 0.06s ease;"/>
+  </svg>
+
+  <!-- Wiggle progress bar -->
+  <div id="wiggle-track"><div id="wiggle-fill"></div></div>
+
+  <!-- Status -->
+  <div id="nose-status">Initializing...</div>
+
+  <main class="relative w-full h-full flex items-center justify-center p-8">
+
+    <!-- Main Window -->
+    <div class="relative w-full max-w-4xl h-[618px] bg-surface-container flex flex-col beveled-outset shadow-2xl z-10">
+
+      <!-- Title Bar -->
+      <header class="bg-[#5e55a0] h-10 flex justify-between items-center w-full px-4 border-b-2 border-white/20">
+        <div class="flex items-center gap-3">
+          <div class="flex gap-1.5">
+            <div class="w-3.5 h-3.5 bg-[#ba1b24]"></div>
+            <div class="w-3.5 h-3.5 bg-[#fcedc9]"></div>
+            <div class="w-3.5 h-3.5 bg-[#5e55a0] border border-white/40"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#fff8f1] text-lg">local_florist</span>
+            <h1 id="window-title" class="font-['Work_Sans'] font-bold text-[#fff8f1] text-sm tracking-tight">
+              FloralNet Explorer
+            </h1>
+          </div>
+        </div>
+        <span class="text-white/50 text-[10px] font-bold tracking-widest uppercase">Ver 4.0.1</span>
+      </header>
+
+      <!-- Toolbar — Back button is the main nose target here -->
+      <nav class="bg-surface-container-low px-4 py-2 flex items-center gap-4 border-b border-outline-variant/30">
+        <div class="flex gap-2">
+          <!-- BACK BUTTON — nose-clickable -->
+          <button class="back-btn flex items-center gap-1 p-1 px-3 beveled-outset bg-surface-container text-secondary font-bold text-xs uppercase tracking-wider transition-colors"
+                  data-href="index.html">
+            <span class="material-symbols-outlined btn-icon text-secondary" style="font-size:1.1rem;">arrow_back</span>
+            Back
+          </button>
+          <button class="p-1 beveled-outset bg-surface-container opacity-40">
+            <span class="material-symbols-outlined text-secondary">arrow_forward</span>
+          </button>
+        </div>
+        <div class="flex-1 flex items-center bg-surface-container-highest beveled-inset px-2 h-8">
+          <span class="material-symbols-outlined text-outline text-sm mr-2">language</span>
+          <span id="path-bar" class="text-xs text-on-surface-variant flex-1">C:\FloralNet\Explorer\Home</span>
+        </div>
+      </nav>
+
+      <!-- Content area -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+        <!-- Folder header -->
+        <div class="flex items-center gap-4 mb-6 pb-4 border-b border-outline-variant/30">
+          <div id="folder-icon-wrap" class="w-16 h-16 flex items-center justify-center beveled-outset bg-primary-container">
+            <span id="folder-icon" class="material-symbols-outlined text-on-primary-container text-4xl"
+                  style="font-variation-settings:'FILL' 1;">folder_open</span>
+          </div>
+          <div>
+            <h2 id="folder-title" class="font-headline font-black text-2xl text-primary uppercase tracking-tight">Folder</h2>
+            <p id="folder-subtitle" class="text-xs text-on-surface-variant uppercase tracking-widest font-bold mt-0.5">0 items</p>
+          </div>
+        </div>
+
+        <!-- File list -->
+        <div id="file-list" class="flex flex-col gap-1"></div>
+
+      </div>
+
+      <!-- Status Bar -->
+      <footer class="h-6 bg-surface-container-highest border-t border-outline-variant flex items-center px-4 justify-between text-[10px] font-bold text-on-surface-variant uppercase">
+        <div class="flex items-center gap-4">
+          <span id="item-count">0 Items</span>
+          <span class="w-[1px] h-3 bg-outline-variant"></span>
+          <span>1.2 GB Free</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">security</span>
+          <span>System Secure</span>
+        </div>
+      </footer>
+
+    </div>
+
+    <!-- Decorative clouds -->
+    <div class="absolute bottom-32 right-20 w-48 h-24 bg-surface-container-low/60 backdrop-blur-sm rounded-full blur-xl -z-10"></div>
+    <div class="absolute top-40 left-10 w-64 h-32 bg-surface-container-high/40 backdrop-blur-sm rounded-full blur-2xl -z-10"></div>
+  </main>
+
+  <!-- Taskbar -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center gap-2 px-2 bg-[#e2f8cc] h-12 border-t-2 border-[#c1b188]/30">
+    <div class="flex items-center gap-1 h-full py-1">
+      <button class="flex items-center justify-center gap-2 bg-[#ba1b24] text-[#fff8f1] px-4 h-full beveled-outset">
+        <span class="material-symbols-outlined text-lg">filter_vintage</span>
+        <span class="font-headline font-black italic tracking-tighter text-sm uppercase">Start</span>
+      </button>
+      <div class="w-[1px] h-6 bg-[#4d603e]/20 mx-1"></div>
+      <button class="flex items-center gap-2 bg-[#fff2d9] text-[#ba1b24] px-3 h-full border-inset border-2 border-[#ba1b24]/30">
+        <span class="material-symbols-outlined text-sm">local_florist</span>
+        <span class="text-[10px] font-bold uppercase tracking-widest font-['Inter']">Explorer</span>
+      </button>
+    </div>
+    <div class="flex items-center gap-4 h-full py-1 px-4 bg-surface-container-low/40 beveled-inset">
+      <div class="flex gap-2">
+        <span class="material-symbols-outlined text-secondary text-sm">wifi</span>
+        <span class="material-symbols-outlined text-secondary text-sm">volume_up</span>
+      </div>
+      <div class="flex items-center gap-1 text-[#4d603e] font-['Inter'] text-[10px] font-bold uppercase tracking-widest">
+        <span class="material-symbols-outlined text-[12px]">schedule</span>
+        <span id="clock">12:00 PM</span>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    // ================================================================
+    //  Page content definitions
+    // ================================================================
+    const PAGES = {
+      home: {
+        title: 'Home',
+        subtitle: '6 items',
+        icon: 'home',
+        bg: 'bg-primary-container',
+        iconColor: 'text-on-primary-container',
+        path: 'C:\\FloralNet\\Explorer\\Home',
+        files: [
+          { icon: 'description', label: 'Welcome.txt',       size: '2 KB',   date: '2024-03-01' },
+          { icon: 'image',       label: 'Garden_Photo.jpg',  size: '1.4 MB', date: '2024-03-05' },
+          { icon: 'article',     label: 'Notes.doc',         size: '18 KB',  date: '2024-03-10' },
+          { icon: 'folder',      label: 'Favorites',         size: '—',      date: '2024-02-20' },
+          { icon: 'folder',      label: 'Downloads',         size: '—',      date: '2024-01-15' },
+          { icon: 'settings',    label: 'Preferences.cfg',   size: '4 KB',   date: '2024-03-12' },
+        ]
+      },
+      search: {
+        title: 'Search',
+        subtitle: '3 results',
+        icon: 'search',
+        bg: 'bg-secondary-container',
+        iconColor: 'text-on-secondary-container',
+        path: 'C:\\FloralNet\\Search\\Results',
+        files: [
+          { icon: 'local_florist', label: 'Rosa_canina.db',      size: '88 KB',  date: '2024-03-11' },
+          { icon: 'local_florist', label: 'Papaver_rhoeas.db',   size: '64 KB',  date: '2024-03-09' },
+          { icon: 'local_florist', label: 'Helianthus_annuus.db',size: '72 KB',  date: '2024-03-07' },
+        ]
+      },
+      mail: {
+        title: 'Mail',
+        subtitle: '4 messages',
+        icon: 'mail',
+        bg: 'bg-tertiary-container',
+        iconColor: 'text-on-tertiary-container',
+        path: 'C:\\FloralNet\\Mail\\Inbox',
+        files: [
+          { icon: 'mail',         label: 'Re: Spring Seeds',      size: '12 KB', date: '2024-03-14' },
+          { icon: 'mail',         label: 'Garden Club Newsletter', size: '34 KB', date: '2024-03-13' },
+          { icon: 'mail',         label: 'Order Confirmation',    size: '8 KB',  date: '2024-03-12' },
+          { icon: 'drafts',       label: 'Draft — Petal Report',  size: '5 KB',  date: '2024-03-10' },
+        ]
+      },
+      photos: {
+        title: 'Photos',
+        subtitle: '5 photos',
+        icon: 'image',
+        bg: 'bg-surface-container-high',
+        iconColor: 'text-orange-600',
+        path: 'C:\\FloralNet\\Photos\\Garden',
+        files: [
+          { icon: 'image', label: 'Poppy_Morning.jpg',    size: '2.1 MB', date: '2024-03-08' },
+          { icon: 'image', label: 'Rose_Dew.jpg',         size: '1.8 MB', date: '2024-03-07' },
+          { icon: 'image', label: 'Sunflower_Field.jpg',  size: '3.2 MB', date: '2024-03-05' },
+          { icon: 'image', label: 'Lavender_Row.jpg',     size: '1.5 MB', date: '2024-03-03' },
+          { icon: 'image', label: 'Daisy_Close.jpg',      size: '900 KB', date: '2024-03-01' },
+        ]
+      }
+    };
+
+    // ---- Populate content from URL param ----
+    const params   = new URLSearchParams(window.location.search);
+    const pageKey  = params.get('page') || 'home';
+    const content  = PAGES[pageKey] || PAGES.home;
+
+    document.getElementById('window-title').textContent = 'FloralNet Explorer — ' + content.title;
+    document.getElementById('folder-title').textContent = content.title;
+    document.getElementById('folder-subtitle').textContent = content.subtitle;
+    document.getElementById('path-bar').textContent = content.path;
+    document.getElementById('item-count').textContent = content.files.length + ' Items';
+    document.title = 'FloralNet Explorer — ' + content.title;
+
+    const iconWrap = document.getElementById('folder-icon-wrap');
+    iconWrap.className = 'w-16 h-16 flex items-center justify-center beveled-outset ' + content.bg;
+    const iconEl = document.getElementById('folder-icon');
+    iconEl.className = 'material-symbols-outlined text-4xl ' + content.iconColor;
+    iconEl.textContent = content.icon;
+
+    const listEl = document.getElementById('file-list');
+    content.files.forEach(f => {
+      const row = document.createElement('div');
+      row.className = 'file-item flex items-center gap-3 px-3 py-2 bg-surface-container-low beveled-outset transition-colors';
+      row.innerHTML = `
+        <span class="material-symbols-outlined mat-icon text-secondary text-lg"
+              style="font-variation-settings:'FILL' 1;">${f.icon}</span>
+        <span class="flex-1 text-sm font-bold text-on-surface">${f.label}</span>
+        <span class="text-xs text-on-surface-variant w-20 text-right">${f.size}</span>
+        <span class="text-xs text-on-surface-variant w-24 text-right">${f.date}</span>
+      `;
+      listEl.appendChild(row);
+    });
+
+    // ================================================================
+    //  Clock
+    // ================================================================
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      document.getElementById('clock').textContent =
+        h + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // ================================================================
+    //  NOSE CURSOR + WIGGLE-TO-CLICK (same logic as index.html)
+    // ================================================================
+
+    const videoEl    = document.getElementById('webcam');
+    const cursorEl   = document.getElementById('nose-cursor');
+    const wiggleRing = document.getElementById('wiggle-ring');
+    const wiggleFill = document.getElementById('wiggle-fill');
+    const wiggleArc  = document.getElementById('wiggle-arc');
+    const statusEl   = document.getElementById('nose-status');
+
+    let faceMesh      = null;
+    let noseHistory   = [];
+    let lastClickTime = 0;
+    let hoveredEl     = null;
+
+    const WIGGLE_WINDOW_MS       = 500;
+    const MIN_REVERSALS          = 4;
+    const MIN_REVERSAL_AMPLITUDE = 7;
+    const CLICK_COOLDOWN_MS      = 1300;
+    const CIRC = 2 * Math.PI * 16;
+
+    async function init() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+          audio: false
+        });
+        videoEl.srcObject = stream;
+        videoEl.onloadeddata = () => { videoEl.play(); loadFaceMesh(); };
+        videoEl.load();
+      } catch (err) {
+        statusEl.textContent = 'Camera denied — grant access & refresh';
+        console.error('Camera error:', err);
+      }
+    }
+
+    async function loadFaceMesh() {
+      statusEl.textContent = 'Loading face model...';
+      try {
+        // ml5 v1.3.1: faceMesh() returns a Promise — must await
+        faceMesh = await ml5.faceMesh({ maxFaces: 1, refineLandmarks: false, flipped: true });
+        faceMesh.detectStart(videoEl, onFaces);
+        statusEl.textContent = 'Model loaded — move your nose!';
+      } catch (e) {
+        statusEl.textContent = 'ML5 error: ' + e.message;
+        console.error('[NoseCursor] ML5 error:', e);
+      }
+    }
+
+    let _firstFace = true;
+    function onFaces(faces) {
+      if (_firstFace && faces && faces.length > 0) {
+        console.log('[NoseCursor] First detection:', faces[0].keypoints?.[4]);
+        _firstFace = false;
+        statusEl.textContent = 'Tracking ✓ — hover Back, wiggle to return';
+      }
+      if (!faces || faces.length === 0) return;
+      const face = faces[0];
+      if (!face.keypoints || face.keypoints.length < 5) return;
+
+      const noseTip =
+        face.keypoints.find(k => k.name === 'noseTip' || k.name === 'nose_tip')
+        || face.keypoints[4];
+      if (!noseTip) return;
+
+      const vw = videoEl.videoWidth  || 640;
+      const vh = videoEl.videoHeight || 480;
+      const sx = (noseTip.x / vw) * window.innerWidth;
+      const sy = (noseTip.y / vh) * window.innerHeight;
+
+      cursorEl.style.left = sx + 'px';
+      cursorEl.style.top  = sy + 'px';
+      wiggleRing.style.left = sx + 'px';
+      wiggleRing.style.top  = sy + 'px';
+
+      const now = Date.now();
+      noseHistory.push({ x: noseTip.x, t: now });
+      noseHistory = noseHistory.filter(p => now - p.t < WIGGLE_WINDOW_MS);
+
+      updateHover(sx, sy);
+      const wig = detectWiggle();
+
+      wiggleFill.style.width = (wig.progress * 100) + '%';
+      const dashLen = wig.progress * CIRC;
+      wiggleArc.setAttribute('stroke-dasharray', dashLen + ' ' + (CIRC - dashLen));
+
+      if (wig.detected && (now - lastClickTime) > CLICK_COOLDOWN_MS) {
+        triggerClick(sx, sy);
+      }
+    }
+
+    function detectWiggle() {
+      if (noseHistory.length < 5) return { detected: false, progress: 0 };
+      let reversals = 0, prevDir = 0, lastRevX = noseHistory[0].x;
+      for (let i = 1; i < noseHistory.length; i++) {
+        const dx = noseHistory[i].x - noseHistory[i - 1].x;
+        if (Math.abs(dx) < 2) continue;
+        const dir = dx > 0 ? 1 : -1;
+        if (prevDir !== 0 && dir !== prevDir) {
+          if (Math.abs(noseHistory[i].x - lastRevX) >= MIN_REVERSAL_AMPLITUDE) {
+            reversals++;
+            lastRevX = noseHistory[i].x;
+          }
+        }
+        prevDir = dir;
+      }
+      return { detected: reversals >= MIN_REVERSALS, progress: Math.min(reversals / MIN_REVERSALS, 1) };
+    }
+
+    function updateHover(sx, sy) {
+      cursorEl.style.visibility = 'hidden';
+      wiggleRing.style.visibility = 'hidden';
+      const el = document.elementFromPoint(sx, sy);
+      cursorEl.style.visibility = 'visible';
+      wiggleRing.style.visibility = 'visible';
+
+      const target = el?.closest('[data-href], .back-btn');
+
+      if (hoveredEl && hoveredEl !== target) hoveredEl.classList.remove('nose-hover');
+
+      if (target) {
+        target.classList.add('nose-hover');
+        cursorEl.classList.add('hovering');
+      } else {
+        cursorEl.classList.remove('hovering');
+      }
+
+      hoveredEl = target || null;
+    }
+
+    function triggerClick(sx, sy) {
+      lastClickTime = Date.now();
+      noseHistory   = [];
+      cursorEl.classList.add('clicking');
+      setTimeout(() => cursorEl.classList.remove('clicking'), 350);
+
+      cursorEl.style.visibility = 'hidden';
+      const el = document.elementFromPoint(sx, sy);
+      cursorEl.style.visibility = 'visible';
+
+      const target = el?.closest('[data-href]');
+      if (target) {
+        const href = target.getAttribute('data-href');
+        if (href) setTimeout(() => { window.location.href = href; }, 280);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Escape body's overflow:hidden by reparenting to <html>
+      document.documentElement.appendChild(cursorEl);
+      document.documentElement.appendChild(wiggleRing);
+      init();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FloralNet Explorer - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "background": "#fff8f1",
+          "on-error": "#fff7f6",
+          "on-tertiary-fixed-variant": "#3e357d",
+          "surface-container-high": "#f8e7bf",
+          "primary-fixed": "#ffaba5",
+          "tertiary": "#5e55a0",
+          "on-primary-fixed": "#580007",
+          "on-error-container": "#65000b",
+          "on-secondary-fixed-variant": "#576a48",
+          "tertiary-fixed": "#b9afff",
+          "on-surface-variant": "#6b5e3c",
+          "secondary-fixed": "#e2f8cc",
+          "tertiary-fixed-dim": "#aba1f2",
+          "surface-tint": "#ba1b24",
+          "on-secondary-container": "#4d603e",
+          "inverse-on-surface": "#a79c84",
+          "surface-container-highest": "#f3e1b5",
+          "surface": "#fff8f1",
+          "on-secondary": "#edffda",
+          "primary-container": "#ffaba5",
+          "surface-container": "#fcedc9",
+          "secondary-container": "#e2f8cc",
+          "error-container": "#f56965",
+          "primary": "#ba1b24",
+          "inverse-primary": "#ff5351",
+          "on-secondary-fixed": "#3b4d2d",
+          "surface-container-low": "#fff2d9",
+          "primary-fixed-dim": "#ff968f",
+          "secondary-fixed-dim": "#d3eabf",
+          "surface-variant": "#f3e1b5",
+          "secondary-dim": "#465938",
+          "on-primary-fixed-variant": "#900013",
+          "outline": "#887a55",
+          "on-background": "#3c3113",
+          "surface-dim": "#ecd8a9",
+          "on-surface": "#3c3113",
+          "error-dim": "#70030f",
+          "outline-variant": "#c1b188",
+          "on-tertiary": "#fcf7ff",
+          "on-tertiary-container": "#352b74",
+          "surface-bright": "#fff8f1",
+          "on-tertiary-fixed": "#1e115d",
+          "error": "#ac3434",
+          "secondary": "#526543",
+          "surface-container-lowest": "#ffffff",
+          "primary-dim": "#a9081a",
+          "on-primary-container": "#7f000f",
+          "tertiary-container": "#b9afff",
+          "inverse-surface": "#130e02",
+          "tertiary-dim": "#524993",
+          "on-primary": "#fff7f6"
+        },
+        fontFamily: {
+          "headline": ["Work Sans"],
+          "body": ["Inter"],
+          "label": ["Inter"]
+        },
+        borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .floral-bg {
+    background-color: #7dd3fc;
+    background-image: radial-gradient(circle at 20% 30%, #fcedc9 0%, transparent 40%),
+                      radial-gradient(circle at 80% 10%, #fff2d9 0%, transparent 35%),
+                      radial-gradient(circle at 50% 80%, #f3e1b5 0%, transparent 50%);
+  }
+  .beveled-outset {
+    box-shadow: inset 2px 2px 0px 0px #ffffff, inset -2px -2px 0px 0px #c1b188;
+  }
+  .beveled-inset {
+    box-shadow: inset -1px -1px 0px 0px #ffffff, inset 1px 1px 0px 0px #887a55;
+  }
+  .custom-scrollbar::-webkit-scrollbar { width: 16px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #fff2d9; }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #526543;
+    border: 4px solid #fff2d9;
+  }
+  body { min-height: max(884px, 100dvh); }
+
+  /* ---- Hide real cursor; nose cursor takes over ---- */
+  * { cursor: none !important; }
+
+  /* ---- Nose cursor: bright dot — injected into <html> to escape body overflow:hidden ---- */
+  #nose-cursor {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    background: #ba1b24;
+    border: 3px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2147483647;
+    left: -200px;
+    top: -200px;
+    box-shadow: 0 0 0 2px #ba1b24, 0 4px 14px rgba(0,0,0,0.45);
+    transition: background 0.1s ease, box-shadow 0.1s ease, transform 0.12s ease;
+  }
+  #nose-cursor.hovering {
+    background: #5e55a0;
+    box-shadow: 0 0 0 2px #5e55a0, 0 4px 14px rgba(94,85,160,0.5);
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+  #nose-cursor.clicking {
+    background: white;
+    box-shadow: 0 0 0 4px #ba1b24, 0 0 20px rgba(186,27,36,0.6);
+    transform: translate(-50%, -50%) scale(0.75);
+  }
+
+  /* ---- Wiggle progress arc (circular indicator around cursor) ---- */
+  #wiggle-ring {
+    position: fixed;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    left: -100px;
+    top: -100px;
+  }
+
+  /* ---- Wiggle bar at bottom ---- */
+  #wiggle-track {
+    position: fixed;
+    bottom: 48px; /* above taskbar */
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(0,0,0,0.06);
+    z-index: 9000;
+    pointer-events: none;
+  }
+  #wiggle-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #526543, #ba1b24);
+    transition: width 0.06s ease;
+  }
+
+  /* ---- Status label ---- */
+  #nose-status {
+    position: fixed;
+    top: 0.5rem;
+    right: 0.75rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: rgba(60, 49, 19, 0.45);
+    z-index: 9000;
+    pointer-events: none;
+  }
+
+  /* ---- Webcam preview (top-right mini window) ---- */
+  #webcam-wrap {
+    position: fixed;
+    top: 2.5rem;
+    right: 0.75rem;
+    z-index: 8000;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #c1b188;
+    box-shadow: inset 2px 2px 0 #fff, inset -2px -2px 0 #887a55,
+                3px 3px 0 rgba(0,0,0,0.15);
+  }
+  #webcam-titlebar {
+    background: #5e55a0;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  #webcam {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    transform: scaleX(-1);
+    display: block;
+  }
+
+  /* ---- Hover highlight on folder icons ---- */
+  .folder-icon.nose-hover .folder-box {
+    box-shadow: inset 2px 2px 0px 0px #ffffff, inset -2px -2px 0px 0px #c1b188,
+                0 0 0 2px #5e55a0;
+    transform: scale(1.08);
+  }
+  .folder-icon.nose-hover .folder-label {
+    background: #5e55a0;
+    color: white;
+  }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden h-screen select-none floral-bg">
+
+  <!-- Webcam preview window -->
+  <div id="webcam-wrap">
+    <div id="webcam-titlebar">📷 Nose Cam</div>
+    <video id="webcam" autoplay playsinline muted></video>
+  </div>
+
+  <!-- Nose cursor dot (moved to <html> element via JS to escape body overflow:hidden) -->
+  <div id="nose-cursor"></div>
+
+  <!-- Circular dwell ring -->
+  <svg id="wiggle-ring" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(186,27,36,0.15)" stroke-width="2"/>
+    <circle id="wiggle-arc" cx="18" cy="18" r="16" fill="none"
+      stroke="#ba1b24" stroke-width="2.5"
+      stroke-dasharray="0 100.5"
+      stroke-linecap="round"
+      transform="rotate(-90 18 18)"
+      style="transition: stroke-dasharray 0.06s ease;"/>
+  </svg>
+
+  <!-- Wiggle progress bar -->
+  <div id="wiggle-track"><div id="wiggle-fill"></div></div>
+
+  <!-- Tracking status -->
+  <div id="nose-status">Initializing...</div>
+
+  <!-- Desktop Environment -->
+  <main class="relative w-full h-full flex items-center justify-center p-8">
+    <!-- Desktop Icons -->
+    <div class="absolute top-12 left-12 flex flex-col gap-8">
+      <div class="flex flex-col items-center gap-1 group">
+        <div class="w-14 h-14 bg-surface-container-high flex items-center justify-center beveled-outset transition-transform">
+          <span class="material-symbols-outlined text-primary text-3xl">folder</span>
+          <span class="material-symbols-outlined absolute text-xs text-secondary-dim translate-y-1">filter_vintage</span>
+        </div>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant bg-surface/40 px-1">GARDEN_DOCS</span>
+      </div>
+      <div class="flex flex-col items-center gap-1 group">
+        <div class="w-14 h-14 bg-surface-container-high flex items-center justify-center beveled-outset transition-transform">
+          <span class="material-symbols-outlined text-tertiary text-3xl">folder</span>
+          <span class="material-symbols-outlined absolute text-xs text-white translate-y-1">psychology</span>
+        </div>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant bg-surface/40 px-1">RESEARCH</span>
+      </div>
+    </div>
+
+    <!-- Main Window -->
+    <div class="relative w-full max-w-4xl h-[618px] bg-surface-container flex flex-col beveled-outset shadow-2xl z-10">
+
+      <!-- Title Bar -->
+      <header class="bg-[#5e55a0] h-10 flex justify-between items-center w-full px-4 border-b-2 border-white/20">
+        <div class="flex items-center gap-3">
+          <div class="flex gap-1.5">
+            <div class="w-3.5 h-3.5 bg-[#ba1b24] flex items-center justify-center group">
+              <span class="material-symbols-outlined text-[10px] text-white opacity-0 group-hover:opacity-100">close</span>
+            </div>
+            <div class="w-3.5 h-3.5 bg-[#fcedc9] flex items-center justify-center group">
+              <span class="material-symbols-outlined text-[10px] text-on-surface opacity-0 group-hover:opacity-100">remove</span>
+            </div>
+            <div class="w-3.5 h-3.5 bg-[#5e55a0] border border-white/40 flex items-center justify-center group">
+              <span class="material-symbols-outlined text-[10px] text-white opacity-0 group-hover:opacity-100">add</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#fff8f1] text-lg">local_florist</span>
+            <h1 class="font-['Work_Sans'] font-bold text-[#fff8f1] text-sm tracking-tight">FloralNet Explorer</h1>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 text-white/70 text-[10px] font-bold tracking-widest uppercase">
+          <span>Ver 4.0.1</span>
+        </div>
+      </header>
+
+      <!-- Toolbar -->
+      <nav class="bg-surface-container-low px-4 py-2 flex items-center gap-4 border-b border-outline-variant/30">
+        <div class="flex gap-2">
+          <button class="p-1 hover:bg-white/50 transition-colors beveled-outset bg-surface-container">
+            <span class="material-symbols-outlined text-secondary">arrow_back</span>
+          </button>
+          <button class="p-1 hover:bg-white/50 transition-colors beveled-outset bg-surface-container">
+            <span class="material-symbols-outlined text-secondary">arrow_forward</span>
+          </button>
+        </div>
+        <div class="flex-1 flex items-center bg-surface-container-highest beveled-inset px-2 h-8">
+          <span class="material-symbols-outlined text-outline text-sm mr-2">language</span>
+          <span class="text-xs text-on-surface-variant flex-1">C:\FloralNet\Explorer\Home</span>
+          <button class="bg-secondary-container text-on-secondary-container px-3 h-6 flex items-center gap-1 beveled-outset active:translate-y-0.5">
+            <span class="material-symbols-outlined text-sm">eco</span>
+            <span class="text-[10px] font-bold uppercase tracking-tighter">Go</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Content -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+
+        <!-- Folder Grid — these are the nose-clickable targets -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-12 justify-items-center">
+
+          <div class="folder-icon flex flex-col items-center gap-3 w-24"
+               data-href="detail.html?page=home">
+            <div class="folder-box relative w-20 h-20 bg-primary-container flex items-center justify-center beveled-outset transition-transform">
+              <span class="material-symbols-outlined text-on-primary-container text-5xl">folder_open</span>
+              <span class="material-symbols-outlined absolute text-primary text-xl translate-y-1" style="font-variation-settings:'FILL' 1;">home</span>
+            </div>
+            <span class="folder-label text-xs font-bold tracking-wide text-on-surface text-center uppercase px-1">Home</span>
+          </div>
+
+          <div class="folder-icon flex flex-col items-center gap-3 w-24"
+               data-href="detail.html?page=search">
+            <div class="folder-box relative w-20 h-20 bg-secondary-container flex items-center justify-center beveled-outset transition-transform">
+              <span class="material-symbols-outlined text-on-secondary-container text-5xl">folder_open</span>
+              <span class="material-symbols-outlined absolute text-secondary text-xl translate-y-1">search</span>
+            </div>
+            <span class="folder-label text-xs font-bold tracking-wide text-on-surface text-center uppercase px-1">Search</span>
+          </div>
+
+          <div class="folder-icon flex flex-col items-center gap-3 w-24"
+               data-href="detail.html?page=mail">
+            <div class="folder-box relative w-20 h-20 bg-tertiary-container flex items-center justify-center beveled-outset transition-transform">
+              <span class="material-symbols-outlined text-on-tertiary-container text-5xl">folder_open</span>
+              <span class="material-symbols-outlined absolute text-tertiary text-xl translate-y-1" style="font-variation-settings:'FILL' 1;">mail</span>
+            </div>
+            <span class="folder-label text-xs font-bold tracking-wide text-on-surface text-center uppercase px-1">Mail</span>
+          </div>
+
+          <div class="folder-icon flex flex-col items-center gap-3 w-24"
+               data-href="detail.html?page=photos">
+            <div class="folder-box relative w-20 h-20 bg-surface-container-high flex items-center justify-center beveled-outset transition-transform">
+              <span class="material-symbols-outlined text-on-surface-variant text-5xl">folder_open</span>
+              <span class="material-symbols-outlined absolute text-orange-600 text-xl translate-y-1" style="font-variation-settings:'FILL' 1;">image</span>
+            </div>
+            <span class="folder-label text-xs font-bold tracking-wide text-on-surface text-center uppercase px-1">Photos</span>
+          </div>
+
+        </div>
+
+        <!-- Featured Bento -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-2 bg-surface-container-low p-6 beveled-outset flex gap-6">
+            <div class="w-32 h-32 flex-shrink-0 bg-primary-fixed overflow-hidden">
+              <img class="w-full h-full object-cover" alt="Red poppy flower"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOxl7WpgEH3a1f-AxQniBFd4rbjTJYjUsxhCOsygUWdS4EVbPhcHLd64PvMnBN1IXX6uHzOHUMl89ieZS3ahETxMnoeRiVvQ8obN5zB-C7XPr3bH6v0w6tv4yK4E6TpiUaBRAwdx3gPbXz8vIPtCFb9jBYrxL_-nVe6UWmxTmwuE7VXwLNf1Yq1QShVs01jWOijRZQ9BVlszl3lISBGAgKae8AeaI9vgjbAi_w7vyiWmDXaFxF7a2slwrlNZagcEzHViqMC0uvX-Q"/>
+            </div>
+            <div>
+              <h3 class="font-headline font-bold text-lg text-primary mb-2">Botanical of the Day</h3>
+              <p class="text-sm text-on-surface-variant leading-relaxed">The Red Poppy (Papaver rhoeas) is an annual herbaceous species of flowering plant in the poppy family, Papaveraceae.</p>
+              <button class="mt-4 px-4 py-2 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest beveled-outset hover:opacity-90 active:translate-y-0.5">Learn More</button>
+            </div>
+          </div>
+          <div class="bg-tertiary-container/30 p-6 beveled-outset flex flex-col items-center justify-center text-center">
+            <span class="material-symbols-outlined text-tertiary text-4xl mb-2">cloud_queue</span>
+            <h4 class="font-bold text-on-tertiary-container uppercase text-xs">Garden Weather</h4>
+            <span class="text-3xl font-black text-tertiary mt-2">72°F</span>
+            <span class="text-[10px] text-tertiary-dim font-bold uppercase mt-1">Light Breeze</span>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+
+      <!-- Status Bar -->
+      <footer class="h-6 bg-surface-container-highest border-t border-outline-variant flex items-center px-4 justify-between text-[10px] font-bold text-on-surface-variant uppercase">
+        <div class="flex items-center gap-4">
+          <span>4 Items Found</span>
+          <span class="w-[1px] h-3 bg-outline-variant"></span>
+          <span>1.2 GB Free</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">security</span>
+          <span>System Secure</span>
+        </div>
+      </footer>
+
+    </div><!-- /main window -->
+
+    <!-- Decorative clouds -->
+    <div class="absolute bottom-32 right-20 w-48 h-24 bg-surface-container-low/60 backdrop-blur-sm rounded-full blur-xl -z-10"></div>
+    <div class="absolute top-40 left-10 w-64 h-32 bg-surface-container-high/40 backdrop-blur-sm rounded-full blur-2xl -z-10"></div>
+  </main>
+
+  <!-- Taskbar -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-between items-center gap-2 px-2 pb-safe bg-[#e2f8cc] h-12 border-t-2 border-[#c1b188]/30">
+    <div class="flex items-center gap-1 h-full py-1">
+      <button class="flex items-center justify-center gap-2 bg-[#ba1b24] text-[#fff8f1] px-4 h-full beveled-outset active:translate-y-0.5 group">
+        <span class="material-symbols-outlined text-lg">filter_vintage</span>
+        <span class="font-headline font-black italic tracking-tighter text-sm uppercase">Start</span>
+      </button>
+      <div class="w-[1px] h-6 bg-[#4d603e]/20 mx-1"></div>
+      <button class="flex items-center gap-2 bg-[#fff2d9] text-[#ba1b24] px-3 h-full border-inset border-2 border-[#ba1b24]/30">
+        <span class="material-symbols-outlined text-sm">local_florist</span>
+        <span class="text-[10px] font-bold uppercase tracking-widest font-['Inter']">Explorer</span>
+      </button>
+      <button class="flex items-center gap-2 px-3 h-full hover:bg-white/30 transition-colors">
+        <span class="material-symbols-outlined text-secondary text-sm">mail</span>
+      </button>
+      <button class="flex items-center gap-2 px-3 h-full hover:bg-white/30 transition-colors">
+        <span class="material-symbols-outlined text-secondary text-sm">image</span>
+      </button>
+    </div>
+    <div class="flex items-center gap-4 h-full py-1 px-4 bg-surface-container-low/40 beveled-inset">
+      <div class="flex gap-2">
+        <span class="material-symbols-outlined text-secondary text-sm">wifi</span>
+        <span class="material-symbols-outlined text-secondary text-sm">volume_up</span>
+      </div>
+      <div class="flex flex-col items-end">
+        <div class="flex items-center gap-1 text-[#4d603e] font-['Inter'] text-[10px] font-bold uppercase tracking-widest">
+          <span class="material-symbols-outlined text-[12px]">schedule</span>
+          <span id="clock">12:00 PM</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    // ================================================================
+    //  Live clock
+    // ================================================================
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      document.getElementById('clock').textContent =
+        h + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // ================================================================
+    //  NOSE CURSOR + WIGGLE-TO-CLICK
+    //  ml5.js v1 FaceMesh — nose tip = MediaPipe keypoint 4
+    // ================================================================
+
+    const videoEl    = document.getElementById('webcam');
+    const cursorEl   = document.getElementById('nose-cursor');
+    const wiggleRing = document.getElementById('wiggle-ring');
+    const wiggleFill = document.getElementById('wiggle-fill');
+    const wiggleArc  = document.getElementById('wiggle-arc');
+    const statusEl   = document.getElementById('nose-status');
+
+    let faceMesh      = null;
+    let noseHistory   = [];   // [{ x (video px), t (ms) }]
+    let lastClickTime = 0;
+    let hoveredEl     = null;
+
+    // ---- Tuning ----
+    const WIGGLE_WINDOW_MS       = 500;   // rolling history window
+    const MIN_REVERSALS          = 4;     // direction flips needed to click
+    const MIN_REVERSAL_AMPLITUDE = 7;     // min px per reversal (video space)
+    const CLICK_COOLDOWN_MS      = 1300;  // prevent rapid re-triggers
+    const CIRC = 2 * Math.PI * 16;       // wiggle arc circumference
+
+    // ================================================================
+    //  1. Camera
+    // ================================================================
+    async function init() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+          audio: false
+        });
+        videoEl.srcObject = stream;
+        // onloadeddata ensures actual frame data exists before detection starts
+        videoEl.onloadeddata = () => { videoEl.play(); loadFaceMesh(); };
+        videoEl.load();
+      } catch (err) {
+        statusEl.textContent = 'Camera denied — grant access & refresh';
+        console.error('Camera error:', err);
+      }
+    }
+
+    // ================================================================
+    //  2. Load ML5 FaceMesh
+    //  NOTE: ml5 v1 does NOT take a ready-callback in the constructor.
+    //  Call detectStart directly — ml5 queues it until the model loads.
+    // ================================================================
+    async function loadFaceMesh() {
+      statusEl.textContent = 'Loading face model...';
+      try {
+        console.log('[NoseCursor] ml5 version:', ml5.version);
+        // ml5 v1.3.1: faceMesh() returns a Promise — must await before detectStart
+        faceMesh = await ml5.faceMesh({ maxFaces: 1, refineLandmarks: false, flipped: true });
+        console.log('[NoseCursor] model ready, starting detection');
+        faceMesh.detectStart(videoEl, onFaces);
+        statusEl.textContent = 'Model loaded — move your nose!';
+      } catch (e) {
+        statusEl.textContent = 'ML5 error: ' + e.message;
+        console.error('[NoseCursor] ML5 error:', e);
+      }
+    }
+
+    // ================================================================
+    //  3. Per-frame callback
+    // ================================================================
+    let _firstFace = true;
+    function onFaces(faces) {
+      if (_firstFace) {
+        console.log('[NoseCursor] First detection result:', faces);
+        if (faces && faces[0]) console.log('[NoseCursor] Keypoint[4]:', faces[0].keypoints?.[4]);
+        _firstFace = false;
+        statusEl.textContent = 'Tracking ✓ — wiggle nose fast to open a folder';
+      }
+      if (!faces || faces.length === 0) return;
+      const face = faces[0];
+      if (!face.keypoints || face.keypoints.length < 5) return;
+
+      // Nose tip: named lookup first, MediaPipe index 4 as fallback
+      const noseTip =
+        face.keypoints.find(k => k.name === 'noseTip' || k.name === 'nose_tip')
+        || face.keypoints[4];
+      if (!noseTip) return;
+
+      const vw = videoEl.videoWidth  || 640;
+      const vh = videoEl.videoHeight || 480;
+
+      // With flipped:true, direct ratio maps naturally (right nose → right screen)
+      const sx = (noseTip.x / vw) * window.innerWidth;
+      const sy = (noseTip.y / vh) * window.innerHeight;
+
+      // DEBUG: show raw + mapped coords in status bar
+      statusEl.textContent =
+        `raw: (${noseTip.x.toFixed(2)}, ${noseTip.y.toFixed(2)})  vw:${vw}  →  screen: (${sx.toFixed(0)}, ${sy.toFixed(0)})`;
+
+      // Move cursor
+      cursorEl.style.left = sx + 'px';
+      cursorEl.style.top  = sy + 'px';
+
+      // Move wiggle ring (centered on cursor)
+      wiggleRing.style.left = sx + 'px';
+      wiggleRing.style.top  = sy + 'px';
+
+      // Record X history for wiggle detection
+      const now = Date.now();
+      noseHistory.push({ x: noseTip.x, t: now });
+      noseHistory = noseHistory.filter(p => now - p.t < WIGGLE_WINDOW_MS);
+
+      // Hover + wiggle
+      updateHover(sx, sy);
+      const wig = detectWiggle();
+
+      // Update visual indicators
+      wiggleFill.style.width = (wig.progress * 100) + '%';
+      const dashLen = wig.progress * CIRC;
+      wiggleArc.setAttribute('stroke-dasharray', dashLen + ' ' + (CIRC - dashLen));
+      wiggleArc.setAttribute('stroke', wig.progress > 0.75 ? '#ba1b24' : '#5e55a0');
+
+      if (wig.detected && (now - lastClickTime) > CLICK_COOLDOWN_MS) {
+        triggerClick(sx, sy);
+      }
+    }
+
+    // ================================================================
+    //  4. Wiggle detection — counts X direction reversals
+    // ================================================================
+    function detectWiggle() {
+      if (noseHistory.length < 5) return { detected: false, progress: 0 };
+
+      let reversals     = 0;
+      let prevDir       = 0;
+      let lastRevX      = noseHistory[0].x;
+
+      for (let i = 1; i < noseHistory.length; i++) {
+        const dx = noseHistory[i].x - noseHistory[i - 1].x;
+        if (Math.abs(dx) < 2) continue;
+
+        const dir = dx > 0 ? 1 : -1;
+        if (prevDir !== 0 && dir !== prevDir) {
+          if (Math.abs(noseHistory[i].x - lastRevX) >= MIN_REVERSAL_AMPLITUDE) {
+            reversals++;
+            lastRevX = noseHistory[i].x;
+          }
+        }
+        prevDir = dir;
+      }
+
+      return {
+        detected: reversals >= MIN_REVERSALS,
+        progress: Math.min(reversals / MIN_REVERSALS, 1)
+      };
+    }
+
+    // ================================================================
+    //  5. Hover — highlights folder under nose
+    // ================================================================
+    function updateHover(sx, sy) {
+      cursorEl.style.visibility = 'hidden';
+      wiggleRing.style.visibility = 'hidden';
+      const el = document.elementFromPoint(sx, sy);
+      cursorEl.style.visibility = 'visible';
+      wiggleRing.style.visibility = 'visible';
+
+      const folder = el?.closest('[data-href]');
+
+      if (hoveredEl && hoveredEl !== folder) {
+        hoveredEl.classList.remove('nose-hover');
+      }
+
+      if (folder) {
+        folder.classList.add('nose-hover');
+        cursorEl.classList.add('hovering');
+      } else {
+        cursorEl.classList.remove('hovering');
+      }
+
+      hoveredEl = folder || null;
+    }
+
+    // ================================================================
+    //  6. Trigger click — navigate to data-href
+    // ================================================================
+    function triggerClick(sx, sy) {
+      lastClickTime = Date.now();
+      noseHistory   = [];
+
+      cursorEl.classList.add('clicking');
+      setTimeout(() => cursorEl.classList.remove('clicking'), 350);
+
+      cursorEl.style.visibility = 'hidden';
+      const el = document.elementFromPoint(sx, sy);
+      cursorEl.style.visibility = 'visible';
+
+      const target = el?.closest('[data-href]');
+      if (target) {
+        const href = target.getAttribute('data-href');
+        if (href) setTimeout(() => { window.location.href = href; }, 280);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Escape body overflow:hidden by reparenting to <html>
+      document.documentElement.appendChild(cursorEl);
+      document.documentElement.appendChild(wiggleRing);
+
+      // TEMP DEBUG: also follow the mouse so we can confirm the dot is visible
+      document.addEventListener('mousemove', e => {
+        cursorEl.style.left = e.clientX + 'px';
+        cursorEl.style.top  = e.clientY + 'px';
+      });
+
+      init();
+    });
+  </script>
+
+</body>
+</html>

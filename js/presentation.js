@@ -20,7 +20,7 @@ Reveal.initialize({
   margin: 0.04,
   minScale: 0.2,
   maxScale: 2.0,
-  autoPlayMedia: true,
+  autoPlayMedia: false,
   preloadIframes: 'lazy',
   slideNumber: 'c/t',
   keyboard: {
@@ -40,30 +40,116 @@ Reveal.initialize({
 }).then(() => {
   console.log('Reveal.js initialized');
 
-  // Resume any paused videos when returning to the tab/window
-  const resumeCurrentSlideVideos = () => {
-    const slide = Reveal.getCurrentSlide();
+  // ── Video helpers ──────────────────────────────────────────
+  // Track videos we intentionally pause during slide navigation so the
+  // self-heal listener below doesn't fight us.
+  const _ourPause = new WeakSet();
+
+  function playSlideVideos(slide) {
     if (!slide) return;
-    slide.querySelectorAll('video').forEach(video => {
-      if (video.paused && !video.closest('.wf-preview-overlay')) {
-        video.play().catch(() => {});
+    slide.querySelectorAll('video').forEach(v => {
+      if (!v.closest('.wf-preview-overlay')) v.play().catch(() => {});
+    });
+  }
+
+  function pauseSlideVideos(slide) {
+    if (!slide) return;
+    slide.querySelectorAll('video').forEach(v => {
+      if (!v.closest('.wf-preview-overlay')) {
+        _ourPause.add(v);
+        v.pause();
+        v.currentTime = 0;
       }
     });
-  };
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') resumeCurrentSlideVideos();
-  });
-  window.addEventListener('focus', resumeCurrentSlideVideos);
+  }
 
-  // Lazy-load Three.js only when a 3D model slide is reached
+  // Self-heal: if a video on the current slide is paused by anything
+  // outside our control (notes-plugin setState, browser throttle, etc.),
+  // restart it within 50 ms.
+  function attachSelfHeal(v) {
+    v.addEventListener('pause', () => {
+      if (_ourPause.has(v)) { _ourPause.delete(v); return; } // intentional — leave it
+      if (v.ended) return;
+      const current = Reveal.getCurrentSlide();
+      if (!current || !current.contains(v)) return;
+      setTimeout(() => {
+        if (v.paused && !v.ended && Reveal.getCurrentSlide()?.contains(v)) {
+          v.play().catch(() => {});
+        }
+      }, 50);
+    });
+  }
+
+  // Attach self-heal to every inline data-ignore video at startup.
+  document.querySelectorAll('.reveal .slides video[data-ignore]').forEach(attachSelfHeal);
+
+  // Background videos live in .slide-background.present, outside the <section>.
+  function playBackgroundVideos() {
+    document.querySelectorAll('.slide-background.present video').forEach(v => {
+      v.play().catch(() => {});
+    });
+  }
+
+  function resumeAll() {
+    playSlideVideos(Reveal.getCurrentSlide());
+    playBackgroundVideos();
+    // Overlay popups (wf-preview-overlay) are excluded from playSlideVideos,
+    // so recover their videos separately when the overlay is still visible.
+    document.querySelectorAll('.wf-preview-overlay.visible video').forEach(v => {
+      v.play().catch(() => {});
+    });
+  }
+
+  // ── Slide change ───────────────────────────────────────────
   let threeLoaded = false;
   Reveal.on('slidechanged', event => {
+    // Guard against same-slide sync events fired by the RevealNotes plugin — those
+    // would reset currentTime = 0 on a video that's already playing.
+    if (event.previousSlide !== event.currentSlide) {
+      pauseSlideVideos(event.previousSlide);
+    }
+    setTimeout(() => {
+      playSlideVideos(event.currentSlide);
+      playBackgroundVideos();
+    }, 300);
+
     const container = event.currentSlide.querySelector('.model-viewer-container');
     if (container && !threeLoaded) {
       threeLoaded = true;
       loadThreeViewer();
     }
   });
+
+  // ── Initial play on load ───────────────────────────────────
+  resumeAll();
+
+  // ── Recovery: tab/window regains visibility or focus ──────
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') resumeAll();
+  });
+  window.addEventListener('focus', resumeAll);
+
+  // ── Speaker-view heartbeat recovery ───────────────────────
+  // The speaker view popup sends a 'heartbeat' postMessage every second.
+  // While it's active, Chrome can throttle or pause media in the main
+  // window (which loses focus). We detect the heartbeat and periodically
+  // force-resume any paused current-slide videos.
+  let speakerViewActive = false;
+  let speakerViewTimer;
+  window.addEventListener('message', e => {
+    if (typeof e.data !== 'string') return;
+    try {
+      const d = JSON.parse(e.data);
+      if (d?.namespace === 'reveal-notes' && (d?.type === 'heartbeat' || d?.type === 'connected')) {
+        speakerViewActive = true;
+        clearTimeout(speakerViewTimer);
+        speakerViewTimer = setTimeout(() => { speakerViewActive = false; }, 3000);
+      }
+    } catch {}
+  });
+  setInterval(() => {
+    if (speakerViewActive) resumeAll();
+  }, 500);
 });
 
 // ============================================

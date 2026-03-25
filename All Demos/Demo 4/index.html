@@ -503,12 +503,11 @@
     async function loadFaceMesh() {
       statusEl.textContent = 'Loading face model...';
       try {
-        console.log('[NoseCursor] ml5 version:', ml5.version);
-        // ml5 v1.3.1: faceMesh() returns a Promise — must await before detectStart
+        console.log('[NoseCursor] camera stream active, videoWidth:', videoEl.videoWidth, 'videoHeight:', videoEl.videoHeight);
         faceMesh = await ml5.faceMesh({ maxFaces: 1, refineLandmarks: false, flipped: true });
-        console.log('[NoseCursor] model ready, starting detection');
+        console.log('[NoseCursor] model ready — calling detectStart');
+        statusEl.textContent = 'Model ready — point face at camera';
         faceMesh.detectStart(videoEl, onFaces);
-        statusEl.textContent = 'Model loaded — move your nose!';
       } catch (e) {
         statusEl.textContent = 'ML5 error: ' + e.message;
         console.error('[NoseCursor] ML5 error:', e);
@@ -521,10 +520,9 @@
     let _firstFace = true;
     function onFaces(faces) {
       if (_firstFace) {
-        console.log('[NoseCursor] First detection result:', faces);
-        if (faces && faces[0]) console.log('[NoseCursor] Keypoint[4]:', faces[0].keypoints?.[4]);
+        console.log('[NoseCursor] onFaces fired! faces.length:', faces?.length);
+        console.log('[NoseCursor] Full result:', JSON.stringify(faces?.slice(0,1)));
         _firstFace = false;
-        statusEl.textContent = 'Tracking ✓ — wiggle nose fast to open a folder';
       }
       if (!faces || faces.length === 0) return;
       const face = faces[0];

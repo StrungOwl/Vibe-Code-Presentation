@@ -10,7 +10,7 @@
   const content = document.getElementById('wf-preview-content');
   if (!overlay || !content) return;
 
-  const basePath = 'Workflows/3DPrintedSculpture';
+  const basePath = 'Assets/Workflows/3DPrintedSculpture';
 
   // Media configuration for each preview type
   const previews = {
@@ -198,11 +198,11 @@
   var projectModels = {
     thinkingwoman: {
       label: 'Thinking Woman',
-      src: 'Workflows/3DPrintedSculpture/3DModels/thinkingWoman.glb'
+      src: 'Assets/Workflows/3DPrintedSculpture/3DModels/thinkingWoman.glb'
     },
     agony: {
       label: 'Agony',
-      src: 'Workflows/3DPrintedSculpture/3DModels/Agony.glb'
+      src: 'Assets/Workflows/3DPrintedSculpture/3DModels/Agony.glb'
     }
   };
 
@@ -272,7 +272,7 @@
   var content = document.getElementById('wf-ai-preview-content');
   if (!overlay || !content) return;
 
-  var base = 'Workflows/AI%20Assisted%20Programming';
+  var base = 'Assets/Workflows/AI%20Assisted%20Programming';
 
   var previews = {
     pseudocode: {
@@ -397,7 +397,7 @@
   var content = document.getElementById('wf-video-preview-content');
   if (!overlay || !content) return;
 
-  var base = 'Workflows/AI%20Video';
+  var base = 'Assets/Workflows/AI%20Video';
 
   var previews = {
     'vid-seed': {
@@ -538,7 +538,7 @@
   var content = document.getElementById('wf-pm-preview-content');
   if (!overlay || !content) return;
 
-  var base = 'Workflows/AI%20Video/StreamDiffusion';
+  var base = 'Assets/Workflows/AI%20Video/StreamDiffusion';
 
   var previews = {
     streamdiffusion: {

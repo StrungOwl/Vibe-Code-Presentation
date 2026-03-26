@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+<script src="face-tracking.js"></script>
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
@@ -502,14 +503,17 @@
     // ================================================================
     async function loadFaceMesh() {
       statusEl.textContent = 'Loading face model...';
+      if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Loading face model…');
       try {
         console.log('[NoseCursor] camera stream active, videoWidth:', videoEl.videoWidth, 'videoHeight:', videoEl.videoHeight);
         faceMesh = await ml5.faceMesh({ maxFaces: 1, refineLandmarks: false, flipped: true });
         console.log('[NoseCursor] model ready — calling detectStart');
         statusEl.textContent = 'Model ready — point face at camera';
+        if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Model ready — point face at camera');
         faceMesh.detectStart(videoEl, onFaces);
       } catch (e) {
         statusEl.textContent = 'ML5 error: ' + e.message;
+        if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('ML5 error: ' + e.message);
         console.error('[NoseCursor] ML5 error:', e);
       }
     }
@@ -524,9 +528,13 @@
         console.log('[NoseCursor] Full result:', JSON.stringify(faces?.slice(0,1)));
         _firstFace = false;
       }
-      if (!faces || faces.length === 0) return;
+      if (!faces || faces.length === 0) {
+        if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('No face detected — move closer');
+        return;
+      }
       const face = faces[0];
       if (!face.keypoints || face.keypoints.length < 5) return;
+      if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Face detected ✓');
 
       // Nose tip: named lookup first, MediaPipe index 4 as fallback
       const noseTip =
@@ -548,6 +556,11 @@
       // Move cursor
       cursorEl.style.left = sx + 'px';
       cursorEl.style.top  = sy + 'px';
+
+      // Update face-tracking overlay (face-tracking.js) — draws red dot on canvas
+      if (typeof updateNoseOnTrackingCanvas === 'function') {
+        updateNoseOnTrackingCanvas(noseTip.x, noseTip.y, vw, vh);
+      }
 
       // Move wiggle ring (centered on cursor)
       wiggleRing.style.left = sx + 'px';

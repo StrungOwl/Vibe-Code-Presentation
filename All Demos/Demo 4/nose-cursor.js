@@ -1,37 +1,37 @@
 // ================================================================
-//  nose-cursor.js
-//  ml5 faceApi (v0.x) — nose-tip cursor + wiggle-to-click
+//  nose-cursor.js  —  ml5 faceApi nose-tip cursor + mouth-open click
 //
-//  Uses the same technique as sketch-face.js:
-//    • ml5.faceApi with withLandmarks: true
-//    • callback-based detect() loop (not detectStart)
-//    • 68-point landmarks via detection.landmarks.positions
-//    • Nose tip = index 30  (coords: pt._x, pt._y in video px)
+//  ml5 v0.x  •  68-point landmarks  •  nose tip = index 30
+//  Mouth click uses inner lip landmarks 62 (top) and 66 (bottom)
+//
+//  Architecture:
+//    detectLoop  (~10–15 fps)  →  sets targetX / targetY
+//    renderLoop  (~60 fps)     →  lerps curX/curY toward target, moves cursor
 // ================================================================
 
-// ---- DOM refs (resolved after DOMContentLoaded) ----
-let videoEl    = null;
-let cursorEl   = null;
-let wiggleRing = null;
-let wiggleFill = null;
-let wiggleArc  = null;
-let statusEl   = null;
+// ---- Tuning ----
+const MOUTH_OPEN_THRESHOLD = 18;   // px in video space — raise if accidental clicks
+const MOUTH_CLOSE_RATIO    = 0.5;  // must close to this fraction before re-arming
+const CLICK_COOLDOWN_MS    = 800;
+const CIRC   = 2 * Math.PI * 16;  // arc circumference for wiggle-ring (r = 16)
+const SMOOTH = 0.2;                // lerp factor: 0 = frozen, 1 = instant
 
-let faceApi       = null;
-let isModelReady  = false;
-let isDetecting   = false;
-let detections    = [];
+// ---- DOM refs ----
+let videoEl, cursorEl, wiggleRing, wiggleArc, statusEl;
 
-let noseHistory   = [];
+// ---- State ----
+let faceApi;
 let lastClickTime = 0;
 let hoveredEl     = null;
+let mouthWasOpen  = false;
+let missCount     = 0;
+const MAX_MISS    = 8;  // show warning only after this many consecutive missed frames
 
-// ---- Tuning ----
-const WIGGLE_WINDOW_MS       = 500;
-const MIN_REVERSALS          = 4;
-const MIN_REVERSAL_AMPLITUDE = 7;
-const CLICK_COOLDOWN_MS      = 1300;
-const CIRC = 2 * Math.PI * 16;
+// Target position (set by detection, ~10–15 fps)
+let targetX = null, targetY = null;
+
+// Current rendered position (smoothed by renderLoop at 60 fps)
+let curX = null, curY = null;
 
 // ================================================================
 //  1. Camera
@@ -45,7 +45,7 @@ async function init() {
     videoEl.srcObject = stream;
     videoEl.onloadeddata = () => {
       videoEl.play();
-      // Set HTML width/height attributes — ml5 faceApi reads these (not CSS) to resize results
+      // ml5 faceApi reads HTML width/height attributes, not CSS dimensions
       videoEl.width  = videoEl.videoWidth  || 640;
       videoEl.height = videoEl.videoHeight || 480;
       loadFaceApi();
@@ -53,159 +53,129 @@ async function init() {
     videoEl.load();
   } catch (err) {
     statusEl.textContent = 'Camera denied — grant access & refresh';
-    console.error('Camera error:', err);
+    console.error('[NoseCursor] Camera:', err);
   }
 }
 
 // ================================================================
-//  2. Load ml5 faceApi  (same technique as sketch-face.js)
+//  2. Load ml5 faceApi model
 // ================================================================
 function loadFaceApi() {
   statusEl.textContent = 'Loading face model...';
-  if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Loading face model…');
+  if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Loading…');
 
-  const options = {
-    withLandmarks: true,
-    withDescriptors: false,
-    flipHorizontal: true
-  };
+  faceApi = ml5.faceApi(videoEl,
+    { withLandmarks: true, withDescriptors: false, flipHorizontal: true, minConfidence: 0.3 },
+    () => {
+      statusEl.textContent = 'Point your face at the camera';
+      if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Model ready');
+      detectLoop();
+      requestAnimationFrame(renderLoop);
+    }
+  );
+}
 
-  faceApi = ml5.faceApi(videoEl, options, function() {
-    isModelReady = true;
-    statusEl.textContent = 'Model ready — point face at camera';
-    if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Model ready — point face at camera');
-    console.log('[NoseCursor] faceApi model ready');
-    requestAnimationFrame(drawLoop);
+// ================================================================
+//  3. Detection loop — callback chain, ~10–15 fps
+//     Only updates targetX/targetY and mouth state.
+// ================================================================
+function detectLoop() {
+  faceApi.detect((err, results) => {
+    if (!err) processDetections(results);
+    detectLoop();
   });
 }
 
-// ================================================================
-//  3. Detect loop  (same pattern as sketch-face.js detectFace())
-// ================================================================
-function detectFace() {
-  if (!isModelReady || isDetecting) return;
-  isDetecting = true;
+function processDetections(results) {
+  const landmarks = results?.[0]?.landmarks?.positions;
+  const nosePt    = landmarks?.[30];
 
-  faceApi.detect(function(err, results) {
-    isDetecting = false;
-    if (err) { console.error('[NoseCursor] detect error:', err); return; }
-    detections = results;
-  });
-}
-
-function drawLoop() {
-  detectFace();
-  processDetections();
-  requestAnimationFrame(drawLoop);
-}
-
-// ================================================================
-//  4. Process detections each frame
-// ================================================================
-function processDetections() {
-  if (!detections || detections.length === 0) {
-    if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('No face detected — move closer');
-    statusEl.textContent = 'No face detected — move closer';
+  if (!nosePt) {
+    missCount++;
+    if (missCount >= MAX_MISS) {
+      statusEl.textContent = 'No face detected — move closer';
+      if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('No face detected');
+    }
     return;
   }
 
-  const detection = detections[0];
-  if (!detection.landmarks || !detection.landmarks.positions) return;
-
-  if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Face detected ✓');
-
-  const landmarks = detection.landmarks.positions;
-
-  // Nose tip = index 30 in the 68-point model (same as sketch-face.js noseBridge end)
-  const nosePt = landmarks[30];
-  if (!nosePt) return;
+  missCount = 0;
 
   const vw = videoEl.videoWidth  || 640;
   const vh = videoEl.videoHeight || 480;
 
-  // Mirror X — same as sketch-face.js: p.width - p.map(pt._x, 0, video.width, 0, p.width)
-  const sx = (1 - nosePt._x / vw) * window.innerWidth;
-  const sy = (nosePt._y / vh) * window.innerHeight;
+  // Update detection target (renderLoop will smooth toward this)
+  targetX = (1 - nosePt._x / vw) * window.innerWidth;
+  targetY = (nosePt._y / vh) * window.innerHeight;
 
-  statusEl.textContent =
-    `raw: (${nosePt._x.toFixed(1)}, ${nosePt._y.toFixed(1)})  →  screen: (${sx.toFixed(0)}, ${sy.toFixed(0)})`;
+  // Mouth open — inner lip top (62) vs bottom (66)
+  const lipTop    = landmarks[62];
+  const lipBottom = landmarks[66];
+  const mouthDist = lipTop && lipBottom ? lipBottom._y - lipTop._y : 0;
+  const isOpen    = mouthDist > MOUTH_OPEN_THRESHOLD;
 
-  // Move cursor dot
-  cursorEl.style.left = sx + 'px';
-  cursorEl.style.top  = sy + 'px';
+  const dashLen = Math.min(mouthDist / (MOUTH_OPEN_THRESHOLD * 1.5), 1) * CIRC;
+  wiggleArc.setAttribute('stroke-dasharray', `${dashLen} ${CIRC - dashLen}`);
+  wiggleArc.setAttribute('stroke', isOpen ? '#ba1b24' : '#5e55a0');
 
-  // Draw nose dot in face-tracking overlay
-  if (typeof updateNoseOnTrackingCanvas === 'function') {
+  const now = Date.now();
+  if (isOpen && !mouthWasOpen && now - lastClickTime > CLICK_COOLDOWN_MS) {
+    triggerClick(curX ?? targetX, curY ?? targetY);
+  }
+  if (mouthDist < MOUTH_OPEN_THRESHOLD * MOUTH_CLOSE_RATIO) mouthWasOpen = false;
+  else if (isOpen) mouthWasOpen = true;
+
+  statusEl.textContent = 'Tracking ✓';
+  if (typeof setFaceTrackingStatus === 'function') setFaceTrackingStatus('Tracking ✓');
+
+  if (typeof showFaceTracking !== 'undefined' && showFaceTracking &&
+      typeof updateNoseOnTrackingCanvas === 'function') {
     updateNoseOnTrackingCanvas(nosePt._x, nosePt._y, vw, vh);
   }
-
-  // Move wiggle ring
-  wiggleRing.style.left = sx + 'px';
-  wiggleRing.style.top  = sy + 'px';
-
-  // Record nose X for wiggle detection
-  const now = Date.now();
-  noseHistory.push({ x: nosePt._x, t: now });
-  noseHistory = noseHistory.filter(p => now - p.t < WIGGLE_WINDOW_MS);
-
-  updateHover(sx, sy);
-  const wig = detectWiggle();
-
-  wiggleFill.style.width = (wig.progress * 100) + '%';
-  const dashLen = wig.progress * CIRC;
-  wiggleArc.setAttribute('stroke-dasharray', dashLen + ' ' + (CIRC - dashLen));
-  wiggleArc.setAttribute('stroke', wig.progress > 0.75 ? '#ba1b24' : '#5e55a0');
-
-  if (wig.detected && (now - lastClickTime) > CLICK_COOLDOWN_MS) {
-    triggerClick(sx, sy);
-  }
 }
 
 // ================================================================
-//  5. Wiggle detection — counts X direction reversals
+//  4. Render loop — 60 fps, lerps cursor toward detection target
 // ================================================================
-function detectWiggle() {
-  if (noseHistory.length < 5) return { detected: false, progress: 0 };
+function renderLoop() {
+  if (targetX !== null) {
+    // Snap to target on first frame
+    if (curX === null) { curX = targetX; curY = targetY; }
 
-  let reversals = 0;
-  let prevDir   = 0;
-  let lastRevX  = noseHistory[0].x;
+    // Lerp toward target
+    curX += (targetX - curX) * SMOOTH;
+    curY += (targetY - curY) * SMOOTH;
 
-  for (let i = 1; i < noseHistory.length; i++) {
-    const dx = noseHistory[i].x - noseHistory[i - 1].x;
-    if (Math.abs(dx) < 2) continue;
+    // Move cursor — CSS vars on compositor thread, no layout reflow
+    cursorEl.style.setProperty('--cx', (curX - 12) + 'px');
+    cursorEl.style.setProperty('--cy', (curY - 12) + 'px');
+    wiggleRing.style.setProperty('--rx', (curX - 18) + 'px');
+    wiggleRing.style.setProperty('--ry', (curY - 18) + 'px');
 
-    const dir = dx > 0 ? 1 : -1;
-    if (prevDir !== 0 && dir !== prevDir) {
-      if (Math.abs(noseHistory[i].x - lastRevX) >= MIN_REVERSAL_AMPLITUDE) {
-        reversals++;
-        lastRevX = noseHistory[i].x;
-      }
-    }
-    prevDir = dir;
+    updateHover(curX, curY);
   }
 
-  return {
-    detected: reversals >= MIN_REVERSALS,
-    progress: Math.min(reversals / MIN_REVERSALS, 1)
-  };
+  requestAnimationFrame(renderLoop);
 }
 
 // ================================================================
-//  6. Hover — highlights folder card under nose
+//  5. Hit-test — finds element under cursor without DOM mutation
 // ================================================================
-function updateHover(sx, sy) {
-  cursorEl.style.visibility = 'hidden';
-  wiggleRing.style.visibility = 'hidden';
-  const el = document.elementFromPoint(sx, sy);
-  cursorEl.style.visibility = 'visible';
-  wiggleRing.style.visibility = 'visible';
-
-  const folder = el?.closest('[data-href]');
-
-  if (hoveredEl && hoveredEl !== folder) {
-    hoveredEl.classList.remove('nose-hover');
+function getElementAt(x, y) {
+  const els = document.elementsFromPoint(x, y);
+  for (const el of els) {
+    if (el !== cursorEl && el !== wiggleRing) return el;
   }
+  return document.body;
+}
+
+// ================================================================
+//  6. Hover highlight
+// ================================================================
+function updateHover(x, y) {
+  const folder = getElementAt(x, y)?.closest('[data-href]');
+
+  if (hoveredEl && hoveredEl !== folder) hoveredEl.classList.remove('nose-hover');
 
   if (folder) {
     folder.classList.add('nose-hover');
@@ -218,24 +188,16 @@ function updateHover(sx, sy) {
 }
 
 // ================================================================
-//  7. Trigger click — navigate to data-href
+//  7. Click — navigate to data-href
 // ================================================================
-function triggerClick(sx, sy) {
+function triggerClick(x, y) {
   lastClickTime = Date.now();
-  noseHistory   = [];
 
   cursorEl.classList.add('clicking');
   setTimeout(() => cursorEl.classList.remove('clicking'), 350);
 
-  cursorEl.style.visibility = 'hidden';
-  const el = document.elementFromPoint(sx, sy);
-  cursorEl.style.visibility = 'visible';
-
-  const target = el?.closest('[data-href]');
-  if (target) {
-    const href = target.getAttribute('data-href');
-    if (href) setTimeout(() => { window.location.href = href; }, 280);
-  }
+  const href = getElementAt(x, y)?.closest('[data-href]')?.getAttribute('data-href');
+  if (href) setTimeout(() => { window.location.href = href; }, 280);
 }
 
 // ================================================================
@@ -245,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
   videoEl    = document.getElementById('webcam');
   cursorEl   = document.getElementById('nose-cursor');
   wiggleRing = document.getElementById('wiggle-ring');
-  wiggleFill = document.getElementById('wiggle-fill');
   wiggleArc  = document.getElementById('wiggle-arc');
   statusEl   = document.getElementById('nose-status');
 

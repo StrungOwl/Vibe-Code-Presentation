@@ -1,21 +1,19 @@
 // ================================================================
-//  face-tracking.js
-//  Facial-tracking overlay for Demo 4
+//  face-tracking.js  —  Facial-tracking overlay for Demo 4
 //
-//  Press  F  to toggle between the main FloralNet UI and a
-//  full-screen tracking view that shows just the webcam feed
-//  with a red circle drawn at the nose-tip keypoint.
+//  Press F to toggle between the main FloralNet UI and a
+//  full-screen view showing the webcam feed with a red dot
+//  drawn at the nose-tip keypoint.
 //
-//  ml5.js v1  –  FaceMesh, nose keypoint = MediaPipe index 4
+//  ml5 faceApi v0.x  —  68-point landmarks, nose tip = index 30
 // ================================================================
 
-// ---- Public toggle boolean ----
+// ---- Public toggle (read by nose-cursor.js to gate canvas updates) ----
 let showFaceTracking = false;
 
 // ---- Internal refs ----
-let _trackingOverlay   = null;
-let _trackingCanvas    = null;
-let _trackingVideoSrc  = null; // holds the MediaStream for the clone
+let _trackingOverlay = null;
+let _trackingCanvas  = null;
 
 
 // ================================================================
@@ -25,18 +23,18 @@ function initFaceTrackingOverlay() {
   _trackingOverlay = document.createElement('div');
   _trackingOverlay.id = 'face-tracking-overlay';
   Object.assign(_trackingOverlay.style, {
-    position:        'fixed',
-    inset:           '0',
-    background:      '#0d0d0d',
-    display:         'none',           // hidden until toggled on
-    flexDirection:   'column',
-    alignItems:      'center',
-    justifyContent:  'center',
-    zIndex:          '999999',
-    fontFamily:      "'Inter', sans-serif",
+    position:       'fixed',
+    inset:          '0',
+    background:     '#0d0d0d',
+    display:        'none',
+    flexDirection:  'column',
+    alignItems:     'center',
+    justifyContent: 'center',
+    zIndex:         '999999',
+    fontFamily:     "'Inter', sans-serif",
   });
 
-  // ---- Title label ----
+  // Title label
   const label = document.createElement('div');
   label.textContent = 'FACIAL TRACKING MODE  —  press F to return';
   Object.assign(label.style, {
@@ -54,32 +52,32 @@ function initFaceTrackingOverlay() {
   });
   _trackingOverlay.appendChild(label);
 
-  // ---- Video + canvas wrapper ----
+  // Video + canvas wrapper
   const wrap = document.createElement('div');
   Object.assign(wrap.style, {
-    position:     'relative',
-    width:        '640px',
-    height:       '480px',
-    border:       '2px solid #333',
-    boxShadow:    '0 0 40px rgba(186,27,36,0.25)',
+    position:  'relative',
+    width:     '640px',
+    height:    '480px',
+    border:    '2px solid #333',
+    boxShadow: '0 0 40px rgba(186,27,36,0.25)',
   });
 
-  // Clone video element — shows the same camera stream
+  // Clone of the main webcam stream
   const vid = document.createElement('video');
   vid.id = 'tracking-video-clone';
-  vid.autoplay  = true;
+  vid.autoplay = true;
   vid.playsInline = true;
-  vid.muted     = true;
+  vid.muted = true;
   Object.assign(vid.style, {
-    width:       '640px',
-    height:      '480px',
-    display:     'block',
-    objectFit:   'cover',
-    transform:   'scaleX(-1)',         // mirror so it feels natural
+    width:      '640px',
+    height:     '480px',
+    display:    'block',
+    objectFit:  'cover',
+    transform:  'scaleX(-1)',
   });
   wrap.appendChild(vid);
 
-  // Canvas drawn on top of video — nose dot lives here
+  // Canvas for nose dot overlay
   _trackingCanvas = document.createElement('canvas');
   _trackingCanvas.id     = 'tracking-canvas';
   _trackingCanvas.width  = 640;
@@ -92,10 +90,9 @@ function initFaceTrackingOverlay() {
     pointerEvents: 'none',
   });
   wrap.appendChild(_trackingCanvas);
-
   _trackingOverlay.appendChild(wrap);
 
-  // ---- Model / detection status ----
+  // Status text
   const status = document.createElement('div');
   status.id = 'tracking-status';
   Object.assign(status.style, {
@@ -110,7 +107,7 @@ function initFaceTrackingOverlay() {
   status.textContent = 'Waiting for model…';
   _trackingOverlay.appendChild(status);
 
-  // ---- Coordinates readout ----
+  // Coordinates readout
   const coords = document.createElement('div');
   coords.id = 'tracking-coords';
   Object.assign(coords.style, {
@@ -124,25 +121,9 @@ function initFaceTrackingOverlay() {
   coords.textContent = '—';
   _trackingOverlay.appendChild(coords);
 
-  // ---- Debug keypoint dump (visible without opening console) ----
-  const debug = document.createElement('div');
-  debug.id = 'tracking-debug';
-  Object.assign(debug.style, {
-    marginTop:     '0.5rem',
-    color:         'rgba(255,200,100,0.7)',
-    fontSize:      '0.5rem',
-    letterSpacing: '0.06em',
-    maxWidth:      '640px',
-    wordBreak:     'break-all',
-    textAlign:     'center',
-    pointerEvents: 'none',
-  });
-  _trackingOverlay.appendChild(debug);
-
   document.body.appendChild(_trackingOverlay);
 
-  // Mirror the main webcam stream to the clone video.
-  // We poll briefly because the camera starts asynchronously after DOMContentLoaded.
+  // Mirror the main webcam stream — poll until it's available
   const mainVid = document.getElementById('webcam');
   function tryMirrorStream() {
     if (mainVid && mainVid.srcObject) {
@@ -157,26 +138,17 @@ function initFaceTrackingOverlay() {
 
 
 // ================================================================
-//  Update the status line inside the tracking overlay
-//  Called from index.html at model-load milestones and per-frame.
+//  Update status text — called from nose-cursor.js
 // ================================================================
 function setFaceTrackingStatus(msg) {
   const el = document.getElementById('tracking-status');
   if (el) el.textContent = msg;
 }
 
-// Show the raw keypoints array on screen so we can see names/indices
-function setFaceTrackingDebug(msg) {
-  const el = document.getElementById('tracking-debug');
-  if (el) el.textContent = msg;
-}
-
 
 // ================================================================
-//  Draw the nose dot on the tracking canvas
-//
-//  Call this from onFaces() on every frame, passing raw keypoint
-//  coordinates (already in video-pixel space) and video dimensions.
+//  Draw nose dot on the tracking canvas
+//  noseX/noseY are raw video-pixel coordinates from ml5
 // ================================================================
 function updateNoseOnTrackingCanvas(noseX, noseY, videoWidth, videoHeight) {
   if (!_trackingCanvas) return;
@@ -184,105 +156,75 @@ function updateNoseOnTrackingCanvas(noseX, noseY, videoWidth, videoHeight) {
   const ctx = _trackingCanvas.getContext('2d');
   const cw  = _trackingCanvas.width;
   const ch  = _trackingCanvas.height;
-
-  // Map nose coords → canvas pixels
-  // With flipped:true in ml5 the x coordinate is already mirrored,
-  // matching the scaleX(-1) CSS on the video.
-  const cx = (noseX / videoWidth)  * cw;
-  const cy = (noseY / videoHeight) * ch;
+  const cx  = (noseX / videoWidth)  * cw;
+  const cy  = (noseY / videoHeight) * ch;
 
   ctx.clearRect(0, 0, cw, ch);
 
-  // Outer glow ring
-  ctx.beginPath();
-  ctx.arc(cx, cy, 22, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(186,27,36,0.18)';
-  ctx.fill();
+  // Glow rings
+  ctx.beginPath(); ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(186,27,36,0.18)'; ctx.fill();
 
-  // Mid ring
-  ctx.beginPath();
-  ctx.arc(cx, cy, 14, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(186,27,36,0.35)';
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(186,27,36,0.35)'; ctx.fill();
 
-  // Solid red dot
-  ctx.beginPath();
-  ctx.arc(cx, cy, 9, 0, Math.PI * 2);
-  ctx.fillStyle = '#ba1b24';
-  ctx.fill();
+  // Solid dot
+  ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+  ctx.fillStyle = '#ba1b24'; ctx.fill();
+  ctx.strokeStyle = 'white'; ctx.lineWidth = 2.5; ctx.stroke();
 
-  // White border
-  ctx.strokeStyle = 'white';
-  ctx.lineWidth   = 2.5;
-  ctx.stroke();
-
-  // Cross-hair lines for precision
+  // Crosshairs
   ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-  ctx.lineWidth   = 1;
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(cx - 26, cy);
-  ctx.lineTo(cx + 26, cy);
-  ctx.moveTo(cx, cy - 26);
-  ctx.lineTo(cx, cy + 26);
+  ctx.moveTo(cx - 26, cy); ctx.lineTo(cx + 26, cy);
+  ctx.moveTo(cx, cy - 26); ctx.lineTo(cx, cy + 26);
   ctx.stroke();
 
-  // Update coords readout
   const coordsEl = document.getElementById('tracking-coords');
   if (coordsEl) {
     coordsEl.textContent =
-      `nose tip  raw: (${noseX.toFixed(1)}, ${noseY.toFixed(1)})  ` +
-      `canvas: (${cx.toFixed(0)}, ${cy.toFixed(0)})`;
+      `nose  raw: (${noseX.toFixed(1)}, ${noseY.toFixed(1)})  canvas: (${cx.toFixed(0)}, ${cy.toFixed(0)})`;
   }
 }
 
 
 // ================================================================
-//  Toggle between main UI and face-tracking-only mode
+//  Toggle between main UI and face-tracking overlay
 // ================================================================
 function toggleFaceTracking() {
   showFaceTracking = !showFaceTracking;
 
-  // Elements belonging to the main interface
-  const mainEl      = document.querySelector('body > main');
-  const taskbarEl   = document.querySelector('nav.fixed');
-  const webcamWrap  = document.getElementById('webcam-wrap');
-  const noseCursor  = document.getElementById('nose-cursor');
-  const wiggleRing  = document.getElementById('wiggle-ring');
-  const wiggleTrack = document.getElementById('wiggle-track');
-  const noseStatus  = document.getElementById('nose-status');
+  const mainEl     = document.querySelector('body > main');
+  const taskbarEl  = document.querySelector('nav.fixed');
+  const webcamWrap = document.getElementById('webcam-wrap');
+  const noseCursor = document.getElementById('nose-cursor');
+  const wiggleRing = document.getElementById('wiggle-ring');
+  const noseStatus = document.getElementById('nose-status');
 
   if (showFaceTracking) {
-    // --- hide main UI ---
-    [mainEl, taskbarEl, webcamWrap, noseCursor, wiggleRing, wiggleTrack, noseStatus]
+    [mainEl, taskbarEl, webcamWrap, noseCursor, wiggleRing, noseStatus]
       .forEach(el => { if (el) el.style.display = 'none'; });
 
-    // --- show tracking overlay ---
     if (_trackingOverlay) _trackingOverlay.style.display = 'flex';
 
-    // Ensure clone video is playing
     const clone = document.getElementById('tracking-video-clone');
     const main  = document.getElementById('webcam');
-    if (clone && main && main.srcObject) {
+    if (clone && main?.srcObject) {
       clone.srcObject = main.srcObject;
       clone.play().catch(() => {});
     }
   } else {
-    // --- restore main UI ---
-    if (mainEl)      mainEl.style.display      = '';
-    if (taskbarEl)   taskbarEl.style.display   = '';
-    if (webcamWrap)  webcamWrap.style.display  = '';
-    if (noseCursor)  noseCursor.style.display  = '';
-    if (wiggleRing)  wiggleRing.style.display  = '';
-    if (wiggleTrack) wiggleTrack.style.display = '';
-    if (noseStatus)  noseStatus.style.display  = '';
+    if (mainEl)     mainEl.style.display     = '';
+    if (taskbarEl)  taskbarEl.style.display  = '';
+    if (webcamWrap) webcamWrap.style.display = '';
+    if (noseCursor) noseCursor.style.display = '';
+    if (wiggleRing) wiggleRing.style.display = '';
+    if (noseStatus) noseStatus.style.display = '';
 
-    // --- hide tracking overlay and clear canvas ---
     if (_trackingOverlay) _trackingOverlay.style.display = 'none';
-    if (_trackingCanvas) {
-      _trackingCanvas.getContext('2d').clearRect(
-        0, 0, _trackingCanvas.width, _trackingCanvas.height
-      );
-    }
+    if (_trackingCanvas)  _trackingCanvas.getContext('2d')
+      .clearRect(0, 0, _trackingCanvas.width, _trackingCanvas.height);
   }
 }
 
@@ -292,10 +234,7 @@ function toggleFaceTracking() {
 // ================================================================
 document.addEventListener('DOMContentLoaded', () => {
   initFaceTrackingOverlay();
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'f' || e.key === 'F') {
-      toggleFaceTracking();
-    }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'f' || e.key === 'F') toggleFaceTracking();
   });
 });

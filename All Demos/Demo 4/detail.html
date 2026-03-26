@@ -7,7 +7,8 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+<script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+<link rel="stylesheet" href="cursor.css"/>
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
@@ -82,112 +83,6 @@
   }
   body { min-height: max(884px, 100dvh); }
 
-  /* ---- Cursor — injected into <html> to escape body overflow:hidden ---- */
-  * { cursor: none !important; }
-
-  #nose-cursor {
-    position: fixed;
-    width: 24px;
-    height: 24px;
-    background: #ba1b24;
-    border: 3px solid white;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 2147483647;
-    left: -200px; top: -200px;
-    box-shadow: 0 0 0 2px #ba1b24, 0 4px 14px rgba(0,0,0,0.45);
-    transition: background 0.1s ease, box-shadow 0.1s ease, transform 0.12s ease;
-  }
-  #nose-cursor.hovering {
-    background: #5e55a0;
-    box-shadow: 0 0 0 2px #5e55a0, 0 4px 14px rgba(94,85,160,0.5);
-    transform: translate(-50%, -50%) scale(1.35);
-  }
-  #nose-cursor.clicking {
-    background: white;
-    box-shadow: 0 0 0 4px #ba1b24, 0 0 20px rgba(186,27,36,0.6);
-    transform: translate(-50%, -50%) scale(0.75);
-  }
-
-  #wiggle-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99998;
-    transform: translate(-50%, -50%);
-    left: -100px; top: -100px;
-  }
-  #wiggle-track {
-    position: fixed;
-    bottom: 48px;
-    left: 0; right: 0;
-    height: 3px;
-    background: rgba(0,0,0,0.06);
-    z-index: 9000;
-    pointer-events: none;
-  }
-  #wiggle-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #526543, #ba1b24);
-    transition: width 0.06s ease;
-  }
-  #nose-status {
-    position: fixed;
-    top: 0.5rem; right: 0.75rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    color: rgba(60, 49, 19, 0.45);
-    z-index: 9000;
-    pointer-events: none;
-  }
-  #webcam-wrap {
-    position: fixed;
-    top: 2.5rem; right: 0.75rem;
-    z-index: 8000;
-    border: 2px solid #c1b188;
-    box-shadow: inset 2px 2px 0 #fff, inset -2px -2px 0 #887a55,
-                3px 3px 0 rgba(0,0,0,0.15);
-  }
-  #webcam-titlebar {
-    background: #5e55a0;
-    height: 16px;
-    display: flex; align-items: center;
-    padding: 0 4px;
-    font-size: 0.5rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    white-space: nowrap;
-  }
-  #webcam {
-    width: 120px; height: 90px;
-    object-fit: cover;
-    transform: scaleX(-1);
-    display: block;
-  }
-
-  /* Back button hover */
-  .back-btn.nose-hover,
-  .back-btn:hover {
-    background: #5e55a0 !important;
-    color: white !important;
-  }
-  .back-btn.nose-hover .btn-icon { color: white; }
-
-  /* File-list items */
-  .file-item.nose-hover {
-    background: #5e55a0 !important;
-    color: white !important;
-  }
-  .file-item.nose-hover .mat-icon { color: white; }
 </style>
 </head>
 <body class="bg-background text-on-surface font-body overflow-hidden h-screen select-none floral-bg">
@@ -213,18 +108,16 @@
   </svg>
 
   <!-- Wiggle progress bar -->
-  <div id="wiggle-track"><div id="wiggle-fill"></div></div>
-
   <!-- Status -->
   <div id="nose-status">Initializing...</div>
 
   <main class="relative w-full h-full flex items-center justify-center p-8">
 
     <!-- Main Window -->
-    <div class="relative w-full max-w-4xl h-[618px] bg-surface-container flex flex-col beveled-outset shadow-2xl z-10">
+    <div id="main-window" class="relative w-full max-w-4xl h-[618px] bg-surface-container flex flex-col beveled-outset shadow-2xl z-10">
 
       <!-- Title Bar -->
-      <header class="bg-[#5e55a0] h-10 flex justify-between items-center w-full px-4 border-b-2 border-white/20">
+      <header id="title-bar" class="bg-[#5e55a0] h-10 flex justify-between items-center w-full px-4 border-b-2 border-white/20">
         <div class="flex items-center gap-3">
           <div class="flex gap-1.5">
             <div class="w-3.5 h-3.5 bg-[#ba1b24]"></div>
@@ -242,7 +135,7 @@
       </header>
 
       <!-- Toolbar — Back button is the main nose target here -->
-      <nav class="bg-surface-container-low px-4 py-2 flex items-center gap-4 border-b border-outline-variant/30">
+      <nav id="toolbar" class="bg-surface-container-low px-4 py-2 flex items-center gap-4 border-b border-outline-variant/30">
         <div class="flex gap-2">
           <!-- BACK BUTTON — nose-clickable -->
           <button class="back-btn flex items-center gap-1 p-1 px-3 beveled-outset bg-surface-container text-secondary font-bold text-xs uppercase tracking-wider transition-colors"
@@ -281,7 +174,7 @@
       </div>
 
       <!-- Status Bar -->
-      <footer class="h-6 bg-surface-container-highest border-t border-outline-variant flex items-center px-4 justify-between text-[10px] font-bold text-on-surface-variant uppercase">
+      <footer id="status-bar" class="h-6 bg-surface-container-highest border-t border-outline-variant flex items-center px-4 justify-between text-[10px] font-bold text-on-surface-variant uppercase">
         <div class="flex items-center gap-4">
           <span id="item-count">0 Items</span>
           <span class="w-[1px] h-3 bg-outline-variant"></span>
@@ -325,6 +218,8 @@
     </div>
   </nav>
 
+  <script src="face-tracking.js"></script>
+
   <script>
     // ================================================================
     //  Page content definitions
@@ -337,6 +232,14 @@
         bg: 'bg-primary-container',
         iconColor: 'text-on-primary-container',
         path: 'C:\\FloralNet\\Explorer\\Home',
+        theme: {
+          bodyBg: '#ba1b24',
+          bodyGradients: 'radial-gradient(circle at 20% 30%, #ffaba5 0%, transparent 40%), radial-gradient(circle at 80% 10%, #ffd5d2 0%, transparent 35%), radial-gradient(circle at 50% 80%, #f08080 0%, transparent 50%)',
+          titleBar: '#900013',
+          windowBg: '#ffaba5',
+          windowHighBg: '#ffd5d2',
+          accentColor: '#ba1b24',
+        },
         files: [
           { icon: 'description', label: 'Welcome.txt',       size: '2 KB',   date: '2024-03-01' },
           { icon: 'image',       label: 'Garden_Photo.jpg',  size: '1.4 MB', date: '2024-03-05' },
@@ -353,6 +256,14 @@
         bg: 'bg-secondary-container',
         iconColor: 'text-on-secondary-container',
         path: 'C:\\FloralNet\\Search\\Results',
+        theme: {
+          bodyBg: '#526543',
+          bodyGradients: 'radial-gradient(circle at 20% 30%, #e2f8cc 0%, transparent 40%), radial-gradient(circle at 80% 10%, #d3eabf 0%, transparent 35%), radial-gradient(circle at 50% 80%, #b8d9a0 0%, transparent 50%)',
+          titleBar: '#3b4d2d',
+          windowBg: '#e2f8cc',
+          windowHighBg: '#d3eabf',
+          accentColor: '#526543',
+        },
         files: [
           { icon: 'local_florist', label: 'Rosa_canina.db',      size: '88 KB',  date: '2024-03-11' },
           { icon: 'local_florist', label: 'Papaver_rhoeas.db',   size: '64 KB',  date: '2024-03-09' },
@@ -366,6 +277,14 @@
         bg: 'bg-tertiary-container',
         iconColor: 'text-on-tertiary-container',
         path: 'C:\\FloralNet\\Mail\\Inbox',
+        theme: {
+          bodyBg: '#5e55a0',
+          bodyGradients: 'radial-gradient(circle at 20% 30%, #b9afff 0%, transparent 40%), radial-gradient(circle at 80% 10%, #d4d0ff 0%, transparent 35%), radial-gradient(circle at 50% 80%, #aba1f2 0%, transparent 50%)',
+          titleBar: '#3e357d',
+          windowBg: '#b9afff',
+          windowHighBg: '#d4d0ff',
+          accentColor: '#5e55a0',
+        },
         files: [
           { icon: 'mail',         label: 'Re: Spring Seeds',      size: '12 KB', date: '2024-03-14' },
           { icon: 'mail',         label: 'Garden Club Newsletter', size: '34 KB', date: '2024-03-13' },
@@ -380,6 +299,14 @@
         bg: 'bg-surface-container-high',
         iconColor: 'text-orange-600',
         path: 'C:\\FloralNet\\Photos\\Garden',
+        theme: {
+          bodyBg: '#7dd3fc',
+          bodyGradients: 'radial-gradient(circle at 20% 30%, #fcedc9 0%, transparent 40%), radial-gradient(circle at 80% 10%, #fff2d9 0%, transparent 35%), radial-gradient(circle at 50% 80%, #f3e1b5 0%, transparent 50%)',
+          titleBar: '#5e55a0',
+          windowBg: '#fcedc9',
+          windowHighBg: '#f3e1b5',
+          accentColor: '#6b5e3c',
+        },
         files: [
           { icon: 'image', label: 'Poppy_Morning.jpg',    size: '2.1 MB', date: '2024-03-08' },
           { icon: 'image', label: 'Rose_Dew.jpg',         size: '1.8 MB', date: '2024-03-07' },
@@ -394,9 +321,19 @@
     const params   = new URLSearchParams(window.location.search);
     const pageKey  = params.get('page') || 'home';
     const content  = PAGES[pageKey] || PAGES.home;
+    const t        = content.theme;
+
+    // Apply page color theme
+    document.body.style.backgroundColor = t.bodyBg;
+    document.body.style.backgroundImage = t.bodyGradients;
+    document.getElementById('title-bar').style.background = t.titleBar;
+    document.getElementById('main-window').style.background = t.windowBg;
+    document.getElementById('toolbar').style.background = t.windowHighBg;
+    document.getElementById('status-bar').style.background = t.windowHighBg;
 
     document.getElementById('window-title').textContent = 'FloralNet Explorer — ' + content.title;
     document.getElementById('folder-title').textContent = content.title;
+    document.getElementById('folder-title').style.color = t.accentColor;
     document.getElementById('folder-subtitle').textContent = content.subtitle;
     document.getElementById('path-bar').textContent = content.path;
     document.getElementById('item-count').textContent = content.files.length + ' Items';
@@ -435,162 +372,9 @@
     }
     updateClock();
     setInterval(updateClock, 30000);
-
-    // ================================================================
-    //  NOSE CURSOR + WIGGLE-TO-CLICK (same logic as index.html)
-    // ================================================================
-
-    const videoEl    = document.getElementById('webcam');
-    const cursorEl   = document.getElementById('nose-cursor');
-    const wiggleRing = document.getElementById('wiggle-ring');
-    const wiggleFill = document.getElementById('wiggle-fill');
-    const wiggleArc  = document.getElementById('wiggle-arc');
-    const statusEl   = document.getElementById('nose-status');
-
-    let faceMesh      = null;
-    let noseHistory   = [];
-    let lastClickTime = 0;
-    let hoveredEl     = null;
-
-    const WIGGLE_WINDOW_MS       = 500;
-    const MIN_REVERSALS          = 4;
-    const MIN_REVERSAL_AMPLITUDE = 7;
-    const CLICK_COOLDOWN_MS      = 1300;
-    const CIRC = 2 * Math.PI * 16;
-
-    async function init() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
-          audio: false
-        });
-        videoEl.srcObject = stream;
-        videoEl.onloadeddata = () => { videoEl.play(); loadFaceMesh(); };
-        videoEl.load();
-      } catch (err) {
-        statusEl.textContent = 'Camera denied — grant access & refresh';
-        console.error('Camera error:', err);
-      }
-    }
-
-    async function loadFaceMesh() {
-      statusEl.textContent = 'Loading face model...';
-      try {
-        // ml5 v1.3.1: faceMesh() returns a Promise — must await
-        faceMesh = await ml5.faceMesh({ maxFaces: 1, refineLandmarks: false, flipped: true });
-        faceMesh.detectStart(videoEl, onFaces);
-        statusEl.textContent = 'Model loaded — move your nose!';
-      } catch (e) {
-        statusEl.textContent = 'ML5 error: ' + e.message;
-        console.error('[NoseCursor] ML5 error:', e);
-      }
-    }
-
-    let _firstFace = true;
-    function onFaces(faces) {
-      if (_firstFace && faces && faces.length > 0) {
-        console.log('[NoseCursor] First detection:', faces[0].keypoints?.[4]);
-        _firstFace = false;
-        statusEl.textContent = 'Tracking ✓ — hover Back, wiggle to return';
-      }
-      if (!faces || faces.length === 0) return;
-      const face = faces[0];
-      if (!face.keypoints || face.keypoints.length < 5) return;
-
-      const noseTip =
-        face.keypoints.find(k => k.name === 'noseTip' || k.name === 'nose_tip')
-        || face.keypoints[4];
-      if (!noseTip) return;
-
-      const vw = videoEl.videoWidth  || 640;
-      const vh = videoEl.videoHeight || 480;
-      const sx = (noseTip.x / vw) * window.innerWidth;
-      const sy = (noseTip.y / vh) * window.innerHeight;
-
-      cursorEl.style.left = sx + 'px';
-      cursorEl.style.top  = sy + 'px';
-      wiggleRing.style.left = sx + 'px';
-      wiggleRing.style.top  = sy + 'px';
-
-      const now = Date.now();
-      noseHistory.push({ x: noseTip.x, t: now });
-      noseHistory = noseHistory.filter(p => now - p.t < WIGGLE_WINDOW_MS);
-
-      updateHover(sx, sy);
-      const wig = detectWiggle();
-
-      wiggleFill.style.width = (wig.progress * 100) + '%';
-      const dashLen = wig.progress * CIRC;
-      wiggleArc.setAttribute('stroke-dasharray', dashLen + ' ' + (CIRC - dashLen));
-
-      if (wig.detected && (now - lastClickTime) > CLICK_COOLDOWN_MS) {
-        triggerClick(sx, sy);
-      }
-    }
-
-    function detectWiggle() {
-      if (noseHistory.length < 5) return { detected: false, progress: 0 };
-      let reversals = 0, prevDir = 0, lastRevX = noseHistory[0].x;
-      for (let i = 1; i < noseHistory.length; i++) {
-        const dx = noseHistory[i].x - noseHistory[i - 1].x;
-        if (Math.abs(dx) < 2) continue;
-        const dir = dx > 0 ? 1 : -1;
-        if (prevDir !== 0 && dir !== prevDir) {
-          if (Math.abs(noseHistory[i].x - lastRevX) >= MIN_REVERSAL_AMPLITUDE) {
-            reversals++;
-            lastRevX = noseHistory[i].x;
-          }
-        }
-        prevDir = dir;
-      }
-      return { detected: reversals >= MIN_REVERSALS, progress: Math.min(reversals / MIN_REVERSALS, 1) };
-    }
-
-    function updateHover(sx, sy) {
-      cursorEl.style.visibility = 'hidden';
-      wiggleRing.style.visibility = 'hidden';
-      const el = document.elementFromPoint(sx, sy);
-      cursorEl.style.visibility = 'visible';
-      wiggleRing.style.visibility = 'visible';
-
-      const target = el?.closest('[data-href], .back-btn');
-
-      if (hoveredEl && hoveredEl !== target) hoveredEl.classList.remove('nose-hover');
-
-      if (target) {
-        target.classList.add('nose-hover');
-        cursorEl.classList.add('hovering');
-      } else {
-        cursorEl.classList.remove('hovering');
-      }
-
-      hoveredEl = target || null;
-    }
-
-    function triggerClick(sx, sy) {
-      lastClickTime = Date.now();
-      noseHistory   = [];
-      cursorEl.classList.add('clicking');
-      setTimeout(() => cursorEl.classList.remove('clicking'), 350);
-
-      cursorEl.style.visibility = 'hidden';
-      const el = document.elementFromPoint(sx, sy);
-      cursorEl.style.visibility = 'visible';
-
-      const target = el?.closest('[data-href]');
-      if (target) {
-        const href = target.getAttribute('data-href');
-        if (href) setTimeout(() => { window.location.href = href; }, 280);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Escape body's overflow:hidden by reparenting to <html>
-      document.documentElement.appendChild(cursorEl);
-      document.documentElement.appendChild(wiggleRing);
-      init();
-    });
   </script>
+
+  <script src="nose-cursor.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,113 @@
+/* =============================================================
+   cursor.css  —  shared nose-cursor UI styles for Demo 4
+   Shared by index.html and detail.html
+   ============================================================= */
+
+/* Hide the real mouse cursor everywhere */
+* { cursor: none !important; }
+
+/* ---- Nose cursor dot ---- */
+#nose-cursor {
+  position: fixed;
+  left: 0; top: 0;
+  width: 24px; height: 24px;
+  background: #ba1b24;
+  border: 3px solid white;
+  border-radius: 50%;
+  transform: translate(var(--cx, -200px), var(--cy, -200px));
+  pointer-events: none;
+  z-index: 2147483647;
+  will-change: transform;
+  box-shadow: 0 0 0 2px #ba1b24, 0 4px 14px rgba(0,0,0,0.45);
+  transition: background 0.1s ease, box-shadow 0.1s ease;
+}
+#nose-cursor.hovering {
+  background: #5e55a0;
+  box-shadow: 0 0 0 2px #5e55a0, 0 4px 14px rgba(94,85,160,0.5);
+  transform: translate(var(--cx, -200px), var(--cy, -200px)) scale(1.35);
+}
+#nose-cursor.clicking {
+  background: white;
+  box-shadow: 0 0 0 4px #ba1b24, 0 0 20px rgba(186,27,36,0.6);
+  transform: translate(var(--cx, -200px), var(--cy, -200px)) scale(0.75);
+}
+
+/* ---- Mouth-open progress ring (SVG arc around cursor) ---- */
+#wiggle-ring {
+  position: fixed;
+  left: 0; top: 0;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  will-change: transform;
+  transform: translate(var(--rx, -200px), var(--ry, -200px));
+}
+
+/* ---- Tracking status label (top-right) ---- */
+#nose-status {
+  position: fixed;
+  top: 0.5rem; right: 0.75rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: rgba(60, 49, 19, 0.45);
+  z-index: 9000;
+  pointer-events: none;
+}
+
+/* ---- Webcam preview window (top-right) ---- */
+#webcam-wrap {
+  position: fixed;
+  top: 2.5rem; right: 0.75rem;
+  z-index: 8000;
+  border: 2px solid #c1b188;
+  box-shadow: inset 2px 2px 0 #fff, inset -2px -2px 0 #887a55,
+              3px 3px 0 rgba(0,0,0,0.15);
+}
+#webcam-titlebar {
+  background: #5e55a0;
+  height: 16px;
+  display: flex; align-items: center;
+  padding: 0 4px;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+#webcam {
+  width: 120px; height: 90px;
+  object-fit: cover;
+  transform: scaleX(-1);
+  display: block;
+}
+
+/* ---- Hover highlights — index.html folder icons ---- */
+.folder-icon.nose-hover .folder-box {
+  box-shadow: inset 2px 2px 0px 0px #ffffff, inset -2px -2px 0px 0px #c1b188,
+              0 0 0 2px #5e55a0;
+  transform: scale(1.08);
+}
+.folder-icon.nose-hover .folder-label {
+  background: #5e55a0;
+  color: white;
+}
+
+/* ---- Hover highlights — detail.html back button + file list ---- */
+.back-btn.nose-hover,
+.back-btn:hover {
+  background: #5e55a0 !important;
+  color: white !important;
+}
+.back-btn.nose-hover .btn-icon { color: white; }
+
+.file-item.nose-hover {
+  background: #5e55a0 !important;
+  color: white !important;
+}
+.file-item.nose-hover .mat-icon { color: white; }

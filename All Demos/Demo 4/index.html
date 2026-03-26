@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+<link rel="stylesheet" href="cursor.css"/>
 <script src="face-tracking.js"></script>
 <script id="tailwind-config">
   tailwind.config = {
@@ -101,126 +102,6 @@
   }
   body { min-height: max(884px, 100dvh); }
 
-  /* ---- Hide real cursor; nose cursor takes over ---- */
-  * { cursor: none !important; }
-
-  /* ---- Nose cursor: bright dot — injected into <html> to escape body overflow:hidden ---- */
-  #nose-cursor {
-    position: fixed;
-    width: 24px;
-    height: 24px;
-    background: #ba1b24;
-    border: 3px solid white;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 2147483647;
-    left: -200px;
-    top: -200px;
-    box-shadow: 0 0 0 2px #ba1b24, 0 4px 14px rgba(0,0,0,0.45);
-    transition: background 0.1s ease, box-shadow 0.1s ease, transform 0.12s ease;
-  }
-  #nose-cursor.hovering {
-    background: #5e55a0;
-    box-shadow: 0 0 0 2px #5e55a0, 0 4px 14px rgba(94,85,160,0.5);
-    transform: translate(-50%, -50%) scale(1.35);
-  }
-  #nose-cursor.clicking {
-    background: white;
-    box-shadow: 0 0 0 4px #ba1b24, 0 0 20px rgba(186,27,36,0.6);
-    transform: translate(-50%, -50%) scale(0.75);
-  }
-
-  /* ---- Wiggle progress arc (circular indicator around cursor) ---- */
-  #wiggle-ring {
-    position: fixed;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99998;
-    transform: translate(-50%, -50%);
-    left: -100px;
-    top: -100px;
-  }
-
-  /* ---- Wiggle bar at bottom ---- */
-  #wiggle-track {
-    position: fixed;
-    bottom: 48px; /* above taskbar */
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: rgba(0,0,0,0.06);
-    z-index: 9000;
-    pointer-events: none;
-  }
-  #wiggle-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #526543, #ba1b24);
-    transition: width 0.06s ease;
-  }
-
-  /* ---- Status label ---- */
-  #nose-status {
-    position: fixed;
-    top: 0.5rem;
-    right: 0.75rem;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    color: rgba(60, 49, 19, 0.45);
-    z-index: 9000;
-    pointer-events: none;
-  }
-
-  /* ---- Webcam preview (top-right mini window) ---- */
-  #webcam-wrap {
-    position: fixed;
-    top: 2.5rem;
-    right: 0.75rem;
-    z-index: 8000;
-    display: flex;
-    flex-direction: column;
-    border: 2px solid #c1b188;
-    box-shadow: inset 2px 2px 0 #fff, inset -2px -2px 0 #887a55,
-                3px 3px 0 rgba(0,0,0,0.15);
-  }
-  #webcam-titlebar {
-    background: #5e55a0;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    padding: 0 4px;
-    font-size: 0.5rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    white-space: nowrap;
-  }
-  #webcam {
-    width: 120px;
-    height: 90px;
-    object-fit: cover;
-    transform: scaleX(-1);
-    display: block;
-  }
-
-  /* ---- Hover highlight on folder icons ---- */
-  .folder-icon.nose-hover .folder-box {
-    box-shadow: inset 2px 2px 0px 0px #ffffff, inset -2px -2px 0px 0px #c1b188,
-                0 0 0 2px #5e55a0;
-    transform: scale(1.08);
-  }
-  .folder-icon.nose-hover .folder-label {
-    background: #5e55a0;
-    color: white;
-  }
 </style>
 </head>
 <body class="bg-background text-on-surface font-body overflow-hidden h-screen select-none floral-bg">
@@ -244,9 +125,6 @@
       transform="rotate(-90 18 18)"
       style="transition: stroke-dasharray 0.06s ease;"/>
   </svg>
-
-  <!-- Wiggle progress bar -->
-  <div id="wiggle-track"><div id="wiggle-fill"></div></div>
 
   <!-- Tracking status -->
   <div id="nose-status">Initializing...</div>

@@ -124,6 +124,21 @@ function initFaceTrackingOverlay() {
   coords.textContent = '—';
   _trackingOverlay.appendChild(coords);
 
+  // ---- Debug keypoint dump (visible without opening console) ----
+  const debug = document.createElement('div');
+  debug.id = 'tracking-debug';
+  Object.assign(debug.style, {
+    marginTop:     '0.5rem',
+    color:         'rgba(255,200,100,0.7)',
+    fontSize:      '0.5rem',
+    letterSpacing: '0.06em',
+    maxWidth:      '640px',
+    wordBreak:     'break-all',
+    textAlign:     'center',
+    pointerEvents: 'none',
+  });
+  _trackingOverlay.appendChild(debug);
+
   document.body.appendChild(_trackingOverlay);
 
   // Mirror the main webcam stream to the clone video.
@@ -147,6 +162,12 @@ function initFaceTrackingOverlay() {
 // ================================================================
 function setFaceTrackingStatus(msg) {
   const el = document.getElementById('tracking-status');
+  if (el) el.textContent = msg;
+}
+
+// Show the raw keypoints array on screen so we can see names/indices
+function setFaceTrackingDebug(msg) {
+  const el = document.getElementById('tracking-debug');
   if (el) el.textContent = msg;
 }
 

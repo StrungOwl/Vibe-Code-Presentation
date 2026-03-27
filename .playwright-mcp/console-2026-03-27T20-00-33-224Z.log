@@ -1,0 +1,7 @@
+[      41ms] Unexpected token '<'
+[      57ms] Unexpected token '<'
+[      61ms] Unexpected token '<'
+[      61ms] Unexpected token '<'
+[      61ms] Unexpected token '<'
+[-1680428ms] [ERROR] Permissions policy violation: compute-pressure is not allowed in this document. @ https://www.youtube.com/s/player/8e54e4ea/player_embed_es6.vflset/en_US/base.js:5012
+[-1680428ms] [ERROR] Permissions policy violation: compute-pressure is not allowed in this document. @ https://www.youtube.com/s/player/8e54e4ea/player_embed_es6.vflset/en_US/base.js:5012

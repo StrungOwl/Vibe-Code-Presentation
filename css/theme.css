@@ -95,6 +95,9 @@
   animation: bounce 2s infinite;
   opacity: 0.7;
   transition: opacity 0.3s ease;
+  cursor: pointer;
+  z-index: 100;
+  pointer-events: auto;
 }
 
 .down-arrow:hover {

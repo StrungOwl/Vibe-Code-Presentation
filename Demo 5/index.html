@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>FloralNet — Nose Navigator</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background":              "#fff9e7",
+            "surface":                 "#fff9e7",
+            "surface-container":       "#f4eed4",
+            "surface-container-low":   "#faf4dd",
+            "surface-container-high":  "#efe9cc",
+            "surface-container-highest":"#eae3c3",
+            "surface-variant":         "#eae3c3",
+            "on-surface":              "#36331d",
+            "on-surface-variant":      "#646046",
+            "outline":                 "#807b60",
+            "outline-variant":         "#b8b295",
+            "primary":                 "#ad3500",
+            "primary-container":       "#ffad92",
+            "primary-dim":             "#982e00",
+            "on-primary":              "#fff7f5",
+            "on-primary-container":    "#712000",
+            "secondary":               "#4d6731",
+            "secondary-container":     "#dcfbb6",
+            "on-secondary-container":  "#48622d",
+            "on-secondary-fixed":      "#364f1c",
+            "tertiary":                "#5e4ac6",
+            "tertiary-container":      "#baafff",
+            "on-tertiary":             "#fcf7ff",
+            "on-tertiary-container":   "#34179c",
+            "on-tertiary-fixed-variant":"#3e25a5",
+            "inverse-primary":         "#fc6b37",
+          },
+          fontFamily: {
+            "headline": ["Plus Jakarta Sans"],
+            "body":     ["Work Sans"],
+            "label":    ["Work Sans"],
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ─── Base ─────────────────────────────────────────────── */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block; line-height: 1;
+      text-transform: none; letter-spacing: normal;
+      word-wrap: normal; white-space: nowrap; direction: ltr;
+    }
+    body {
+      background-image: radial-gradient(#efe9cc 1px, transparent 1px);
+      background-size: 20px 20px;
+      font-family: 'Work Sans', sans-serif;
+      background-color: #fff9e7;
+      overflow: hidden;
+    }
+
+    /* ─── Pages ─────────────────────────────────────────────── */
+    .page { display: none; height: 100dvh; overflow-y: auto; }
+    .page.active { display: flex; flex-direction: column; }
+
+    /* ─── Nose cursor ────────────────────────────────────────── */
+    #nose-cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-20px, -20px);
+      transition: transform 0.05s linear;
+    }
+    #nose-cursor .cursor-icon {
+      position: absolute;
+      inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      color: #ad3500;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+      transition: transform 0.15s ease;
+    }
+    #nose-cursor.mouth-open .cursor-icon {
+      transform: scale(1.5);
+      color: #5e4ac6;
+    }
+
+    /* dwell ring */
+    #nose-cursor svg.dwell-ring {
+      position: absolute;
+      inset: -8px;
+      width: 56px; height: 56px;
+      transform: rotate(-90deg);
+    }
+    #nose-cursor svg.dwell-ring circle {
+      fill: none;
+      stroke: #ad3500;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 150;
+      stroke-dashoffset: 150;
+      transition: stroke-dashoffset 0.05s linear;
+    }
+
+    /* ─── Hover highlight for interactive elements ───────────── */
+    .nose-hover {
+      outline: 3px solid #ad3500 !important;
+      outline-offset: 2px;
+    }
+    .nose-clicked {
+      transform: scale(0.96) !important;
+      filter: brightness(1.15);
+    }
+
+    /* ─── Camera preview ────────────────────────────────────── */
+    #camera-preview {
+      position: fixed;
+      bottom: 70px; right: 12px;
+      width: 140px;
+      border: 3px solid #5e4ac6;
+      border-radius: 0;
+      overflow: hidden;
+      z-index: 9000;
+      box-shadow: 4px 4px 0 rgba(72,98,45,0.2);
+      background: #100e05;
+    }
+    #camera-preview canvas { width: 100%; display: block; }
+    #cam-status {
+      background: #5e4ac6;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 2px 6px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    #mouth-status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #4d6731;
+      transition: background 0.1s;
+    }
+    #mouth-status-dot.open { background: #fc6b37; }
+
+    /* ─── Loading overlay ───────────────────────────────────── */
+    #loading-overlay {
+      position: fixed; inset: 0;
+      background: #fff9e7;
+      z-index: 99999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px;
+    }
+    #loading-overlay.hidden { display: none; }
+    .loading-spinner {
+      width: 48px; height: 48px;
+      border: 4px solid #eae3c3;
+      border-top-color: #ad3500;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Page transition ───────────────────────────────────── */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page.active { animation: fadeSlideIn 0.35s ease; }
+
+    /* ─── Vine scrollbar ────────────────────────────────────── */
+    .vine-scrollbar::-webkit-scrollbar { width: 10px; }
+    .vine-scrollbar::-webkit-scrollbar-track { background: #dcfbb6; }
+    .vine-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #4d6731;
+      border: 2px solid #dcfbb6;
+    }
+
+    /* ─── Nav bar ───────────────────────────────────────────── */
+    .bottom-nav-item { transition: background 0.15s, transform 0.1s; }
+    .bottom-nav-item.active {
+      background: #eae3c3;
+      color: #ad3500;
+      border-bottom: 3px solid #ad3500;
+    }
+
+    /* ─── Big nav buttons (easy nose targets) ───────────────── */
+    .nav-btn {
+      cursor: none;
+      user-select: none;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .nav-btn:active { transform: translateY(2px); }
+
+    /* ─── Gallery items ─────────────────────────────────────── */
+    .gallery-card {
+      aspect-ratio: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: none;
+      transition: transform 0.15s;
+    }
+    .gallery-card:hover { transform: scale(1.03); }
+  </style>
+</head>
+
+<body class="cursor-none">
+
+<!-- ══════════════════ LOADING OVERLAY ══════════════════ -->
+<div id="loading-overlay">
+  <span class="material-symbols-outlined text-6xl text-secondary" style="font-variation-settings:'FILL' 1; animation: spin 2s linear infinite;">local_florist</span>
+  <p class="font-headline font-black text-2xl text-on-surface uppercase tracking-widest">FloralNet</p>
+  <div id="loading-msg" class="text-center space-y-1">
+    <p class="font-bold text-on-surface-variant text-sm" id="load-step">Requesting camera…</p>
+    <p class="text-xs text-on-surface-variant opacity-60">Allow camera access when prompted</p>
+  </div>
+  <div class="loading-spinner"></div>
+  <div class="bg-tertiary-container border-2 border-tertiary p-4 max-w-xs text-center space-y-1 mt-4">
+    <p class="font-headline font-bold text-on-tertiary-container text-sm uppercase">How to navigate</p>
+    <p class="text-xs text-on-tertiary-fixed-variant">Move your <strong>nose</strong> to aim the cursor</p>
+    <p class="text-xs text-on-tertiary-fixed-variant">Open your <strong>mouth</strong> to click</p>
+  </div>
+</div>
+
+<!-- ══════════════════ HIDDEN WEBCAM ══════════════════ -->
+<video id="webcam" autoplay playsinline muted style="display:none;"></video>
+
+<!-- ══════════════════ NOSE CURSOR ══════════════════ -->
+<div id="nose-cursor">
+  <svg class="dwell-ring" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+    <circle id="dwell-circle" cx="28" cy="28" r="24"/>
+  </svg>
+  <div class="cursor-icon">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">local_florist</span>
+  </div>
+</div>
+
+<!-- ══════════════════ CAMERA PREVIEW ══════════════════ -->
+<div id="camera-preview">
+  <div id="cam-status">
+    <div id="mouth-status-dot"></div>
+    <span id="cam-status-text">Searching…</span>
+  </div>
+  <canvas id="preview-canvas" width="140" height="105"></canvas>
+</div>
+
+<!-- ══════════════════ PAGES ══════════════════ -->
+
+<!-- ─── PAGE 1 : START ─────────────────────────────── -->
+<div class="page active" id="page-start">
+  <!-- Header -->
+  <header class="bg-tertiary text-on-tertiary font-headline font-bold text-lg uppercase tracking-tight flex items-center justify-between px-4 h-10 shrink-0 border-b-4 border-surface-container-highest">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">local_florist</span>
+      <span class="text-xl font-black">Botanical Desktop</span>
+    </div>
+    <span class="text-xs font-label opacity-70">Nose Navigator v1.0</span>
+  </header>
+
+  <main class="flex-1 flex flex-col items-center justify-center px-6 gap-6 max-w-lg mx-auto w-full">
+    <!-- Hero card -->
+    <div class="bg-secondary-container border-4 border-secondary w-full p-6 shadow-[8px_8px_0_rgba(72,98,45,0.12)] text-center space-y-3">
+      <span class="material-symbols-outlined text-5xl text-secondary" style="font-variation-settings:'FILL' 1;">eco</span>
+      <h1 class="font-headline font-black text-3xl text-on-secondary-container uppercase tracking-tight leading-tight">
+        Welcome to<br/>Botanical Desktop
+      </h1>
+      <p class="text-on-secondary-fixed text-sm font-semibold">
+        Navigate this garden with your body — no hands needed.
+      </p>
+    </div>
+
+    <!-- How-to hint -->
+    <div class="grid grid-cols-2 gap-3 w-full">
+      <div class="bg-surface-container border-2 border-surface-variant p-3 flex flex-col items-center gap-2 text-center">
+        <span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings:'FILL' 1;">face</span>
+        <p class="text-xs font-bold text-on-surface uppercase">Move Nose</p>
+        <p class="text-[10px] text-on-surface-variant">Aim the flower cursor</p>
+      </div>
+      <div class="bg-surface-container border-2 border-surface-variant p-3 flex flex-col items-center gap-2 text-center">
+        <span class="material-symbols-outlined text-3xl text-tertiary" style="font-variation-settings:'FILL' 1;">sentiment_very_dissatisfied</span>
+        <p class="text-xs font-bold text-on-surface uppercase">Open Mouth</p>
+        <p class="text-[10px] text-on-surface-variant">Click / navigate</p>
+      </div>
+    </div>
+
+    <!-- Big CTA -->
+    <button
+      class="nav-btn bg-primary text-on-primary font-headline font-black text-xl uppercase tracking-tight w-full py-5 border-b-4 border-primary-dim shadow-[6px_6px_0_rgba(152,46,0,0.3)] flex items-center justify-center gap-3"
+      id="btn-enter-garden"
+      onclick="goToPage('page-files')"
+    >
+      <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1;">park</span>
+      Enter the Garden
+      <span class="material-symbols-outlined text-2xl">arrow_forward</span>
+    </button>
+  </main>
+
+  <!-- Bottom nav -->
+  <nav class="shrink-0 flex justify-around items-stretch h-14 bg-surface-container-low/90 backdrop-blur border-t-4 border-surface-container-highest">
+    <a class="bottom-nav-item active flex flex-col items-center justify-center text-primary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-start');return false;">
+      <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">filter_vintage</span>Start
+    </a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-files');return false;">
+      <span class="material-symbols-outlined text-xl">folder_open</span>Files
+    </a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-photos');return false;">
+      <span class="material-symbols-outlined text-xl">photo_library</span>Photos
+    </a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-settings');return false;">
+      <span class="material-symbols-outlined text-xl">settings</span>Settings
+    </a>
+  </nav>
+</div>
+
+<!-- ─── PAGE 2 : FILES ─────────────────────────────── -->
+<div class="page" id="page-files">
+  <header class="bg-secondary text-on-secondary-fixed font-headline font-bold uppercase tracking-tight flex items-center justify-between px-4 h-10 shrink-0 border-b-4 border-surface-container-highest">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">folder_open</span>
+      <span class="font-black">Botanical Files</span>
+    </div>
+    <span class="text-xs font-label opacity-70">4 items</span>
+  </header>
+
+  <main class="flex-1 overflow-y-auto vine-scrollbar px-4 py-4 space-y-3 max-w-lg mx-auto w-full">
+    <!-- File rows — large easy targets -->
+    <button class="nav-btn w-full bg-surface-container border-2 border-surface-variant p-4 flex items-center gap-4 shadow-[4px_4px_0_rgba(72,98,45,0.06)]" onclick="openFile('Petal Archive')">
+      <span class="material-symbols-outlined text-3xl text-primary" style="font-variation-settings:'FILL' 1;">folder_special</span>
+      <div class="text-left flex-1">
+        <p class="font-bold text-on-surface">Petal Archive</p>
+        <p class="text-xs text-on-surface-variant">48 items · 2.4 GB</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </button>
+
+    <button class="nav-btn w-full bg-surface-container border-2 border-surface-variant p-4 flex items-center gap-4 shadow-[4px_4px_0_rgba(72,98,45,0.06)]" onclick="openFile('Seed Vault')">
+      <span class="material-symbols-outlined text-3xl text-secondary" style="font-variation-settings:'FILL' 1;">folder</span>
+      <div class="text-left flex-1">
+        <p class="font-bold text-on-surface">Seed Vault</p>
+        <p class="text-xs text-on-surface-variant">120 items · 890 MB</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </button>
+
+    <button class="nav-btn w-full bg-surface-container border-2 border-surface-variant p-4 flex items-center gap-4 shadow-[4px_4px_0_rgba(72,98,45,0.06)]" onclick="openFile('Root System')">
+      <span class="material-symbols-outlined text-3xl text-tertiary" style="font-variation-settings:'FILL' 1;">folder</span>
+      <div class="text-left flex-1">
+        <p class="font-bold text-on-surface">Root System</p>
+        <p class="text-xs text-on-surface-variant">7 items · 13 MB</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </button>
+
+    <button class="nav-btn w-full bg-secondary-container border-2 border-secondary p-4 flex items-center gap-4 shadow-[4px_4px_0_rgba(72,98,45,0.06)]" onclick="openFile('Garden Notes')">
+      <span class="material-symbols-outlined text-3xl text-secondary" style="font-variation-settings:'FILL' 1;">description</span>
+      <div class="text-left flex-1">
+        <p class="font-bold text-on-surface">Garden Notes.txt</p>
+        <p class="text-xs text-on-surface-variant">Text document · 4 KB</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </button>
+
+    <!-- toast placeholder (shown on file click) -->
+    <div id="file-toast" class="hidden bg-on-surface text-surface font-bold text-sm px-4 py-3 border-b-4 border-secondary text-center">
+      Opening…
+    </div>
+
+    <!-- Next page button -->
+    <div class="pt-4">
+      <button class="nav-btn w-full bg-tertiary text-on-tertiary font-headline font-black uppercase text-base py-4 border-b-4 border-on-tertiary-container flex items-center justify-center gap-2 shadow-[6px_6px_0_rgba(58,23,156,0.2)]"
+        onclick="goToPage('page-photos')">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">photo_library</span>
+        Photo Gallery
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+  </main>
+
+  <nav class="shrink-0 flex justify-around items-stretch h-14 bg-surface-container-low/90 backdrop-blur border-t-4 border-surface-container-highest">
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-start');return false;"><span class="material-symbols-outlined text-xl">filter_vintage</span>Start</a>
+    <a class="bottom-nav-item active flex flex-col items-center justify-center text-primary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-files');return false;"><span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">folder_open</span>Files</a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-photos');return false;"><span class="material-symbols-outlined text-xl">photo_library</span>Photos</a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-settings');return false;"><span class="material-symbols-outlined text-xl">settings</span>Settings</a>
+  </nav>
+</div>
+
+<!-- ─── PAGE 3 : PHOTOS ───────────────────────────── -->
+<div class="page" id="page-photos">
+  <header class="bg-primary text-on-primary font-headline font-bold uppercase tracking-tight flex items-center justify-between px-4 h-10 shrink-0 border-b-4 border-primary-dim">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">photo_library</span>
+      <span class="font-black">Garden Gallery</span>
+    </div>
+    <span class="text-xs font-label opacity-70">6 photos</span>
+  </header>
+
+  <main class="flex-1 overflow-y-auto vine-scrollbar px-4 py-4 max-w-lg mx-auto w-full">
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <!-- Gallery cards with CSS botanical art -->
+      <button class="nav-btn gallery-card bg-secondary-container border-2 border-secondary p-0 overflow-hidden shadow-[4px_4px_0_rgba(72,98,45,0.12)]" onclick="viewPhoto('Spring Bloom')">
+        <div class="w-full h-32 flex items-center justify-center" style="background: radial-gradient(circle at 50% 60%, #dcfbb6, #4d6731);">
+          <span class="material-symbols-outlined text-6xl text-white opacity-80" style="font-variation-settings:'FILL' 1;">local_florist</span>
+        </div>
+        <p class="w-full text-center text-xs font-bold py-2 text-on-secondary-container bg-secondary-container">Spring Bloom</p>
+      </button>
+
+      <button class="nav-btn gallery-card bg-primary-container border-2 border-primary p-0 overflow-hidden shadow-[4px_4px_0_rgba(152,46,0,0.12)]" onclick="viewPhoto('Sunrise Petals')">
+        <div class="w-full h-32 flex items-center justify-center" style="background: radial-gradient(circle at 50% 60%, #ffad92, #ad3500);">
+          <span class="material-symbols-outlined text-6xl text-white opacity-80" style="font-variation-settings:'FILL' 1;">wb_sunny</span>
+        </div>
+        <p class="w-full text-center text-xs font-bold py-2 text-on-primary-container bg-primary-container">Sunrise Petals</p>
+      </button>
+
+      <button class="nav-btn gallery-card bg-tertiary-container border-2 border-tertiary p-0 overflow-hidden shadow-[4px_4px_0_rgba(58,23,156,0.12)]" onclick="viewPhoto('Moonflower')">
+        <div class="w-full h-32 flex items-center justify-center" style="background: radial-gradient(circle at 50% 40%, #baafff, #5e4ac6);">
+          <span class="material-symbols-outlined text-6xl text-white opacity-80" style="font-variation-settings:'FILL' 1;">bedtime</span>
+        </div>
+        <p class="w-full text-center text-xs font-bold py-2 text-on-tertiary-container bg-tertiary-container">Moonflower</p>
+      </button>
+
+      <button class="nav-btn gallery-card border-2 border-outline p-0 overflow-hidden shadow-[4px_4px_0_rgba(72,98,45,0.06)]" onclick="viewPhoto('Dew Drop')">
+        <div class="w-full h-32 flex items-center justify-center" style="background: radial-gradient(circle at 50% 40%, #cce7ff, #2563eb);">
+          <span class="material-symbols-outlined text-6xl text-white opacity-80" style="font-variation-settings:'FILL' 1;">water_drop</span>
+        </div>
+        <p class="w-full text-center text-xs font-bold py-2 text-on-surface bg-surface-container">Dew Drop</p>
+      </button>
+
+      <button class="nav-btn gallery-card border-2 border-secondary p-0 overflow-hidden shadow-[4px_4px_0_rgba(72,98,45,0.06)]" onclick="viewPhoto('Wildflower Field')">
+        <div class="w-full h-32 flex items-center justify-center" style="background: linear-gradient(160deg, #dcfbb6 30%, #ffad92);">
+          <span class="material-symbols-outlined text-6xl text-secondary opacity-80" style="font-variation-settings:'FILL' 1;">eco</span>
+        </div>
+        <p class="w-full text-center text-xs font-bold py-2 text-on-surface bg-surface-container">Wildflower Field</p>
+      </button>
+
+      <button class="nav-btn gallery-card border-2 border-primary p-0 overflow-hidden shadow-[4px_4px_0_rgba(152,46,0,0.06)]" onclick="viewPhoto('Autumn Leaf')">
+        <div class="w-full h-32 flex items-center justify-center" style="background: linear-gradient(160deg, #ffad92, #712000);">
+          <span class="material-symbols-outlined text-6xl text-white opacity-80" style="font-variation-settings:'FILL' 1;">park</span>
+        </div>
+        <p class="w-full text-center text-xs font-bold py-2 text-on-surface bg-surface-container">Autumn Leaf</p>
+      </button>
+    </div>
+
+    <!-- photo toast -->
+    <div id="photo-toast" class="hidden bg-on-surface text-surface font-bold text-sm px-4 py-3 border-b-4 border-primary text-center mb-3">
+      Viewing…
+    </div>
+
+    <button class="nav-btn w-full bg-primary text-on-primary font-headline font-black uppercase text-base py-4 border-b-4 border-primary-dim flex items-center justify-center gap-2 shadow-[6px_6px_0_rgba(152,46,0,0.2)]"
+      onclick="goToPage('page-settings')">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">settings</span>
+      System Settings
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </main>
+
+  <nav class="shrink-0 flex justify-around items-stretch h-14 bg-surface-container-low/90 backdrop-blur border-t-4 border-surface-container-highest">
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-start');return false;"><span class="material-symbols-outlined text-xl">filter_vintage</span>Start</a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-files');return false;"><span class="material-symbols-outlined text-xl">folder_open</span>Files</a>
+    <a class="bottom-nav-item active flex flex-col items-center justify-center text-primary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-photos');return false;"><span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">photo_library</span>Photos</a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-settings');return false;"><span class="material-symbols-outlined text-xl">settings</span>Settings</a>
+  </nav>
+</div>
+
+<!-- ─── PAGE 4 : SETTINGS ─────────────────────────── -->
+<div class="page" id="page-settings">
+  <header class="bg-tertiary text-on-tertiary font-headline font-bold uppercase tracking-tight flex items-center justify-between px-4 h-10 shrink-0 border-b-4 border-surface-container-highest">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">settings</span>
+      <span class="font-black">System Settings</span>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto vine-scrollbar px-4 py-4 max-w-lg mx-auto w-full space-y-6">
+    <!-- Settings window -->
+    <div class="bg-surface-container border-4 border-surface-container-highest shadow-[8px_8px_0px_0px_rgba(72,98,45,0.06)]">
+      <div class="h-10 bg-tertiary flex items-center justify-between px-3 border-b-4 border-surface-container-highest">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-on-tertiary" style="font-variation-settings:'FILL' 1;">settings</span>
+          <span class="font-headline font-bold text-on-tertiary uppercase text-sm tracking-widest">System Settings</span>
+        </div>
+        <div class="flex gap-1">
+          <div class="w-4 h-4 bg-secondary flex items-center justify-center text-[10px] text-white">_</div>
+          <div class="w-4 h-4 bg-primary flex items-center justify-center text-[10px] text-white">×</div>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-8 bg-surface-container-low">
+        <!-- Connectivity -->
+        <section class="space-y-4">
+          <h2 class="font-headline text-xs font-extrabold text-on-surface-variant uppercase tracking-[0.2em] border-b-2 border-surface-container-highest pb-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[14px]">hub</span>Connectivity
+          </h2>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-secondary-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">filter_vintage</span>
+              </div>
+              <div>
+                <p class="font-bold text-on-surface leading-tight">Garden Sync</p>
+                <p class="text-[10px] text-on-surface-variant">Update floral data across mesh</p>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-none">
+              <input id="toggle-sync" checked class="sr-only peer" type="checkbox"/>
+              <div class="w-11 h-6 bg-surface-container-highest rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-primary after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-fixed"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-primary-container/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">psychology</span>
+              </div>
+              <div>
+                <p class="font-bold text-on-surface leading-tight">Root Access</p>
+                <p class="text-[10px] text-on-surface-variant">Deep system botanical privilege</p>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-none">
+              <input id="toggle-root" class="sr-only peer" type="checkbox"/>
+              <div class="w-11 h-6 bg-surface-container-highest rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+        </section>
+
+        <!-- Notifications -->
+        <section class="space-y-4">
+          <h2 class="font-headline text-xs font-extrabold text-on-surface-variant uppercase tracking-[0.2em] border-b-2 border-surface-container-highest pb-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[14px]">notifications_active</span>Bloom Alerts
+          </h2>
+          <div class="bg-surface-container p-4 border-2 border-surface-container-highest space-y-3">
+            <p class="text-xs font-bold text-secondary uppercase">Notification Style</p>
+            <label class="flex items-center gap-3 cursor-none group">
+              <input checked class="hidden peer" name="bloom_style" type="radio"/>
+              <div class="w-5 h-5 border-2 border-secondary flex items-center justify-center bg-white peer-checked:bg-secondary">
+                <span class="material-symbols-outlined text-white text-[12px] hidden peer-checked:block" style="font-variation-settings:'FILL' 1;">spa</span>
+              </div>
+              <span class="text-sm font-semibold text-on-surface">Subtle Petal Fall</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-none group">
+              <input class="hidden peer" name="bloom_style" type="radio"/>
+              <div class="w-5 h-5 border-2 border-secondary flex items-center justify-center bg-white peer-checked:bg-secondary">
+                <span class="material-symbols-outlined text-white text-[12px] hidden peer-checked:block" style="font-variation-settings:'FILL' 1;">spa</span>
+              </div>
+              <span class="text-sm font-semibold text-on-surface">Full Wildflower Bloom</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Nose sensitivity slider -->
+        <section class="space-y-4">
+          <h2 class="font-headline text-xs font-extrabold text-on-surface-variant uppercase tracking-[0.2em] border-b-2 border-surface-container-highest pb-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[14px]">face</span>Nose Sensitivity
+          </h2>
+          <div class="bg-surface-container-lowest p-4">
+            <div class="flex justify-between text-[10px] font-bold uppercase mb-2">
+              <span>Slow</span>
+              <span class="text-primary">Fast</span>
+            </div>
+            <input id="sensitivity-slider" class="w-full h-2 bg-surface-container-highest accent-primary appearance-none cursor-none" type="range" min="1" max="10" value="5"
+              oninput="updateSensitivity(this.value)"/>
+            <p class="text-[10px] text-on-surface-variant mt-2 text-center">Sensitivity: <span id="sens-value">5</span></p>
+          </div>
+        </section>
+
+        <!-- Mouth threshold -->
+        <section class="space-y-4">
+          <h2 class="font-headline text-xs font-extrabold text-on-surface-variant uppercase tracking-[0.2em] border-b-2 border-surface-container-highest pb-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[14px]">sentiment_very_dissatisfied</span>Mouth Click Threshold
+          </h2>
+          <div class="bg-surface-container-lowest p-4">
+            <div class="flex justify-between text-[10px] font-bold uppercase mb-2">
+              <span>Easy (small open)</span>
+              <span class="text-primary">Strict (wide open)</span>
+            </div>
+            <input id="mouth-slider" class="w-full h-2 bg-surface-container-highest accent-primary appearance-none cursor-none" type="range" min="1" max="10" value="3"
+              oninput="updateMouthThreshold(this.value)"/>
+            <p class="text-[10px] text-on-surface-variant mt-2 text-center">Threshold: <span id="mouth-value">3</span></p>
+          </div>
+        </section>
+
+        <!-- Performance -->
+        <section class="space-y-4">
+          <h2 class="font-headline text-xs font-extrabold text-on-surface-variant uppercase tracking-[0.2em] border-b-2 border-surface-container-highest pb-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[14px]">speed</span>Photosynthesis Rate
+          </h2>
+          <div class="bg-surface-container-lowest p-4">
+            <div class="flex justify-between text-[10px] font-bold uppercase mb-2">
+              <span>Dormant</span><span class="text-primary">Super Bloom</span>
+            </div>
+            <input class="w-full h-2 bg-surface-container-highest accent-primary appearance-none cursor-none" type="range"/>
+          </div>
+        </section>
+
+        <!-- Action footer -->
+        <div class="flex gap-2 pt-2">
+          <button class="nav-btn flex-1 py-4 bg-primary text-on-primary font-bold uppercase text-xs tracking-tighter border-b-4 border-primary-dim shadow-[4px_4px_0_rgba(152,46,0,0.2)]"
+            onclick="settingsSaved()">Apply Pollen</button>
+          <button class="nav-btn px-6 py-4 bg-surface-container-highest text-on-surface-variant font-bold uppercase text-xs border-b-4 border-outline-variant"
+            onclick="settingsReset()">Prune</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info cards -->
+    <div class="grid grid-cols-2 gap-4 pb-4">
+      <div class="bg-secondary-container p-4 border-4 border-secondary flex flex-col gap-2">
+        <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">potted_plant</span>
+        <p class="font-headline font-extrabold text-on-secondary-fixed text-xs uppercase">Garden Version</p>
+        <p class="font-body text-xl font-bold text-secondary">v1.0-flora</p>
+      </div>
+      <div class="bg-tertiary-container p-4 border-4 border-tertiary flex flex-col gap-2">
+        <span class="material-symbols-outlined text-tertiary" style="font-variation-settings:'FILL' 1;">water_drop</span>
+        <p class="font-headline font-extrabold text-on-tertiary-fixed-variant text-xs uppercase">Hydration Level</p>
+        <p class="font-body text-xl font-bold text-tertiary">Optimal</p>
+      </div>
+      <div class="col-span-2 bg-surface-container-high border-4 border-surface-variant p-4 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-black uppercase text-on-surface-variant">Last Root Update</p>
+          <p class="font-bold">2m ago via Network Vine</p>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant">history</span>
+      </div>
+    </div>
+
+    <!-- Back to start -->
+    <button class="nav-btn w-full bg-secondary text-on-secondary-fixed font-headline font-black uppercase text-base py-4 border-b-4 border-on-secondary-fixed flex items-center justify-center gap-2 shadow-[6px_6px_0_rgba(72,98,45,0.2)] mb-4"
+      onclick="goToPage('page-start')">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">home</span>
+      Back to Start
+    </button>
+  </main>
+
+  <nav class="shrink-0 flex justify-around items-stretch h-14 bg-surface-container-low/90 backdrop-blur border-t-4 border-surface-container-highest">
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-start');return false;"><span class="material-symbols-outlined text-xl">filter_vintage</span>Start</a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-files');return false;"><span class="material-symbols-outlined text-xl">folder_open</span>Files</a>
+    <a class="bottom-nav-item flex flex-col items-center justify-center text-secondary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-photos');return false;"><span class="material-symbols-outlined text-xl">photo_library</span>Photos</a>
+    <a class="bottom-nav-item active flex flex-col items-center justify-center text-primary font-bold text-[10px] uppercase w-1/4 gap-0.5" href="#" onclick="goToPage('page-settings');return false;"><span class="material-symbols-outlined text-xl" style="font-variation-settings:'FILL' 1;">settings</span>Settings</a>
+  </nav>
+</div>
+
+<!-- ══════════════════ JAVASCRIPT ══════════════════ -->
+<script>
+  // ── Config ──────────────────────────────────────────────────
+  const CONFIG = {
+    SMOOTH:            0.55,   // cursor lerp (0=raw, 1=frozen)
+    MOUTH_THRESHOLD:   0.018,  // normalized mouth-open ratio (vs face height)
+    MOUTH_HYSTERESIS:  0.65,   // close ratio relative to threshold
+    CLICK_COOLDOWN_MS: 1200,   // ms between mouth-clicks
+    DWELL_MS:          600,    // ms to fill dwell ring
+    NOSE_TIP_IDX:      4,      // MediaPipe FaceMesh nose tip landmark
+    UPPER_LIP_IDX:     13,     // inner upper lip
+    LOWER_LIP_IDX:     14,     // inner lower lip
+  };
+
+  // ── State ────────────────────────────────────────────────────
+  let faceMesh = null;
+  let video    = document.getElementById('webcam');
+  let faces    = [];
+
+  let curX = window.innerWidth / 2;
+  let curY = window.innerHeight / 2;
+
+  let isMouthOpen    = false;
+  let clickCooldown  = false;
+  let dwellTimer     = null;
+  let dwellTarget    = null;
+  let dwellProgress  = 0;   // 0–1
+  let currentHovered = null;
+
+  // ── DOM refs ─────────────────────────────────────────────────
+  const noseCursor   = document.getElementById('nose-cursor');
+  const dwellCircle  = document.getElementById('dwell-circle');
+  const previewCanvas= document.getElementById('preview-canvas');
+  const pCtx         = previewCanvas.getContext('2d');
+  const loadOverlay  = document.getElementById('loading-overlay');
+  const loadStep     = document.getElementById('load-step');
+  const mouthDot     = document.getElementById('mouth-status-dot');
+  const camStatusTxt = document.getElementById('cam-status-text');
+
+  // ── Page navigation ──────────────────────────────────────────
+  function goToPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function openFile(name) {
+    const t = document.getElementById('file-toast');
+    t.textContent = `Opening "${name}"…`;
+    t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 2000);
+  }
+
+  function viewPhoto(name) {
+    const t = document.getElementById('photo-toast');
+    t.textContent = `Viewing "${name}"`;
+    t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 2000);
+  }
+
+  function settingsSaved() {
+    const btn = event.currentTarget;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Saved!';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }
+
+  function settingsReset() {
+    document.getElementById('sensitivity-slider').value = 5;
+    document.getElementById('sens-value').textContent = 5;
+    document.getElementById('mouth-slider').value = 3;
+    document.getElementById('mouth-value').textContent = 3;
+    CONFIG.MOUTH_THRESHOLD = 0.018;
+  }
+
+  function updateSensitivity(val) {
+    document.getElementById('sens-value').textContent = val;
+    // Higher val = less smoothing = more responsive
+    CONFIG.SMOOTH = 0.75 - (val / 10) * 0.55;
+  }
+
+  function updateMouthThreshold(val) {
+    document.getElementById('mouth-value').textContent = val;
+    // Map 1-10 → 0.008–0.035
+    CONFIG.MOUTH_THRESHOLD = 0.008 + (val / 10) * 0.027;
+  }
+
+  // ── Camera + FaceMesh setup ──────────────────────────────────
+  async function init() {
+    loadStep.textContent = 'Requesting camera…';
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480, facingMode: 'user' }
+      });
+      video.srcObject = stream;
+      await new Promise(r => video.onloadedmetadata = r);
+      video.play();
+    } catch (e) {
+      loadStep.textContent = 'Camera denied. Please allow access and refresh.';
+      return;
+    }
+
+    loadStep.textContent = 'Loading FaceMesh model…';
+    try {
+      faceMesh = ml5.faceMesh({ maxFaces: 1, flipped: true }, () => {
+        loadOverlay.classList.add('hidden');
+        camStatusTxt.textContent = 'No face';
+        faceMesh.detectStart(video, onFaces);
+        requestAnimationFrame(drawPreview);
+      });
+    } catch(e) {
+      loadStep.textContent = 'ml5 failed to load: ' + e.message;
+    }
+  }
+
+  // ── Face detection callback ──────────────────────────────────
+  function onFaces(results) {
+    faces = results;
+
+    if (!results || results.length === 0) {
+      camStatusTxt.textContent = 'No face';
+      mouthDot.classList.remove('open');
+      return;
+    }
+
+    const face = results[0];
+    const kp   = face.keypoints;
+
+    // Guard: ensure required keypoints exist
+    if (!kp || kp.length < 15) return;
+
+    const nose   = kp[CONFIG.NOSE_TIP_IDX];
+    const upper  = kp[CONFIG.UPPER_LIP_IDX];
+    const lower  = kp[CONFIG.LOWER_LIP_IDX];
+
+    if (!nose || !upper || !lower) return;
+
+    // Map nose to screen (video already flipped by ml5)
+    const vw = video.videoWidth  || 640;
+    const vh = video.videoHeight || 480;
+    const rawX = (nose.x / vw) * window.innerWidth;
+    const rawY = (nose.y / vh) * window.innerHeight;
+
+    // Lerp for smoothness
+    curX += (rawX - curX) * (1 - CONFIG.SMOOTH);
+    curY += (rawY - curY) * (1 - CONFIG.SMOOTH);
+
+    // Move cursor
+    noseCursor.style.transform = `translate(${curX - 20}px, ${curY - 20}px)`;
+
+    // Mouth open detection (normalized to face bounding-box height)
+    const faceH  = face.box ? face.box.height : 200;
+    const mouthD = (lower.y - upper.y) / faceH;
+    const isOpen = mouthD > CONFIG.MOUTH_THRESHOLD;
+
+    // Visual indicator
+    camStatusTxt.textContent = isOpen ? 'MOUTH OPEN' : 'Face detected';
+    mouthDot.classList.toggle('open', isOpen);
+    noseCursor.classList.toggle('mouth-open', isOpen);
+
+    if (isOpen && !isMouthOpen && !clickCooldown) {
+      isMouthOpen = true;
+      triggerNoseClick(curX, curY);
+    } else if (!isOpen && mouthD < CONFIG.MOUTH_THRESHOLD * CONFIG.MOUTH_HYSTERESIS) {
+      isMouthOpen = false;
+    }
+
+    // Hover + dwell
+    updateHover(curX, curY);
+  }
+
+  // ── Click trigger ────────────────────────────────────────────
+  function triggerNoseClick(x, y) {
+    clickCooldown = true;
+
+    // Flash animation
+    noseCursor.style.transition = 'none';
+    setTimeout(() => { noseCursor.style.transition = ''; }, 200);
+
+    // Find & click element
+    const el = document.elementFromPoint(x, y);
+    if (el) {
+      // Traverse up for clickable ancestor
+      let target = el;
+      while (target && target !== document.body) {
+        if (target.tagName === 'BUTTON' || target.tagName === 'A' ||
+            target.tagName === 'INPUT'  || target.tagName === 'LABEL' ||
+            target.onclick) {
+          target.click();
+          target.classList.add('nose-clicked');
+          setTimeout(() => target.classList.remove('nose-clicked'), 300);
+          break;
+        }
+        target = target.parentElement;
+      }
+    }
+
+    // Reset dwell
+    clearDwell();
+
+    setTimeout(() => { clickCooldown = false; }, CONFIG.CLICK_COOLDOWN_MS);
+  }
+
+  // ── Hover + dwell ring ───────────────────────────────────────
+  function updateHover(x, y) {
+    const el = document.elementFromPoint(x, y);
+    if (!el) return;
+
+    // Find nearest nav-btn or interactive element
+    let candidate = el;
+    let found = null;
+    while (candidate && candidate !== document.body) {
+      if (candidate.classList.contains('nav-btn') ||
+          candidate.tagName === 'A' || candidate.tagName === 'LABEL' ||
+          candidate.tagName === 'INPUT') {
+        found = candidate;
+        break;
+      }
+      candidate = candidate.parentElement;
+    }
+
+    if (found !== currentHovered) {
+      // Remove old hover
+      if (currentHovered) currentHovered.classList.remove('nose-hover');
+      clearDwell();
+      currentHovered = found;
+
+      if (found) {
+        found.classList.add('nose-hover');
+        startDwell(found);
+      }
+    }
+  }
+
+  function startDwell(el) {
+    dwellTarget   = el;
+    dwellProgress = 0;
+    const start   = performance.now();
+
+    function step(now) {
+      if (dwellTarget !== el) return; // abandoned
+      dwellProgress = Math.min((now - start) / CONFIG.DWELL_MS, 1);
+      // Update SVG circle stroke-dashoffset (150 = full circumference approx)
+      const circumference = 150;
+      dwellCircle.style.strokeDashoffset = circumference * (1 - dwellProgress);
+      if (dwellProgress < 1) requestAnimationFrame(step);
+      else clearDwell(); // reset after full fill so it stays clean
+    }
+    requestAnimationFrame(step);
+  }
+
+  function clearDwell() {
+    dwellTarget   = null;
+    dwellProgress = 0;
+    dwellCircle.style.strokeDashoffset = 150;
+    if (currentHovered) {
+      currentHovered.classList.remove('nose-hover');
+      currentHovered = null;
+    }
+  }
+
+  // ── Camera preview canvas ────────────────────────────────────
+  function drawPreview() {
+    requestAnimationFrame(drawPreview);
+    if (!video.videoWidth) return;
+
+    pCtx.save();
+    // Mirror the preview canvas
+    pCtx.translate(previewCanvas.width, 0);
+    pCtx.scale(-1, 1);
+    pCtx.drawImage(video, 0, 0, previewCanvas.width, previewCanvas.height);
+    pCtx.restore();
+
+    // Draw nose dot on preview
+    if (faces && faces.length > 0) {
+      const face = faces[0];
+      const kp   = face.keypoints;
+      if (!kp || kp.length < 5) return;
+
+      const nose  = kp[CONFIG.NOSE_TIP_IDX];
+      const upper = kp[CONFIG.UPPER_LIP_IDX];
+      const lower = kp[CONFIG.LOWER_LIP_IDX];
+      if (!nose) return;
+
+      const vw = video.videoWidth  || 640;
+      const vh = video.videoHeight || 480;
+      const pw = previewCanvas.width;
+      const ph = previewCanvas.height;
+
+      // Nose tip — already mirrored in ml5 (flipped:true), mirror again for display
+      const nx = (1 - nose.x / vw) * pw;
+      const ny = (nose.y / vh) * ph;
+
+      pCtx.beginPath();
+      pCtx.arc(nx, ny, 5, 0, Math.PI * 2);
+      pCtx.fillStyle = '#ad3500';
+      pCtx.fill();
+
+      // Lip dots
+      if (upper && lower) {
+        const ux = (1 - upper.x / vw) * pw, uy = (upper.y / vh) * ph;
+        const lx = (1 - lower.x / vw) * pw, ly = (lower.y / vh) * ph;
+        pCtx.beginPath();
+        pCtx.arc(ux, uy, 3, 0, Math.PI * 2);
+        pCtx.fillStyle = '#5e4ac6';
+        pCtx.fill();
+        pCtx.beginPath();
+        pCtx.arc(lx, ly, 3, 0, Math.PI * 2);
+        pCtx.fillStyle = '#4d6731';
+        pCtx.fill();
+      }
+    }
+  }
+
+  // ── Boot ─────────────────────────────────────────────────────
+  window.addEventListener('load', init);
+</script>
+</body>
+</html>
